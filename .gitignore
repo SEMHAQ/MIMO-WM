@@ -83,3 +83,4 @@ paper/template/
 # Exceptions - keep important figures/tables in paper/
 !paper/figures/*.pdf
 !paper/figures/*.png
+.claude/
