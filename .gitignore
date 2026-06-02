@@ -77,6 +77,9 @@ Thumbs.db
 *.jpeg
 *.svg
 
+# CTA template (from external repo, not tracked here)
+paper/template/
+
 # Exceptions - keep important figures/tables in paper/
 !paper/figures/*.pdf
 !paper/figures/*.png
