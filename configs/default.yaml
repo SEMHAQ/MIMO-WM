@@ -3,7 +3,7 @@
 # 数据
 data:
   data_dir: "data/robot"
-  seq_len: 16
+  seq_len: 64
   batch_size: 64
   num_workers: 4
   normalize: true
@@ -31,7 +31,7 @@ transformer_wm:
 
 # 训练
 train:
-  epochs: 100
+  epochs: 20
   lr: 1.0e-3
   weight_decay: 1.0e-4
   lr_scheduler: cosine    # cosine / step
@@ -53,5 +53,5 @@ mpc:
 log:
   save_dir: "experiments/"
   log_interval: 10
-  eval_interval: 5
+  eval_interval: 3
   save_best: true
