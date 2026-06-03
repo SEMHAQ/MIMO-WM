@@ -27,6 +27,8 @@ plt.rcParams.update({
     'savefig.bbox': 'tight',
     'lines.linewidth': 1.5,
     'lines.markersize': 5,
+    'pdf.fonttype': 42,
+    'svg.fonttype': 'none',
 })
 
 output_dir = Path("paper/figures")
