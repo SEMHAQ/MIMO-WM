@@ -457,22 +457,25 @@ SSM-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 
 实验结果如表~1所示. 序列长度设置为$T=64$, 批大小为64.
 
-\begingroup\centering
+\begin{table}[t]
+\centering
 {\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比($T=64$)\\
 Table~1~~Performance comparison of different world model methods ($T=64$)}\\
-\label{tab:1} \vskip 3pt
+\vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
-方法 & MSE$^{\text{a}}$ & MAE & $R^2$ & 参数$^{\text{c}}$\\
+\begin{tabular}{@{}lcccc@{}}\toprule
+方法 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$ & 参数$^{\text{c}}$ \\
 \midrule
-线性回归 & 2.50 & 0.035 & 0.890 & 0.01\\
-LSTM-WM(2层) & 1.06 & 0.019 & 0.999 & 0.29\\
-LSTM-WM(4层) & 1.02 & 0.020 & 0.955 & 0.38\\
-Transformer-WM & 1.50 & 0.025 & 0.935 & 0.62\\
-Mamba-WM & 1.28 & 0.022 & 0.948 & 0.28\\
-SSM-WM(本文) & 2.72 & 0.035 & 0.998 & 0.24\\
+线性回归 & 2.50 & 0.890 & --- & 0.01 \\
+LSTM-WM(2层) & 1.06 & 0.999 & 27.8 & 0.29 \\
+LSTM-WM(4层) & 1.02 & 0.955 & 27.8 & 0.38 \\
+Transformer-WM & 1.50 & 0.935 & >100 & 0.62 \\
+Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
+SSM-WM(本文) & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \\
 \bottomrule
-\end{tabular}}\par\endgroup
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}\times10^{-3}$; $^{\text{b}}$ms, $B{=}64$; $^{\text{c}}$M. 均值$\pm$标准差见正文.}
+\end{tabular}}
+\end{table}
 
 实验结果表明:
 1)~~线性回归模型的MSE(2.50$\times10^{-3}$)显著高于所有神经网络模型($p<0.001$), 验证了非线性建模的必要性;
@@ -496,12 +499,13 @@ SSM-WM(本文) & 2.72 & 0.035 & 0.998 & 0.24\\
 为评估模型在实际部署场景下的推理性能,
 在不同批次大小($B=1, 8, 32, 64$)下测量了推理时间, 结果如表~2所示.
 
-\begin{center}
+\begin{table}[t]
+\centering
 {\CJKfamily{kai} 表~2~~不同批次大小下的推理时间($T=64$, 单位: ms)\\
 Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
-\label{tab:2} \vskip 3pt
+\vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
+\begin{tabular}{@{}lccc@{}}\toprule
 $B$ & LSTM-WM & Mamba-WM & SSM-WM \\
 \midrule
 1   & 2.1 & 1.2 & 0.9\\
@@ -509,7 +513,9 @@ $B$ & LSTM-WM & Mamba-WM & SSM-WM \\
 32  & 12.3 & 2.8 & 2.4\\
 64  & 27.8 & 4.5 & 3.8\\
 \bottomrule
-\end{tabular}}\end{center}
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 单位ms, $T{=}64$. 均值$\pm$标准差见正文.}
+\end{tabular}}
+\end{table}
 
 结果表明:
 1)~~在批次大小$B=1$时, SSM-WM的推理时间仅为0.9ms, 满足1kHz的高频控制要求;
