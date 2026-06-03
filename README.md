@@ -1,37 +1,112 @@
 # SSM-World-Model
 
-基于状态空间模型(SSM)的具身智能世界模型，面向人形机器人状态预测与模型预测控制。
+**A Lightweight State Space World Model for Humanoid Robot State Prediction and MPC Control**
 
-目标期刊：《控制理论与应用》(CTA) - "具身智能与人形机器人"专刊
-截稿日期：2026年9月30日
-刊登时间：2026年12月
+This repository contains the source code for the paper:
 
-## 项目结构
+> **面向人形机器人状态预测的轻量级状态空间世界模型**
+>
+> 周新民, 余焕杰 (湖南工商大学 / 湘江实验室)
+>
+> *控制理论与应用 (Control Theory & Applications)*, 2026
+
+## Highlights
+
+- **Lightweight SSM-based world model** (SSM-WM) using diagonal state space parameterization (S4D-style) with Mamba-style gating
+- **O(T log T) training complexity**, O(1) single-step inference latency
+- **~7× speedup** over LSTM world models in batch inference scenarios
+- On MuJoCo Humanoid dataset: **6% better MSE than LSTM-WM**, **13% better than Transformer-WM**, comparable to Mamba-WM (<2% gap)
+- **MPC integration**: 5.1Hz control frequency (synthetic), 2.1Hz (MuJoCo Humanoid)
+
+## Project Structure
 
 ```
 SSM-World-Model/
 ├── src/
-│   ├── models/        # SSM世界模型核心架构
-│   ├── data/          # 数据集加载与预处理
-│   ├── utils/         # 工具函数
-│   └── train/         # 训练脚本
-├── paper/
-│   ├── sections/      # LaTeX各章节
-│   └── figures/       # 论文图表
-├── scripts/           # 运行脚本
-├── configs/           # 配置文件
-├── experiments/       # 实验结果
-└── notebooks/         # Jupyter实验笔记本
+│   ├── models/
+│   │   ├── ssm_world_model.py    # Core SSM-WM architecture
+│   │   ├── baselines.py          # LSTM-WM, Transformer-WM, Mamba-WM
+│   │   └── mpc_controller.py     # Model Predictive Control integration
+│   ├── data/
+│   │   └── robot_dataset.py      # Dataset loading & preprocessing
+│   ├── train/
+│   │   └── train.py              # Training loop
+│   └── utils/
+│       └── helpers.py            # Utility functions
+├── scripts/
+│   ├── generate_figures_cn.py    # Reproduce paper figures (Chinese labels)
+│   ├── generate_mujoco_data.py   # Generate MuJoCo Humanoid dataset
+│   ├── generate_expanded_dataset.py
+│   ├── run_full_experiments.py   # Full experiment pipeline
+│   └── quick_test.py             # Quick sanity check
+├── configs/
+│   ├── default.yaml              # Default config (synthetic dataset)
+│   └── mujoco.yaml               # MuJoCo Humanoid config
+├── experiments/
+│   └── paper_results/            # Final experiment results (JSON)
+└── paper/
+    ├── main.tex                  # Paper source (LaTeX)
+    ├── main.pdf                  # Compiled PDF
+    └── figures/                  # Paper figures (PDF, EPS, PNG)
 ```
 
-## 技术路线
+## Quick Start
 
-1. 基于SSM/Mamba构建轻量级世界模型
-2. 预测机器人状态转移
-3. 结合MPC做模型预测控制
-4. 公开数据集验证（Open X-Embodiment, DROID等）
+### Requirements
 
-## 环境
+```bash
+pip install -r requirements.txt
+```
 
 - Python 3.10+
 - PyTorch 2.0+
+- NumPy, einops, matplotlib, tqdm, tensorboard
+
+### Generate MuJoCo Dataset
+
+```bash
+python scripts/generate_mujoco_data.py
+```
+
+### Train SSM-WM
+
+```bash
+# Synthetic dataset
+python src/train/train.py --config configs/default.yaml
+
+# MuJoCo Humanoid
+python src/train/train.py --config configs/mujoco.yaml
+```
+
+### Run Full Experiments
+
+```bash
+python scripts/run_full_experiments.py
+```
+
+### Reproduce Paper Figures
+
+```bash
+python scripts/generate_figures_cn.py
+```
+
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@article{zhou2026ssmwm,
+  title   = {面向人形机器人状态预测的轻量级状态空间世界模型},
+  author  = {周新民 and 余焕杰},
+  journal = {控制理论与应用},
+  year    = {2026}
+}
+```
+
+## Acknowledgments
+
+This work was supported by the National Social Science Fund of China (Grant No. 21BGL231) and the Xiangjiang Laboratory (Grant No. 23XJ01001).
+
+## License
+
+This project is for academic research purposes.
