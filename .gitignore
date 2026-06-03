@@ -89,3 +89,5 @@ paper/template/
 !paper/ssm_architecture_redraw_bundle/*.svg
 .claude/
 refs/
+paper/peer_review/
+paper/ssm_architecture_redraw_bundle/
