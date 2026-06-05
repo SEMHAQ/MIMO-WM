@@ -411,7 +411,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        一句话概括
+        研究背景
       
     </span>
   </a>
@@ -422,7 +422,40 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        这篇文章做了什么？
+        核心思路
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心结果
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mamba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么不用 Mamba？
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        文档导航
       
     </span>
   </a>
@@ -874,7 +907,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        一句话概括
+        研究背景
       
     </span>
   </a>
@@ -885,7 +918,40 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        这篇文章做了什么？
+        核心思路
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心结果
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mamba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么不用 Mamba？
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        文档导航
       
     </span>
   </a>
@@ -914,28 +980,230 @@
 
 <h1 id="_1">面向人形机器人状态预测的轻量级状态空间世界模型<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p><strong>周新民 &nbsp; 余焕杰</strong> — 湖南工商大学 / 湘江实验室</p>
-<p><em>控制理论与应用</em>, 2026</p>
-<p><a class="md-button md-button--primary" href="https://github.com/SEMHAQ/SSM-World-Model">:fontawesome-brands-github: GitHub</a></p>
+<p><em>控制理论与应用 (Control Theory &amp; Applications)</em>, 2026 专刊: 具身智能与人形机器人</p>
+<p><a class="md-button md-button--primary" href="https://github.com/SEMHAQ/SSM-World-Model">:fontawesome-brands-github: GitHub</a>
+<a class="md-button" href="https://github.com/SEMHAQ/SSM-World-Model/blob/main/paper/main.pdf">:fontawesome-solid-book: 论文PDF</a></p>
 <hr />
-<h2 id="_2">一句话概括<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<blockquote>
-<p>用一种轻量级的序列模型（SSM）给机器人建一个"世界模型"，让机器人能预测自己身体的状态变化，再结合MPC做控制决策。</p>
-</blockquote>
-<h2 id="_3">这篇文章做了什么？<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>```
-人形机器人想控制自己的身体
-    ↓
-需要一个"世界模型"来预测：如果我做这个动作，身体会怎样？
-    ↓
-以前用LSTM建世界模型 → 太慢，来不及控制
-   用Transformer建   → 更慢，O(T²)复杂度
-   用Mamba建         → 快，但部署需要特殊CUDA算子
-    ↓
-我们用SSM（和Mamba类似的数学基础，但实现更简单）
-    ↓
-效果：比LSTM快7倍，比Transformer快26倍，精度不差
-    ↓
-接上MPC控制器 → 实现了5.1Hz的实时控制</p>
+<h2 id="_2">研究背景<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>人形机器人要控制自己的身体，需要一个<strong>世界模型</strong>来预测："如果我施加这个动作，身体状态会怎么变化？" 然后用 <strong>MPC（模型预测控制）</strong> 反复问世界模型，搜索最优动作序列。</p>
+<p>问题在于：<strong>世界模型的推理速度决定了MPC能不能实时运行。</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">世界模型方法</th>
+<th style="text-align: center;">推理时间</th>
+<th style="text-align: center;">能否用于实时MPC？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">LSTM</td>
+<td style="text-align: center;">27.8ms</td>
+<td style="text-align: center;">:material-close: 太慢</td>
+</tr>
+<tr>
+<td style="text-align: center;">Transformer</td>
+<td style="text-align: center;">&gt;100ms</td>
+<td style="text-align: center;">:material-close: 更慢</td>
+</tr>
+<tr>
+<td style="text-align: center;">Mamba</td>
+<td style="text-align: center;">4.5ms</td>
+<td style="text-align: center;">:material-check: 可以，但部署难</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>SSM-WM（本文）</strong></td>
+<td style="text-align: center;"><strong>3.8ms</strong></td>
+<td style="text-align: center;">:material-check: <strong>又快又好部署</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_3">核心思路<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">一句话概括</p>
+<p>用标准 PyTorch 实现的轻量级 SSM 世界模型，推理比 LSTM 快 7 倍，精度在 MuJoCo 上反超 LSTM 6%，接上 MPC 实现 5.1Hz 实时控制。</p>
+</div>
+<hr />
+<h2 id="_4">核心结果<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">MuJoCo 精度</label><label for="__tabbed_1_2">推理速度</label><label for="__tabbed_1_3">MPC 控制</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">方法</th>
+<th style="text-align: center;">MSE (×10⁻³)</th>
+<th style="text-align: center;">R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">Mamba-WM</td>
+<td style="text-align: center;">0.821</td>
+<td style="text-align: center;">0.598</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>SSM-WM</strong></td>
+<td style="text-align: center;"><strong>0.834</strong></td>
+<td style="text-align: center;"><strong>0.592</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;">LSTM-WM</td>
+<td style="text-align: center;">0.889</td>
+<td style="text-align: center;">0.566</td>
+</tr>
+<tr>
+<td style="text-align: center;">Transformer-WM</td>
+<td style="text-align: center;">0.956</td>
+<td style="text-align: center;">0.528</td>
+</tr>
+</tbody>
+</table>
+<p>SSM-WM 比 LSTM 好 <strong>6%</strong>，比 Transformer 好 <strong>13%</strong>，与 Mamba 差距 <strong>&lt;2%</strong>。</p>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">方法</th>
+<th style="text-align: center;">时间 (ms)</th>
+<th style="text-align: center;">加速比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>SSM-WM</strong></td>
+<td style="text-align: center;"><strong>3.8</strong></td>
+<td style="text-align: center;"><strong>基准</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;">Mamba-WM</td>
+<td style="text-align: center;">4.5</td>
+<td style="text-align: center;">0.8×</td>
+</tr>
+<tr>
+<td style="text-align: center;">LSTM-WM</td>
+<td style="text-align: center;">27.8</td>
+<td style="text-align: center;">7.3×</td>
+</tr>
+<tr>
+<td style="text-align: center;">Transformer-WM</td>
+<td style="text-align: center;">&gt;100</td>
+<td style="text-align: center;">&gt;26×</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">数据集</th>
+<th style="text-align: center;">SSM-WM-MPC</th>
+<th style="text-align: center;">LSTM-MPC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">合成数据集</td>
+<td style="text-align: center;"><strong>5.1Hz</strong></td>
+<td style="text-align: center;">0.7Hz</td>
+</tr>
+<tr>
+<td style="text-align: center;">MuJoCo Humanoid</td>
+<td style="text-align: center;"><strong>2.1Hz</strong></td>
+<td style="text-align: center;">0.35Hz</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="mamba">为什么不用 Mamba？<a class="headerlink" href="#mamba" title="Permanent link">&para;</a></h2>
+<p>两者数学基础相同，区别在于实现方式：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: center;">SSM-WM（本文）</th>
+<th style="text-align: center;">Mamba</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>实现依赖</td>
+<td style="text-align: center;">标准 PyTorch</td>
+<td style="text-align: center;">自定义 CUDA 算子</td>
+</tr>
+<tr>
+<td>部署难度</td>
+<td style="text-align: center;">:material-check-circle: 低</td>
+<td style="text-align: center;">:material-close-circle: 高</td>
+</tr>
+<tr>
+<td>推理速度</td>
+<td style="text-align: center;"><strong>3.8ms</strong></td>
+<td style="text-align: center;">4.5ms</td>
+</tr>
+<tr>
+<td>参数量</td>
+<td style="text-align: center;"><strong>0.24M</strong></td>
+<td style="text-align: center;">0.28M</td>
+</tr>
+<tr>
+<td>MuJoCo MSE</td>
+<td style="text-align: center;">0.834</td>
+<td style="text-align: center;">0.821</td>
+</tr>
+</tbody>
+</table>
+<p>:material-star: 为了 1.5% 的精度差距（统计不显著），不值得增加部署复杂度。</p>
+<hr />
+<h2 id="_5">文档导航<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>章节</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="method/background/">背景概念</a></td>
+<td>什么是世界模型？什么是SSM？LSTM/Transformer/Mamba对比</td>
+</tr>
+<tr>
+<td><a href="method/architecture/">SSM-WM架构</a></td>
+<td>模型结构、门控机制、训练方式</td>
+</tr>
+<tr>
+<td><a href="method/mpc/">MPC集成</a></td>
+<td>世界模型如何接入模型预测控制</td>
+</tr>
+<tr>
+<td><a href="experiments/setup/">实验设置</a></td>
+<td>数据集、基线方法、评价指标</td>
+</tr>
+<tr>
+<td><a href="experiments/results/">主要结果</a></td>
+<td>合成数据集和MuJoCo的对比实验</td>
+</tr>
+<tr>
+<td><a href="experiments/ablation/">消融实验</a></td>
+<td>门控、残差、网络深度、损失函数的贡献</td>
+</tr>
+<tr>
+<td><a href="discussion/discussion/">讨论</a></td>
+<td>精度-速度权衡、与Mamba的比较</td>
+</tr>
+<tr>
+<td><a href="discussion/limitations/">局限性</a></td>
+<td>未来工作和开源信息</td>
+</tr>
+</tbody>
+</table>
 
 
 
