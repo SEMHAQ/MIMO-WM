@@ -8,8 +8,8 @@ title: SSM-World-Model
 
 *控制理论与应用 (Control Theory & Applications)*, 2026 专刊: 具身智能与人形机器人
 
-[:octicons-mark-github-16: GitHub](https://github.com/SEMHAQ/SSM-World-Model){ .md-button .md-button--primary }
-[:octicons-file-16: 论文PDF](https://github.com/SEMHAQ/SSM-World-Model/blob/main/paper/main.pdf){ .md-button }
+[GitHub](https://github.com/SEMHAQ/SSM-World-Model){ .md-button .md-button--primary }
+[论文PDF](https://github.com/SEMHAQ/SSM-World-Model/blob/main/paper/main.pdf){ .md-button }
 
 ---
 
@@ -21,10 +21,10 @@ title: SSM-World-Model
 
 | 世界模型方法 | 推理时间 | 能否用于实时MPC？ |
 |:---:|:---:|:---:|
-| LSTM | 27.8ms | :material-close: 太慢 |
-| Transformer | >100ms | :material-close: 更慢 |
-| Mamba | 4.5ms | :material-check: 可以，但部署难 |
-| **SSM-WM（本文）** | **3.8ms** | :material-check: **又快又好部署** |
+| LSTM | 27.8ms | ✗ 太慢 |
+| Transformer | >100ms | ✗ 更慢 |
+| Mamba | 4.5ms | ✓ 可以，但部署难 |
+| **SSM-WM（本文）** | **3.8ms** | ✓ **又快又好部署** |
 
 ---
 
@@ -73,12 +73,12 @@ title: SSM-World-Model
 | | SSM-WM（本文） | Mamba |
 |---|:---:|:---:|
 | 实现依赖 | 标准 PyTorch | 自定义 CUDA 算子 |
-| 部署难度 | :material-check-circle: 低 | :material-close-circle: 高 |
+| 部署难度 | ✓ 低 | ✗ 高 |
 | 推理速度 | **3.8ms** | 4.5ms |
 | 参数量 | **0.24M** | 0.28M |
 | MuJoCo MSE | 0.834 | 0.821 |
 
-:material-star: 为了 1.5% 的精度差距（统计不显著），不值得增加部署复杂度。
+★ 为了 1.5% 的精度差距（统计不显著），不值得增加部署复杂度。
 
 ---
 

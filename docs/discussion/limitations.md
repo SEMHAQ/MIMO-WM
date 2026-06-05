@@ -31,4 +31,4 @@ title: 局限性与未来工作
 
 ## 开源
 
-代码已开源：[:octicons-mark-github-16: SEMHAQ/SSM-World-Model](https://github.com/SEMHAQ/SSM-World-Model)
+代码已开源：[SEMHAQ/SSM-World-Model](https://github.com/SEMHAQ/SSM-World-Model)

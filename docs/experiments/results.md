@@ -15,7 +15,7 @@ title: 实验结果
 | **SSM-WM** | 2.72 | **3.8ms** | **0.24M** |
 | Transformer-WM | 1.50 | >100ms | 0.62M |
 
-:material-star: **SSM-WM比LSTM快7.3倍，参数最少。精度虽低，但R²=0.998，解释了99.8%方差。**
+★ **SSM-WM比LSTM快7.3倍，参数最少。精度虽低，但R²=0.998，解释了99.8%方差。**
 
 为什么精度低？合成数据集近线性，LSTM的非线性结构天然占优。
 
@@ -28,7 +28,7 @@ title: 实验结果
 | LSTM-WM | 0.889 | 0.566 | 5.0ms |
 | Transformer-WM | 0.956 | 0.528 | 52.3ms |
 
-:material-star: **在真实接触动力学下，SSM-WM比LSTM好6%，比Transformer好13%，和Mamba持平。**
+★ **在真实接触动力学下，SSM-WM比LSTM好6%，比Transformer好13%，和Mamba持平。**
 
 为什么精度反超了？接触动力学的复杂非线性反而让SSM的结构化参数化更稳定。
 
@@ -39,7 +39,7 @@ title: 实验结果
 | 合成 | 5.1Hz | 0.7Hz |
 | MuJoCo | 2.1Hz | 0.35Hz |
 
-:material-star: **SSM-WM-MPC实现了5.1Hz控制频率，比LSTM快6-7倍。**
+★ **SSM-WM-MPC实现了5.1Hz控制频率，比LSTM快6-7倍。**
 
 ## 关键图表
 
