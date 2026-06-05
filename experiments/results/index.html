@@ -1112,7 +1112,7 @@
 </tr>
 </tbody>
 </table>
-<p>:material-star: <strong>SSM-WM比LSTM快7.3倍，参数最少。精度虽低，但R²=0.998，解释了99.8%方差。</strong></p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.45 4.73L5.82 21z"/></svg></span> <strong>SSM-WM比LSTM快7.3倍，参数最少。精度虽低，但R²=0.998，解释了99.8%方差。</strong></p>
 <p>为什么精度低？合成数据集近线性，LSTM的非线性结构天然占优。</p>
 <h3 id="mujocolstm">MuJoCo：精度反超LSTM<a class="headerlink" href="#mujocolstm" title="Permanent link">&para;</a></h3>
 <table>
@@ -1151,7 +1151,7 @@
 </tr>
 </tbody>
 </table>
-<p>:material-star: <strong>在真实接触动力学下，SSM-WM比LSTM好6%，比Transformer好13%，和Mamba持平。</strong></p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.45 4.73L5.82 21z"/></svg></span> <strong>在真实接触动力学下，SSM-WM比LSTM好6%，比Transformer好13%，和Mamba持平。</strong></p>
 <p>为什么精度反超了？接触动力学的复杂非线性反而让SSM的结构化参数化更稳定。</p>
 <h3 id="mpc">MPC控制：实时可行<a class="headerlink" href="#mpc" title="Permanent link">&para;</a></h3>
 <table>
@@ -1175,7 +1175,7 @@
 </tr>
 </tbody>
 </table>
-<p>:material-star: <strong>SSM-WM-MPC实现了5.1Hz控制频率，比LSTM快6-7倍。</strong></p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.45 4.73L5.82 21z"/></svg></span> <strong>SSM-WM-MPC实现了5.1Hz控制频率，比LSTM快6-7倍。</strong></p>
 <h2 id="_4">关键图表<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <h3 id="1-vs">图1：推理时间 vs 批次大小<a class="headerlink" href="#1-vs" title="Permanent link">&para;</a></h3>
 <p>SSM-WM在所有批次大小下都最快。单样本推理0.9ms，满足1kHz控制。</p>
