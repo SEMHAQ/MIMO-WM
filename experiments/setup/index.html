@@ -647,10 +647,49 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="两个数据集，两个目的">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        合成数据集（脚本自生成）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mujoco-humanoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MuJoCo Humanoid（公开仿真基准）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么要两个？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         对比方法
@@ -661,7 +700,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         评价指标
@@ -895,10 +934,49 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="两个数据集，两个目的">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        合成数据集（脚本自生成）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mujoco-humanoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MuJoCo Humanoid（公开仿真基准）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么要两个？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         对比方法
@@ -909,7 +987,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         评价指标
@@ -941,6 +1019,15 @@
 
 <h1 id="_1">实验设置<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <h2 id="_2">两个数据集，两个目的<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">合成数据集（脚本自生成）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>用 <code>scripts/generate_expanded_dataset.py</code> 脚本生成，不是公开数据集。动力学方程为：</p>
+<div class="arithmatex">\[
+\bm{s}_{t+1} = \bm{A}\bm{s}_t + \bm{B}\bm{a}_t + 0.1\tanh(\bm{s}_t \odot \bm{a}_t)
+\]</div>
+<p>每条episode使用不同的随机参数（状态转移矩阵、非线性耦合系数），模拟不同任务场景。非线性项系数仅0.1，属于<strong>近线性动力学</strong>。</p>
+<h3 id="mujoco-humanoid">MuJoCo Humanoid（公开仿真基准）<a class="headerlink" href="#mujoco-humanoid" title="Permanent link">&para;</a></h3>
+<p>使用MuJoCo物理仿真器的Humanoid-v4环境，包含真实的接触动力学、摩擦力和碰撞响应，是人形机器人领域最接近真实的公开基准。</p>
+<h3 id="_4">为什么要两个？<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -952,7 +1039,7 @@
 <tbody>
 <tr>
 <td><strong>目的</strong></td>
-<td>验证计算效率和MPC</td>
+<td>验证计算效率和MPC集成</td>
 <td>验证预测精度</td>
 </tr>
 <tr>
@@ -972,20 +1059,19 @@
 </tr>
 <tr>
 <td><strong>数据量</strong></td>
-<td>500条episode</td>
+<td>500条episode（400训练/100验证）</td>
 <td>200条episode</td>
 </tr>
 </tbody>
 </table>
-<p><strong>为什么用两个？</strong> 因为速度优势和精度优势可能来自不同场景。用两个数据集分别验证，比一个数据集同时验证更严谨。</p>
-<h2 id="_3">对比方法<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h2 id="_5">对比方法<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>LSTM-WM</strong>：经典基线，2层和4层版本</li>
 <li><strong>Transformer-WM</strong>：注意力机制，精度好但慢</li>
 <li><strong>Mamba-WM</strong>：SSM的热门变体，需要CUDA算子</li>
 <li><strong>线性回归</strong>：最简单的baseline，验证非线性建模的必要性</li>
 </ul>
-<h2 id="_4">评价指标<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_6">评价指标<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>MSE</strong>：预测误差，越小越好（单位 ×10⁻³）</li>
 <li><strong>R²</strong>：模型解释了多少方差，越接近1越好</li>
