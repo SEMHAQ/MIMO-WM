@@ -6,31 +6,29 @@ title: SSM-World-Model
 
 **周新民 &nbsp; 余焕杰** — 湖南工商大学 / 湘江实验室
 
-*控制理论与应用 (Control Theory & Applications)*, 2026 专刊: 具身智能与人形机器人
+*控制理论与应用*, 2026
 
 [:fontawesome-brands-github: GitHub](https://github.com/SEMHAQ/SSM-World-Model){ .md-button .md-button--primary }
 
 ---
 
-## 研究动机
+## 一句话概括
 
-人形机器人状态预测需要**高精度**和**低延迟**的平衡:
+> 用一种轻量级的序列模型（SSM）给机器人建一个"世界模型"，让机器人能预测自己身体的状态变化，再结合MPC做控制决策。
 
-| 方法 | 问题 |
-|------|------|
-| LSTM | 推理慢 (27.8ms), 参数多 (0.29M) |
-| Transformer | O(T²)复杂度, 推理 >100ms |
-| Mamba | 需要自定义CUDA算子, 部署门槛高 |
+## 这篇文章做了什么？
 
-**SSM-WM** 用标准PyTorch操作实现了 7倍加速 + 竞争力精度 + 最少参数量。
-
-## 核心贡献
-
-1. **轻量级SSM世界模型** — S4D对角参数化 + Mamba门控块结构
-2. **O(T log T)训练, O(1)推理** — FFT卷积 + 递推模式双模计算
-3. **MPC集成** — 合成数据集5.1Hz, MuJoCo 2.1Hz控制频率
-4. **门控阈值实验** — 软阈值 > Garrote > 硬阈值
-
-## 一句话总结
-
-> SSM-WM在MuJoCo Humanoid上优于LSTM 6%、优于Transformer 13%，与Mamba持平但实现更简单，推理快16%，参数少14%。
+```
+人形机器人想控制自己的身体
+    ↓
+需要一个"世界模型"来预测：如果我做这个动作，身体会怎样？
+    ↓
+以前用LSTM建世界模型 → 太慢，来不及控制
+   用Transformer建   → 更慢，O(T²)复杂度
+   用Mamba建         → 快，但部署需要特殊CUDA算子
+    ↓
+我们用SSM（和Mamba类似的数学基础，但实现更简单）
+    ↓
+效果：比LSTM快7倍，比Transformer快26倍，精度不差
+    ↓
+接上MPC控制器 → 实现了5.1Hz的实时控制
