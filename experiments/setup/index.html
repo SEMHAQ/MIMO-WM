@@ -1022,7 +1022,7 @@
 <h3 id="_3">合成数据集（脚本自生成）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>用 <code>scripts/generate_expanded_dataset.py</code> 脚本生成，不是公开数据集。动力学方程为：</p>
 <div class="arithmatex">\[
-\bm{s}_{t+1} = \bm{A}\bm{s}_t + \bm{B}\bm{a}_t + 0.1\tanh(\bm{s}_t \odot \bm{a}_t)
+\mathbf{s}_{t+1} = \mathbf{A}\mathbf{s}_t + \mathbf{B}\mathbf{a}_t + 0.1\tanh(\mathbf{s}_t \odot \mathbf{a}_t)
 \]</div>
 <p>每条episode使用不同的随机参数（状态转移矩阵、非线性耦合系数），模拟不同任务场景。非线性项系数仅0.1，属于<strong>近线性动力学</strong>。</p>
 <h3 id="mujoco-humanoid">MuJoCo Humanoid（公开仿真基准）<a class="headerlink" href="#mujoco-humanoid" title="Permanent link">&para;</a></h3>
