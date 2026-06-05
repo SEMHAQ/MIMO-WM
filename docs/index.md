@@ -8,8 +8,8 @@ title: SSM-World-Model
 
 *控制理论与应用 (Control Theory & Applications)*, 2026 专刊: 具身智能与人形机器人
 
-[:fontawesome-brands-github: GitHub](https://github.com/SEMHAQ/SSM-World-Model){ .md-button .md-button--primary }
-[:fontawesome-solid-book: 论文PDF](https://github.com/SEMHAQ/SSM-World-Model/blob/main/paper/main.pdf){ .md-button }
+[:octicons-mark-github-16: GitHub](https://github.com/SEMHAQ/SSM-World-Model){ .md-button .md-button--primary }
+[:octicons-file-16: 论文PDF](https://github.com/SEMHAQ/SSM-World-Model/blob/main/paper/main.pdf){ .md-button }
 
 ---
 
