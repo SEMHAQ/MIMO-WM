@@ -143,7 +143,7 @@ def fig4():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.2, 3.2))
 
     # (a) MSE
-    configs = ['Baseline', 'w/o Gate', 'w/o Res', '$L$=2', '$L$=6', '$N$=32', '$N$=128', '$D$=64', '$D$=256']
+    configs = ['完整', '无门控', '无残差', '$L$=2', '$L$=6', '$N$=32', '$N$=128', '$D$=64', '$D$=256']
     mse = [2.72, 2.78, 2.76, 2.99, 2.64, 2.68, 2.66, 2.93, 2.58]
     base_mse = 2.72
 
@@ -155,7 +155,7 @@ def fig4():
 
     # Highlight key differences
     for i, (m, c) in enumerate(zip(mse, configs)):
-        if c in ['w/o Gate', '$D$=64']:
+        if c in ['无门控', '$D$=64']:
             ax1.annotate(f'+{(m-base_mse)/base_mse*100:.1f}%', xy=(i, m), xytext=(i, m+0.08),
                         fontsize=7, ha='center', color='#CC0000', fontweight='bold')
 
@@ -172,12 +172,6 @@ def fig4():
     ax2.set_xticks(x)
     ax2.set_xticklabels(configs, rotation=45, ha='right', fontsize=7.5)
     ax2.grid(True, alpha=0.2, axis='y', color=C_GRID)
-
-    # Mark the sweet spot
-    ax2.annotate('最佳平衡点', xy=(0, 0.24), xytext=(2, 0.7),
-                fontsize=7.5, fontweight='bold', color=C_SSM,
-                arrowprops=dict(arrowstyle='->', color=C_SSM, lw=1),
-                bbox=dict(boxstyle='round,pad=0.3', facecolor='#E8F0FE', edgecolor=C_SSM, alpha=0.8))
 
     fig.tight_layout()
     save(fig, 'ablation_results')
