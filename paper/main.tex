@@ -543,17 +543,17 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
-\begin{tabular}{@{}lccc@{}}\toprule
-\multicolumn{4}{l}{(a) MSE$^{\text{a}}$}\\
+\begin{tabular}{@{}lcc@{}}\toprule
+\multicolumn{3}{l}{(a) MSE$^{\text{a}}$}\\
 \midrule
-$T$ & LSTM-WM & Mamba-WM & SSM-WM\\
+$T$ & LSTM-WM & \textbf{SSM-WM}\\
 \midrule
-16  & 1.70 & --- & \textbf{9.76}\\
-32  & 1.58 & --- & \textbf{9.08}\\
-64  & 1.06 & 1.28 & \textbf{2.72}\\
-128 & 0.98 & --- & \textbf{2.37}\\
-256 & 0.90 & --- & \textbf{2.10}\\
-512 & 0.85 & --- & \textbf{1.96}\\
+16  & 1.70 & \textbf{9.76}\\
+32  & 1.58 & \textbf{9.08}\\
+64  & 1.06 & \textbf{2.72}\\
+128 & 0.98 & \textbf{2.37}\\
+256 & 0.90 & \textbf{2.10}\\
+512 & 0.85 & \textbf{1.96}\\
 \bottomrule
 \end{tabular}
 
