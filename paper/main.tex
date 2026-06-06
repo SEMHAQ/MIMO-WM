@@ -16,7 +16,7 @@
 \hspace*{1.1em}国家社会科学基金项目(21BGL231), 湘江实验室重大项目(23XJ01001)资助.\\
 \hspace*{1.1em}Supported by the National Social Science Foundation of China (21BGL231) and the
 Xiangjiang Laboratory Major Project (23XJ01001).}}
-\author{{\large {\CJKfamily{fsong}周新民\makebox{$^{1,\,2}$},~~余焕杰\makebox{$^{3}$}\makebox{$^{\dag}$}}}\\
+\author{{\large {\CJKfamily{fsong}周新民\makebox{$^{1,\,2}$},~~余焕杰\makebox{$^{3}$}\makebox{$^{\dag}$},~~徐云凯\makebox{$^{1}$},~~刘宇翔\makebox{$^{3}$}}}\\
 \scriptsize
 (1. 湖南工商大学~人工智能与先进计算学院, 湖南~长沙~410205;\\
 \scriptsize 2. 湘江实验室, 湖南~长沙~410205;\\
@@ -48,7 +48,7 @@ SSM-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 人形机器人; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 周新民, 余焕杰. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 徐云凯, 刘宇翔. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
 
 \textbf{DOI:} 10.7641/CTA.202x.xxxxx
 
@@ -465,7 +465,7 @@ LSTM-WM(2层) & 1.06 & 0.999 & 27.8 & 0.29 \\
 LSTM-WM(4层) & 1.02 & 0.955 & 27.8 & 0.38 \\
 Transformer-WM & 1.50 & 0.935 & >100 & 0.62 \\
 Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
-SSM-WM & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \\
+\textbf{SSM-WM} & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms; $^{\text{c}}$M(百万).}
 \end{tabular}}
@@ -488,12 +488,12 @@ Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{}}\toprule
-$B$ & LSTM-WM & Mamba-WM & SSM-WM \\
+$B$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM} \\
 \midrule
-1   & 2.1 & 1.2 & 0.9\\
-8   & 4.5 & 1.8 & 1.5\\
-32  & 12.3 & 2.8 & 2.4\\
-64  & 27.8 & 4.5 & 3.8\\
+1   & 2.1 & 1.2 & \textbf{0.9}\\
+8   & 4.5 & 1.8 & \textbf{1.5}\\
+32  & 12.3 & 2.8 & \textbf{2.4}\\
+64  & 27.8 & 4.5 & \textbf{3.8}\\
 \bottomrule
 
 \end{tabular}}
@@ -734,7 +734,7 @@ Table~9~~Ablation study on MuJoCo Humanoid dataset ($T=32$)\\
 去除残差连接 & 0.856 & 0.581 & 9.5\\
 $L=2$层 & 0.912 & 0.554 & 6.2\\
 $L=6$层 & 0.818 & 0.601 & 12.8\\
-\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
+\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}
 \bottomrule
 \end{tabular}}
 \par\endgroup
@@ -913,7 +913,9 @@ MPC控制实验表明, SSM-WM-MPC在保持可接受跟踪精度的同时,
  {\scriptsize
 \indent
 \textbf{周新民}~~~~博士, 教授, 博士生导师, 主要从事新型智慧城市、商务智能与大数据、人工智能大模型等方面的研究. E-mail: zhouxinmin2699@163.com;\\
-\indent \textbf{余焕杰}~~~~硕士研究生, 主要从事人工智能大模型、计算机视觉等方面的研究. E-mail: semhaqx@gmail.com.}
+\indent \textbf{余焕杰}~~~~硕士研究生, 主要从事人工智能大模型、计算机视觉等方面的研究. E-mail: semhaqx@gmail.com;\\
+\indent \textbf{徐云凯}~~~~硕士研究生, 主要从事人工智能大模型、自然语言处理等方面的研究. E-mail: 15539990389@163.com;\\
+\indent \textbf{刘宇翔}~~~~硕士研究生, 主要从事人工智能大模型、具身智能等方面的研究. E-mail: lyx1787843570@126.com.}
 \end{multicols}
 
 \end{document}
