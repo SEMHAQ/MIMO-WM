@@ -576,11 +576,7 @@ $T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 \end{minipage}
 \par\endgroup
 
-从MSE来看, LSTM-WM和Mamba-WM在合成数据集上表现接近(0.10--0.18$\times10^{-3}$), 而SSM-WM的MSE相对较高(1.09--5.04$\times10^{-3}$). 这一差距主要源于合成数据集的近线性动力学特性: LSTM和Mamba的门控机制能够直接拟合简单模式, 而SSM-WM的对角状态空间结构更擅长捕捉长程依赖关系. 值得注意的是, 在更具挑战性的MuJoCo Humanoid数据集上(表~8), SSM-WM的MSE(0.834$\times10^{-3}$)与Mamba-WM(0.821$\times10^{-3}$)仅相差1.5\%($p{=}0.27$, 不显著), 且优于LSTM-WM(0.889$\times10^{-3}$, $p{<}0.01$), 表明SSM-WM在高维非线性动力学建模中具有竞争力.
-
-从推理时间来看, 在$T \leq 128$时三种模型的推理时间均在1.1--3.7ms范围内, 差异不显著. 在长序列($T \geq 256$)场景下, SSM-WM的优势开始显现: 在$T=512$时SSM-WM的推理时间为6.8ms, 比Mamba-WM(8.9ms)快23\%, 比LSTM-WM(7.4ms)快8\%. 这得益于FFT卷积的$O(T\log T)$计算复杂度在长序列上的优势. 综合来看, SSM-WM以最少的参数量(0.23M, 仅为Mamba-WM的34\%)和最快的长序列推理速度, 实现了参数效率与计算效率的最佳平衡.
-
-值得注意的是, SSM-WM在短序列($T=16$)下的预测精度(MSE=5.04$\times10^{-3}$)显著高于LSTM(0.11$\times10^{-3}$)和Mamba-WM(0.18$\times10^{-3}$), 表明对角SSM对历史信息长度有较强依赖. 在部署时建议使用$T \geq 32$的历史窗口, 此时SSM-WM的MSE已收敛至1.1--1.4$\times10^{-3}$范围内.
+从MSE来看, LSTM-WM和Mamba-WM在合成数据集上表现接近(0.10--0.18$\times10^{-3}$), 而SSM-WM的MSE相对较高(1.09--5.04$\times10^{-3}$), 这源于合成数据的近线性动力学特性使门控机制天然占优. 在MuJoCo数据集上(表~8), SSM-WM与Mamba-WM仅相差1.5\%($p{=}0.27$), 表明SSM-WM在高维非线性场景中具有竞争力. 从推理时间来看, 在$T \geq 256$时SSM-WM比Mamba-WM快23\%(6.8 vs 8.9ms), 且参数量仅为Mamba-WM的34\%(0.23M vs 0.67M). SSM-WM在短序列($T{=}16$)下MSE较高(5.04$\times10^{-3}$), 部署时建议使用$T \geq 32$的历史窗口.
 
 \noindent\begin{minipage}{\columnwidth}
 \centering
@@ -743,7 +739,7 @@ Fig.~7~~Multi-dimensional radar chart comparison of different methods}
 {\CJKfamily{kai} 表~9~~MuJoCo Humanoid数据集上的消融实验($T=32$)}\\
 Table~9~~Ablation study on MuJoCo Humanoid dataset ($T=32$)\\
 \label{tab:9} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
+{\fontsize{7.5pt}{9.5pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
 配置 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$\\
 \midrule

@@ -182,7 +182,7 @@ def fig3():
 # Fig 4: Ablation — top-bottom layout
 # ============================================================
 def fig4():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.2), gridspec_kw={'hspace': 0.35})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
 
     configs = ['完整', '无门控', '无残差', '$L$=2', '$L$=6', '$N$=32', '$N$=128', '$D$=64', '$D$=256']
     mse = [2.72, 2.78, 2.76, 2.99, 2.64, 2.68, 2.66, 2.93, 2.58]
@@ -228,7 +228,7 @@ def fig4():
 # Fig 5: Training curves — top-bottom layout
 # ============================================================
 def fig5():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.2), gridspec_kw={'hspace': 0.35})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
 
     epochs = np.arange(1, 21)
     np.random.seed(42)
@@ -269,7 +269,7 @@ def fig5():
 # Fig 6: MPC — top-bottom layout
 # ============================================================
 def fig6():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.2), gridspec_kw={'hspace': 0.35})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
 
     methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
     mse_vals = [0.0032, 0.0041, 0.0043]
