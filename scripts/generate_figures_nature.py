@@ -244,30 +244,41 @@ def fig5():
     loop_ms = [1420, 235, 195]
     c = [C_LSTM, C_MAMBA, C_SSM]
     markers = ['s', 'D', 'o']
-    sizes = [150, 150, 200]
+    sizes = [180, 180, 250]
 
-    # Scatter — each point is a method
-    for i, (name, mse, freq, col, mk, sz, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, sizes, loop_ms)):
-        ax.scatter(mse, freq, s=sz, c=col, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
-        offsets = [(-0.0003, -0.5), (0.0003, 0.4), (0.0003, 0.4)]
-        label = f'{name}\n({lp}ms)'
-        ax.annotate(label, xy=(mse, freq), xytext=(mse + offsets[i][0], freq + offsets[i][1]),
+    # Iso-efficiency curves (freq/MSE = constant)
+    x_range = np.linspace(0.0035, 0.0055, 100)
+    for ratio, label_pos, alpha in [(800, (0.0050, 4.8), 0.08), (1000, (0.0048, 5.8), 0.06)]:
+        y = ratio * x_range
+        mask = (y >= 0) & (y <= 7)
+        ax.plot(x_range[mask], y[mask], ':', color='#ccc', linewidth=0.8, alpha=alpha)
+        ax.text(label_pos[0], label_pos[1], f'$\\eta$={ratio}', fontsize=7, color='#bbb', ha='center', rotation=25)
+
+    # Scatter with loop time as size encoding
+    for i, (name, mse, freq, col, mk, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, loop_ms)):
+        sz = 80 + lp / 5  # size proportional to loop time
+        ax.scatter(mse, freq, s=sizes[i], c=col, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
+        offsets = [(-0.00025, -0.5), (0.00025, 0.4), (0.00025, 0.4)]
+        ax.annotate(name, xy=(mse, freq), xytext=(mse + offsets[i][0], freq + offsets[i][1]),
                     fontsize=9, fontweight='bold', color=col, ha='center',
                     arrowprops=dict(arrowstyle='-', color=col, lw=0.5, alpha=0.3))
+        # Loop time badge
+        ax.text(mse, freq - 0.35, f'{lp}ms', fontsize=7, color=col, ha='center', alpha=0.7, style='italic')
 
     # Pareto frontier
     pareto_x = [mse_vals[0], mse_vals[2], mse_vals[1]]
     pareto_y = [freq_vals[0], freq_vals[2], freq_vals[1]]
-    ax.plot(pareto_x, pareto_y, '--', color='#aaa', linewidth=1.0, alpha=0.6, zorder=1)
-    ax.text(0.00425, 2.0, '帕累托前沿', fontsize=8, color='#999', rotation=35, ha='center', alpha=0.7)
+    ax.plot(pareto_x, pareto_y, '--', color='#aaa', linewidth=1.2, alpha=0.6, zorder=1)
 
-    # Ideal zone (upper-left = best)
+    # Improvement arrow: LSTM → SSM-WM
+    ax.annotate('', xy=(0.0043, 4.8), xytext=(0.0045, 1.0),
+                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.8, alpha=0.7, connectionstyle='arc3,rad=0.2'))
+    ax.text(0.00465, 2.5, '$\\times$7.3', fontsize=10, fontweight='bold', color=C_ANNO, ha='left')
+
+    # Ideal zone
     ax.axvspan(0, 0.0044, alpha=0.03, color='#2ecc71', zorder=0)
     ax.axhspan(4, 7, alpha=0.03, color='#3498db', zorder=0)
-    ax.text(0.0034, 6.3, '理想区域', fontsize=9, color='#2ecc71', ha='center', alpha=0.5)
-
-    # Speedup annotation (text only, no bracket)
-    ax.text(0.0046, 2.8, '$\\times$7.3 频率提升', fontsize=9, color=C_ANNO, fontweight='bold', ha='left')
+    ax.text(0.0036, 6.3, '理想区域', fontsize=9, color='#2ecc71', ha='center', alpha=0.5)
 
     ax.set_xlabel('跟踪 MSE', fontsize=12)
     ax.set_ylabel('控制频率 (Hz)', fontsize=12)
