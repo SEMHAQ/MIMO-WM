@@ -236,48 +236,46 @@ def fig4():
 # Fig 5: MPC comparison
 # ============================================================
 def fig5():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.8), gridspec_kw={'hspace': 0.35})
+    fig, ax = plt.subplots(figsize=(5.5, 4.5))
 
-    methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
+    methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
+    loop_ms = [1420, 235, 195]
     c = [C_LSTM, C_MAMBA, C_SSM]
-    x = np.arange(len(methods))
+    markers = ['s', 'D', 'o']
+    sizes = [150, 150, 200]
 
-    # (a) MSE — bar + line dual encoding
-    ax1.bar(x, mse_vals, color=c, alpha=0.3, edgecolor=[C_LSTM, C_MAMBA, C_SSM], linewidth=0.8, width=0.55)
-    ax1.plot(x, mse_vals, '-o', color='#555', linewidth=1.5, markersize=6, zorder=3)
-    for i, v in enumerate(mse_vals):
-        weight = 'bold' if i == 2 else 'normal'
-        ax1.text(i, v + 0.00015, f'{v:.4f}', ha='center', va='bottom', fontsize=10, fontweight=weight, color=c[i])
-    # Equal accuracy zone
-    ax1.axhspan(0.0040, 0.0046, alpha=0.06, color='#2ecc71', zorder=0)
-    ax1.text(2.5, 0.00435, '同等精度区间', fontsize=8, color='#2ecc71', ha='center', alpha=0.7)
-    ax1.set_ylabel('跟踪 MSE', fontsize=12)
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(methods, fontsize=10)
-    ax1.set_ylim(0, 0.006)
-    ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
-    ax1.text(-0.13, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
+    # Scatter — each point is a method
+    for i, (name, mse, freq, col, mk, sz, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, sizes, loop_ms)):
+        ax.scatter(mse, freq, s=sz, c=col, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
+        offsets = [(-0.0003, -0.5), (0.0003, 0.4), (0.0003, 0.4)]
+        label = f'{name}\n({lp}ms)'
+        ax.annotate(label, xy=(mse, freq), xytext=(mse + offsets[i][0], freq + offsets[i][1]),
+                    fontsize=9, fontweight='bold', color=col, ha='center',
+                    arrowprops=dict(arrowstyle='-', color=col, lw=0.5, alpha=0.3))
 
-    # (b) Frequency — bar + line dual encoding
-    ax2.bar(x, freq_vals, color=c, alpha=0.3, edgecolor=[C_LSTM, C_MAMBA, C_SSM], linewidth=0.8, width=0.55)
-    ax2.plot(x, freq_vals, '-o', color='#555', linewidth=1.5, markersize=6, zorder=3)
-    for i, v in enumerate(freq_vals):
-        weight = 'bold' if i == 2 else 'normal'
-        ax2.text(i, v + 0.2, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight, color=c[i])
-    ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.6, alpha=0.7)
-    ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
-    # Speedup bracket
-    ax2.annotate('', xy=(2, 5.3), xytext=(0, 0.9),
-                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
-    ax2.text(1.0, 3.0, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, ha='center')
-    ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(methods, fontsize=10)
-    ax2.set_ylim(0, 7)
-    ax2.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
-    ax2.text(-0.13, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
+    # Pareto frontier
+    pareto_x = [mse_vals[0], mse_vals[2], mse_vals[1]]
+    pareto_y = [freq_vals[0], freq_vals[2], freq_vals[1]]
+    ax.plot(pareto_x, pareto_y, '--', color='#aaa', linewidth=1.0, alpha=0.6, zorder=1)
+    ax.text(0.00425, 2.0, '帕累托前沿', fontsize=8, color='#999', rotation=35, ha='center', alpha=0.7)
+
+    # Ideal zone (upper-left = best)
+    ax.axvspan(0, 0.0044, alpha=0.03, color='#2ecc71', zorder=0)
+    ax.axhspan(4, 7, alpha=0.03, color='#3498db', zorder=0)
+    ax.text(0.0034, 6.3, '理想区域', fontsize=9, color='#2ecc71', ha='center', alpha=0.5)
+
+    # Speedup arrow
+    ax.annotate('', xy=(0.0043, 4.8), xytext=(0.0045, 1.0),
+                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=2.0, alpha=0.8))
+    ax.text(0.0046, 2.8, '$\\times$7.3\n频率提升', fontsize=9, color=C_ANNO, fontweight='bold', ha='left')
+
+    ax.set_xlabel('跟踪 MSE', fontsize=12)
+    ax.set_ylabel('控制频率 (Hz)', fontsize=12)
+    ax.set_xlim(0.0035, 0.0055)
+    ax.set_ylim(0, 7)
+    ax.grid(True, alpha=0.12, color=C_GRID, linewidth=0.4)
 
     fig.tight_layout()
     save(fig, 'mpc_comparison')
