@@ -136,7 +136,7 @@ def fig2():
     for i, v in enumerate(ssm_m):
         ax2.text(i, v + 0.15, f'{v}', ha='center', fontsize=9, color=C_SSM, fontweight='bold')
     ax2.axhline(y=1.09, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
-    ax2.text(5.3, 1.3, '$T{=}64$ 基准', fontsize=9, color='#777', ha='right')
+    ax2.text(5.5, 5.3, '$T{=}64$ 基准 $\leftarrow$', fontsize=9, color='#777', ha='right', va='center')
     ax2.set_xlabel('序列长度 $T$', fontsize=12)
     ax2.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
     ax2.set_xticks(x)
