@@ -69,26 +69,20 @@ def fig1():
     ax.plot(B, mamba, '-D', color=C_MAMBA, label='Mamba-WM', linewidth=1.5, markersize=6, zorder=4)
     ax.plot(B, ssm, '-o', color=C_SSM, label='SSM-WM', linewidth=2.5, markersize=8, zorder=5)
 
-    # Real-time threshold
     ax.axhline(y=10, color='#999', linestyle=':', linewidth=0.8, alpha=0.8)
     ax.text(1.2, 11, '实时阈值 (10 ms)', fontsize=9, color='#777', va='bottom')
-
-    # Speedup bracket
-    ax.annotate('', xy=(64, 4.5), xytext=(64, 27),
-                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
-    ax.text(68, 15.5, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, va='center')
 
     ax.set_xlabel('批大小 $B$', fontsize=12)
     ax.set_ylabel('推理时间 (ms)', fontsize=12)
     ax.set_xscale('log', base=2)
     ax.set_xticks(B)
-    ax.set_xticklabels([str(b) for b in B])
+    ax.set_xticklabels([str(b) for b in B], fontsize=10)
     ax.set_ylim(0, 33)
     ax.legend(loc='upper left', fontsize=10, handlelength=1.8)
     ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
 
-    # Inset: zoom on low batch
-    axins = ax.inset_axes([0.55, 0.25, 0.4, 0.45])
+    # Inset: zoom on low batch — placed in empty area right of legend
+    axins = ax.inset_axes([0.52, 0.45, 0.35, 0.35])
     axins.plot(B, ssm, '-o', color=C_SSM, linewidth=2.0, markersize=6)
     axins.plot(B, mamba, '-D', color=C_MAMBA, linewidth=1.5, markersize=5)
     axins.plot(B, lstm, '-s', color=C_LSTM, linewidth=1.5, markersize=5)
