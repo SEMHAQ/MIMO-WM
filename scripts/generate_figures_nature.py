@@ -238,7 +238,7 @@ def fig4():
 def fig5():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 3.5), gridspec_kw={'wspace': 0.35})
 
-    methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
+    methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
     c = [C_LSTM, C_MAMBA, C_SSM]
