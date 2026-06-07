@@ -114,25 +114,11 @@ def fig2():
     fig, ax = plt.subplots(figsize=(5.5, 3.6))
     T = [16, 32, 64, 128, 256, 512]
     ssm = [3.7, 3.4, 3.5, 3.4, 3.9, 6.8]
-    lstm = [1.1, 1.3, 1.7, 2.5, 4.1, 7.4]
-    mamba = [3.6, 3.5, 3.6, 3.6, 4.8, 8.9]
 
-    ax.plot(T, lstm, '-s', color=C_LSTM, label='LSTM-WM', linewidth=1.5, markersize=7, zorder=3)
-    ax.plot(T, mamba, '-^', color=C_MAMBA, label='Mamba-WM', linewidth=1.8, markersize=7, zorder=4)
     ax.plot(T, ssm, '-o', color=C_SSM, label='SSM-WM', linewidth=2.5, markersize=8, zorder=5)
 
-    # Real-time line
     ax.axhline(y=10, color='#999', linestyle=':', linewidth=0.8, alpha=0.8)
     ax.text(18, 10.5, '实时阈值', fontsize=9, color='#777')
-
-    # Complexity labels
-    ax.text(280, 6.5, '$O(T)$', fontsize=10, color=C_LSTM, rotation=25, fontweight='bold', alpha=0.7)
-    ax.text(280, 4.0, '$O(T\\log T)$', fontsize=10, color=C_SSM, rotation=12, fontweight='bold', alpha=0.7)
-
-    # Speedup at T=512
-    ax.annotate('', xy=(512, 7.0), xytext=(512, 8.5),
-                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
-    ax.text(540, 7.7, '$\\times$1.1', fontsize=11, fontweight='bold', color=C_ANNO, va='center')
 
     ax.set_xlabel('序列长度 $T$', fontsize=12)
     ax.set_ylabel('推理时间 (ms)', fontsize=12)
@@ -149,23 +135,18 @@ def fig3():
     fig, ax = plt.subplots(figsize=(5.5, 3.6))
     T = [16, 32, 64, 128, 256, 512]
     ssm = [5.04, 1.69, 1.09, 1.34, 1.36, 1.20]
-    lstm = [0.11, 0.10, 0.10, 0.10, 0.10, 0.10]
-    mamba = [0.18, 0.16, 0.15, 0.16, 0.16, 0.16]
 
-    ax.plot(T, lstm, '-s', color=C_LSTM, label='LSTM-WM', linewidth=1.5, markersize=7, zorder=3)
-    ax.plot(T, mamba, '-^', color=C_MAMBA, label='Mamba-WM', linewidth=1.8, markersize=7, zorder=4)
     ax.plot(T, ssm, '-o', color=C_SSM, label='SSM-WM', linewidth=2.5, markersize=8, zorder=5)
 
     # Convergence zone
     ax.axvspan(32, 512, alpha=0.05, color=C_SSM)
-    ax.annotate('SSM-WM收敛区间', xy=(64, 1.2), xytext=(100, 3.5),
+    ax.annotate('推荐工作区间', xy=(128, 1.34), xytext=(200, 3.5),
                 fontsize=9, color=C_SSM, fontstyle='italic',
                 arrowprops=dict(arrowstyle='->', color=C_SSM, lw=0.8, alpha=0.6))
 
-    # Gap annotation
-    ax.annotate('', xy=(16, 5.04), xytext=(16, 0.18),
-                arrowprops=dict(arrowstyle='<->', color='#666', lw=0.8))
-    ax.text(18, 1.0, '$\\times$28', fontsize=9, color='#555', va='center')
+    # Baseline marker
+    ax.axhline(y=1.09, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
+    ax.text(400, 1.15, '$T{=}64$ 基准', fontsize=9, color='#777')
 
     ax.set_xlabel('序列长度 $T$', fontsize=12)
     ax.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
@@ -178,9 +159,6 @@ def fig3():
     save(fig, 'mse_vs_seqlen')
 
 
-# ============================================================
-# Fig 4: Ablation — top-bottom layout
-# ============================================================
 def fig4():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
 
