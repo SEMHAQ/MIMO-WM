@@ -236,7 +236,7 @@ def fig4():
 # Fig 5: MPC comparison
 # ============================================================
 def fig5():
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 3.5), gridspec_kw={'wspace': 0.35})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.8), gridspec_kw={'hspace': 0.35})
 
     methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
