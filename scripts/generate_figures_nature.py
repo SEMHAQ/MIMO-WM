@@ -236,36 +236,46 @@ def fig4():
 # Fig 5: MPC comparison
 # ============================================================
 def fig5():
-    fig, ax = plt.subplots(figsize=(5.5, 4.5))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.0), gridspec_kw={'hspace': 0.40})
 
     methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
     loop_ms = [1420, 235, 195]
     c = [C_LSTM, C_MAMBA, C_SSM]
-    markers = ['s', 'D', 'o']
+    y = np.arange(len(methods))
 
+    # (a) MSE — horizontal lollipop (lower = better)
+    ax1.hlines(y, 0, mse_vals, color=c, linewidth=2.5, zorder=2)
+    ax1.scatter(mse_vals, y, s=120, c=c, zorder=3, edgecolors='white', linewidth=1.2)
+    for i, (v, lp) in enumerate(zip(mse_vals, loop_ms)):
+        ax1.text(v + 0.0001, i, f'{v:.4f}  ({lp}ms)', fontsize=9, va='center', color=c[i], fontweight='bold')
+    ax1.set_yticks(y)
+    ax1.set_yticklabels(methods, fontsize=10)
+    ax1.set_xlabel('跟踪 MSE', fontsize=12)
+    ax1.set_xlim(0, 0.006)
+    ax1.invert_yaxis()
+    ax1.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
+    ax1.text(-0.0005, -0.6, '(a)', fontsize=12, fontweight='bold')
 
-
-    # 3 scatter points
-    for i, (name, mse, freq, col, mk, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, loop_ms)):
-        ax.scatter(mse, freq, s=200, c=col, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
-        offsets = [(-0.00025, -0.5), (0.00025, 0.45), (0.00025, 0.45)]
-        ax.annotate(f'{name}\n{lp}ms回路', xy=(mse, freq),
-                    xytext=(mse + offsets[i][0], freq + offsets[i][1]),
-                    fontsize=9, fontweight='bold', color=col, ha='center',
-                    arrowprops=dict(arrowstyle='-', color=col, lw=0.5, alpha=0.3))
-
-    # Speedup curved arrow
-    ax.annotate('', xy=(0.0043, 4.8), xytext=(0.0045, 1.0),
-                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.8, connectionstyle='arc3,rad=0.15'))
-    ax.text(0.00465, 2.5, '$\\times$7.3 频率提升', fontsize=10, fontweight='bold', color=C_ANNO, ha='left')
-
-    ax.set_xlabel('跟踪 MSE', fontsize=12)
-    ax.set_ylabel('控制频率 (Hz)', fontsize=12)
-    ax.set_xlim(0.0035, 0.0055)
-    ax.set_ylim(0, 7)
-    ax.grid(True, alpha=0.12, color=C_GRID, linewidth=0.4)
+    # (b) Frequency — horizontal lollipop (higher = better)
+    ax2.hlines(y, 0, freq_vals, color=c, linewidth=2.5, zorder=2)
+    ax2.scatter(freq_vals, y, s=120, c=c, zorder=3, edgecolors='white', linewidth=1.2)
+    for i, v in enumerate(freq_vals):
+        ax2.text(v + 0.15, i, f'{v:.1f} Hz', fontsize=9, va='center', color=c[i], fontweight='bold')
+    ax2.axvline(x=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
+    ax2.text(1.1, -0.6, '1 Hz', fontsize=8, color='#999')
+    # Speedup annotation
+    ax2.annotate('$\\times$7.3', xy=(5.1, 2), xytext=(2.5, 2.3),
+                fontsize=11, fontweight='bold', color=C_ANNO,
+                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.5))
+    ax2.set_yticks(y)
+    ax2.set_yticklabels(methods, fontsize=10)
+    ax2.set_xlabel('控制频率 (Hz)', fontsize=12)
+    ax2.set_xlim(0, 7)
+    ax2.invert_yaxis()
+    ax2.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
+    ax2.text(-0.3, -0.6, '(b)', fontsize=12, fontweight='bold')
 
     fig.tight_layout()
     save(fig, 'mpc_comparison')
