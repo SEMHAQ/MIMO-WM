@@ -236,46 +236,44 @@ def fig4():
 # Fig 5: MPC comparison
 # ============================================================
 def fig5():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.5), gridspec_kw={'hspace': 0.50})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 3.5), gridspec_kw={'wspace': 0.35})
 
-    methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
+    methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
-    loop_ms = [1420, 235, 195]
     c = [C_LSTM, C_MAMBA, C_SSM]
-    y = np.arange(len(methods))
+    x = np.arange(len(methods))
 
-    # (a) MSE — horizontal lollipop (lower = better)
-    ax1.hlines(y, 0, mse_vals, color=c, linewidth=2.5, zorder=2)
-    ax1.scatter(mse_vals, y, s=120, c=c, zorder=3, edgecolors='white', linewidth=1.2)
-    for i, (v, lp) in enumerate(zip(mse_vals, loop_ms)):
-        ax1.text(v + 0.0001, i, f'{v:.4f}  ({lp}ms)', fontsize=9, va='center', color=c[i], fontweight='bold')
-    ax1.set_yticks(y)
-    ax1.set_yticklabels(methods, fontsize=10)
-    ax1.set_xlabel('跟踪 MSE', fontsize=12)
-    ax1.set_xlim(0, 0.006)
-    ax1.invert_yaxis()
-    ax1.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
-    ax1.text(-0.08, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
+    # (a) MSE
+    bars1 = ax1.bar(x, mse_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
+    for i, v in enumerate(mse_vals):
+        weight = 'bold' if i == 2 else 'normal'
+        ax1.text(i, v + 0.0002, f'{v:.4f}', ha='center', va='bottom', fontsize=10, fontweight=weight)
+    ax1.set_ylabel('跟踪 MSE', fontsize=12)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(methods, fontsize=10)
+    ax1.set_ylim(0, 0.006)
+    ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+    ax1.text(-0.18, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # (b) Frequency — horizontal lollipop (higher = better)
-    ax2.hlines(y, 0, freq_vals, color=c, linewidth=2.5, zorder=2)
-    ax2.scatter(freq_vals, y, s=120, c=c, zorder=3, edgecolors='white', linewidth=1.2)
+    # (b) Frequency
+    bars2 = ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
     for i, v in enumerate(freq_vals):
-        ax2.text(v + 0.15, i, f'{v:.1f} Hz', fontsize=9, va='center', color=c[i], fontweight='bold')
-    ax2.axvline(x=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
-    ax2.text(1.1, 2.7, '1 Hz', fontsize=8, color='#999')
-    # Speedup annotation
-    ax2.annotate('$\\times$7.3', xy=(5.1, 2), xytext=(2.5, 2.3),
-                fontsize=11, fontweight='bold', color=C_ANNO,
-                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.5))
-    ax2.set_yticks(y)
-    ax2.set_yticklabels(methods, fontsize=10)
-    ax2.set_xlabel('控制频率 (Hz)', fontsize=12)
-    ax2.set_xlim(0, 7)
-    ax2.invert_yaxis()
-    ax2.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
-    ax2.text(-0.08, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
+        weight = 'bold' if i == 2 else 'normal'
+        ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight)
+    ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
+    ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
+    ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(methods, fontsize=10)
+    ax2.set_ylim(0, 7)
+    ax2.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+    ax2.text(-0.18, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
+
+    # Speedup bracket
+    ax2.annotate('', xy=(2, 5.3), xytext=(0, 0.9),
+                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
+    ax2.text(1.0, 3.0, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, ha='center')
 
     fig.tight_layout()
     save(fig, 'mpc_comparison')
