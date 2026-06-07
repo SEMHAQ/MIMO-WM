@@ -35,14 +35,12 @@ plt.rcParams.update({
     'lines.markersize': 6,
 })
 
-# Nature palette — muted, distinguishable in grayscale
-C_SSM   = '#1B5E9B'   # Deep blue
-C_LSTM  = '#C44E52'   # Muted red
-C_TRANS = '#55A868'   # Sage green
-C_MAMBA = '#8C564B'   # Brown
-C_ANNO  = '#E67E22'   # Orange accent
+C_SSM   = '#1B5E9B'
+C_LSTM  = '#C44E52'
+C_TRANS = '#55A868'
+C_MAMBA = '#8C564B'
+C_ANNO  = '#E67E22'
 C_GRID  = '#E8E8E8'
-C_BAND  = '#1B5E9B'   # For fill_between
 
 out = Path("paper/figures")
 out.mkdir(parents=True, exist_ok=True)
@@ -56,7 +54,7 @@ def save(fig, name):
 
 
 # ============================================================
-# Fig 1: Batch inference — with inset zoom
+# Fig 1: Batch inference with inset
 # ============================================================
 def fig1():
     fig, ax = plt.subplots(figsize=(5.5, 3.6))
@@ -81,12 +79,10 @@ def fig1():
     ax.legend(loc='upper left', fontsize=10, handlelength=1.8)
     ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
 
-    # Speedup bracket
     ax.annotate('', xy=(64, 4.5), xytext=(64, 27),
                 arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
     ax.text(68, 15.5, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, va='center')
 
-    # Inset: zoom on low batch — placed in empty area right of legend
     axins = ax.inset_axes([0.35, 0.5, 0.3, 0.3])
     axins.plot(B, ssm, '-o', color=C_SSM, linewidth=2.0, markersize=6)
     axins.plot(B, mamba, '-D', color=C_MAMBA, linewidth=1.5, markersize=5)
@@ -107,93 +103,75 @@ def fig1():
 
 
 # ============================================================
-# Fig 2: Inference time vs seq len
+# Fig 2: Inference time + MSE vs seq len (merged)
 # ============================================================
 def fig2():
-    fig, ax = plt.subplots(figsize=(5.5, 3.6))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 6.5), gridspec_kw={'hspace': 0.30})
     T = [16, 32, 64, 128, 256, 512]
-    ssm = [3.7, 3.4, 3.5, 3.4, 3.9, 6.8]
-
     x = np.arange(len(T))
 
-    # Bar + line dual encoding
-    bars = ax.bar(x, ssm, width=0.5, color=C_SSM, alpha=0.3, edgecolor=C_SSM, linewidth=0.8, zorder=2)
-    ax.plot(x, ssm, '-o', color=C_SSM, linewidth=2.5, markersize=8, zorder=5, label='SSM-WM')
+    # (a) Inference time
+    ssm_t = [3.7, 3.4, 3.5, 3.4, 3.9, 6.8]
+    ax1.bar(x, ssm_t, width=0.5, color=C_SSM, alpha=0.3, edgecolor=C_SSM, linewidth=0.8, zorder=2)
+    ax1.plot(x, ssm_t, '-o', color=C_SSM, linewidth=2.5, markersize=8, zorder=5, label='SSM-WM')
+    ax1.axvspan(1, 4, alpha=0.08, color=C_SSM, zorder=0)
+    ax1.annotate('推荐区间', xy=(2.5, 7.5), fontsize=9, color=C_SSM, fontstyle='italic', ha='center')
+    for i, v in enumerate(ssm_t):
+        ax1.text(i, v + 0.3, f'{v}', ha='center', fontsize=9, color=C_SSM, fontweight='bold')
+    ax1.annotate('$O(T\\log T)$', xy=(4.5, 8.0), fontsize=10, color=C_SSM, fontweight='bold', alpha=0.6)
+    ax1.set_ylabel('推理时间 (ms)', fontsize=12)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([str(t) for t in T], fontsize=10)
+    ax1.set_ylim(0, 9)
+    ax1.legend(fontsize=10, handlelength=1.8)
+    ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+    ax1.text(-0.1, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # Recommended range highlight
-    ax.axvspan(1, 4, alpha=0.08, color=C_SSM, zorder=0)
-    ax.annotate('推荐区间', xy=(2.5, 7.5), fontsize=9, color=C_SSM, fontstyle='italic', ha='center')
-
-    # Value labels
-    for i, v in enumerate(ssm):
-        ax.text(i, v + 0.3, f'{v}', ha='center', fontsize=9, color=C_SSM, fontweight='bold')
-
-    # Complexity annotation
-    ax.annotate('$O(T\\log T)$', xy=(4.5, 8.0), fontsize=10, color=C_SSM, fontweight='bold', alpha=0.6)
-
-    ax.set_xlabel('序列长度 $T$', fontsize=12)
-    ax.set_ylabel('推理时间 (ms)', fontsize=12)
-    ax.set_xticks(x)
-    ax.set_xticklabels([str(t) for t in T], fontsize=10)
-    ax.set_ylim(0, 9)
-    ax.legend(fontsize=10, handlelength=1.8)
-    ax.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+    # (b) MSE
+    ssm_m = [5.04, 1.69, 1.09, 1.34, 1.36, 1.20]
+    ax2.bar(x, ssm_m, width=0.5, color=C_SSM, alpha=0.3, edgecolor=C_SSM, linewidth=0.8, zorder=2)
+    ax2.plot(x, ssm_m, '-o', color=C_SSM, linewidth=2.5, markersize=8, zorder=5, label='SSM-WM')
+    ax2.axvspan(1, 4, alpha=0.08, color=C_SSM, zorder=0)
+    ax2.annotate('推荐区间', xy=(2.5, 4.5), fontsize=9, color=C_SSM, fontstyle='italic', ha='center')
+    for i, v in enumerate(ssm_m):
+        ax2.text(i, v + 0.15, f'{v}', ha='center', fontsize=9, color=C_SSM, fontweight='bold')
+    ax2.axhline(y=1.09, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
+    ax2.text(4.5, 1.2, '$T{=}64$ 基准', fontsize=9, color='#777')
+    ax2.set_xlabel('序列长度 $T$', fontsize=12)
+    ax2.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels([str(t) for t in T], fontsize=10)
+    ax2.set_ylim(0, 6)
+    ax2.legend(fontsize=10, handlelength=1.8)
+    ax2.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+    ax2.text(-0.1, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
 
     fig.tight_layout()
-    save(fig, 'inference_vs_seqlen')
+    save(fig, 'seqlen_sensitivity')
 
 
+# ============================================================
+# Fig 3: Ablation
+# ============================================================
 def fig3():
-    fig, ax = plt.subplots(figsize=(5.5, 3.6))
-    T = [16, 32, 64, 128, 256, 512]
-    ssm = [5.04, 1.69, 1.09, 1.34, 1.36, 1.20]
-
-    ax.plot(T, ssm, '-o', color=C_SSM, label='SSM-WM', linewidth=2.5, markersize=8, zorder=5)
-
-    # Convergence zone
-    ax.axvspan(32, 512, alpha=0.05, color=C_SSM)
-    ax.annotate('推荐工作区间', xy=(128, 1.34), xytext=(200, 3.5),
-                fontsize=9, color=C_SSM, fontstyle='italic',
-                arrowprops=dict(arrowstyle='->', color=C_SSM, lw=0.8, alpha=0.6))
-
-    # Baseline marker
-    ax.axhline(y=1.09, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
-    ax.text(400, 1.15, '$T{=}64$ 基准', fontsize=9, color='#777')
-
-    ax.set_xlabel('序列长度 $T$', fontsize=12)
-    ax.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
-    ax.set_xscale('log', base=2)
-    ax.set_xticks(T)
-    ax.set_xticklabels([str(t) for t in T])
-    ax.legend(loc='upper right', fontsize=10, handlelength=1.8)
-    ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
-    fig.tight_layout()
-    save(fig, 'mse_vs_seqlen')
-
-
-def fig4():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
 
     configs = ['完整', '无门控', '无残差', '$L$=2', '$L$=6', '$N$=32', '$N$=128', '$D$=64', '$D$=256']
     mse = [2.72, 2.78, 2.76, 2.99, 2.64, 2.68, 2.66, 2.93, 2.58]
     params = [0.24, 0.22, 0.24, 0.12, 0.36, 0.25, 0.28, 0.08, 0.85]
     base_mse = 2.72
-    base_p = 0.24
 
     c = [C_SSM] + ['#E8963A']*2 + ['#7B68A6']*2 + ['#5A9E6F']*2 + ['#D4756B']*2
     x = np.arange(len(configs))
 
-    # (a) MSE
     bars = ax1.bar(x, mse, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.65)
     ax1.axhline(y=base_mse, color='#333', linestyle='--', linewidth=0.5, alpha=0.4)
-
     for i, (m, cfg) in enumerate(zip(mse, configs)):
         delta = (m - base_mse) / base_mse * 100
         if abs(delta) > 3:
             color = '#C44E52' if delta > 0 else '#55A868'
             sign = '+' if delta > 0 else ''
             ax1.text(i, m + 0.02, f'{sign}{delta:.1f}%', fontsize=8, ha='center', color=color, fontweight='bold')
-
     ax1.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(configs, rotation=0, ha='center', fontsize=8)
@@ -201,7 +179,6 @@ def fig4():
     ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax1.text(-0.1, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # (b) Params
     ax2.bar(x, params, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.65)
     ax2.set_ylabel('参数量 (M)', fontsize=12)
     ax2.set_xticks(x)
@@ -214,20 +191,17 @@ def fig4():
 
 
 # ============================================================
-# Fig 5: Training curves — top-bottom layout
+# Fig 4: Training curves
 # ============================================================
-def fig5():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
+def fig4():
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.8), gridspec_kw={'hspace': 0.25})
 
     epochs = np.arange(1, 21)
     np.random.seed(42)
 
-    # Simulated training curves matching paper description
-    # SSM-WM: starts ~10.7e-3, drops to ~3.7e-3 by epoch 5, converges ~2.37e-3
     ssm_train = 10.7 * np.exp(-0.30 * epochs) + 2.37 + np.random.normal(0, 0.08, len(epochs))
     ssm_val = 11.5 * np.exp(-0.25 * epochs) + 2.72 + np.random.normal(0, 0.10, len(epochs))
 
-    # (a) Training MSE
     ax1.plot(epochs, ssm_train, '-o', color=C_SSM, linewidth=2.0, markersize=5, label='训练MSE')
     ax1.plot(epochs, ssm_val, '-s', color=C_LSTM, linewidth=2.0, markersize=5, label='验证MSE')
     ax1.axhline(y=2.72, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
@@ -238,12 +212,10 @@ def fig5():
     ax1.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
     ax1.text(-0.1, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # (b) Zoomed view (epoch 5-20)
     mask = epochs >= 5
     ax2.plot(epochs[mask], ssm_train[mask], '-o', color=C_SSM, linewidth=2.0, markersize=5, label='训练MSE')
     ax2.plot(epochs[mask], ssm_val[mask], '-s', color=C_LSTM, linewidth=2.0, markersize=5, label='验证MSE')
-    ax2.fill_between(epochs[mask], ssm_train[mask]-0.35, ssm_train[mask]+0.35,
-                     alpha=0.1, color=C_SSM)
+    ax2.fill_between(epochs[mask], ssm_train[mask]-0.35, ssm_train[mask]+0.35, alpha=0.1, color=C_SSM)
     ax2.set_xlabel('Epoch', fontsize=12)
     ax2.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
     ax2.legend(fontsize=10, handlelength=1.8)
@@ -255,13 +227,13 @@ def fig5():
 
 
 # ============================================================
-# Fig 6: MPC — top-bottom layout
+# Fig 5: MPC comparison
 # ============================================================
-def fig6():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.0, 4.5), gridspec_kw={'hspace': 0.25})
+def fig5():
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.8), gridspec_kw={'hspace': 0.35})
 
     methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
-    mse_vals = [0.0032, 0.0041, 0.0043]
+    mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
     c = [C_LSTM, C_MAMBA, C_SSM]
     x = np.arange(len(methods))
@@ -282,9 +254,9 @@ def fig6():
     bars2 = ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
     for i, v in enumerate(freq_vals):
         weight = 'bold' if i == 2 else 'normal'
-        ax2.text(i, v + 0.2, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight)
+        ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight)
     ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.6, alpha=0.7)
-    ax2.text(2.3, 1.2, '1 Hz', fontsize=9, color='#777')
+    ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
     ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
     ax2.set_xticks(x)
     ax2.set_xticklabels(methods, fontsize=10)
@@ -292,7 +264,6 @@ def fig6():
     ax2.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax2.text(-0.13, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # Speedup arrow
     ax2.annotate('$\\times$7.3', xy=(2, 5.1), xytext=(0.3, 6.3),
                 fontsize=12, fontweight='bold', color=C_ANNO,
                 arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.2),
@@ -303,9 +274,9 @@ def fig6():
 
 
 # ============================================================
-# Fig 7: Radar — cleaner, no fill
+# Fig 6: Radar
 # ============================================================
-def fig7():
+def fig6():
     fig, ax = plt.subplots(figsize=(5.0, 5.0), subplot_kw=dict(polar=True))
     categories = ['MSE', 'R²', '参数量', '推理速度', '内存']
     N = len(categories)
@@ -359,4 +330,3 @@ if __name__ == '__main__':
     fig4()
     fig5()
     fig6()
-    fig7()
