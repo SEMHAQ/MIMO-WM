@@ -241,38 +241,26 @@ def fig5():
     methods = ['LSTM-\nMPC', 'Mamba-\nMPC', 'SSM-WM-\nMPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
     freq_vals = [0.7, 4.3, 5.1]
-    loop_ms = [1420, 235, 195]
     c = [C_LSTM, C_MAMBA, C_SSM]
     x = np.arange(len(methods))
 
-    # (a) MSE — bar + loop time
-    bars1 = ax1.bar(x, mse_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
-    # Highlight best (lowest MSE = Mamba)
-    bars1[1].set_edgecolor(C_MAMBA)
-    bars1[1].set_linewidth(1.5)
-    for i, (v, lp) in enumerate(zip(mse_vals, loop_ms)):
-        weight = 'bold' if i == 2 else 'normal'
-        ax1.text(i, v + 0.00015, f'{v:.4f}', ha='center', va='bottom', fontsize=10, fontweight=weight)
-        ax1.text(i, -0.0004, f'{lp}ms', ha='center', va='top', fontsize=7, color='#888', style='italic')
+    # (a) MSE
+    ax1.bar(x, mse_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
+    for i, v in enumerate(mse_vals):
+        ax1.text(i, v + 0.00015, f'{v:.4f}', ha='center', va='bottom', fontsize=10)
     ax1.set_ylabel('跟踪 MSE', fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(methods, fontsize=10)
-    ax1.set_ylim(-0.0005, 0.006)
+    ax1.set_ylim(0, 0.006)
     ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax1.text(-0.18, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # (b) Frequency — bar + speedup bracket
-    bars2 = ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
-    bars2[2].set_edgecolor(C_SSM)
-    bars2[2].set_linewidth(1.5)
+    # (b) Frequency
+    ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
     for i, v in enumerate(freq_vals):
-        weight = 'bold' if i == 2 else 'normal'
-        ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight)
+        ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10)
     ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
     ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
-    ax2.annotate('', xy=(2, 5.3), xytext=(0, 0.9),
-                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
-    ax2.text(1.0, 3.0, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, ha='center')
     ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
     ax2.set_xticks(x)
     ax2.set_xticklabels(methods, fontsize=10)
