@@ -259,8 +259,6 @@ def fig5():
     ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
     for i, v in enumerate(freq_vals):
         ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10)
-    ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
-    ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
     ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
     ax2.set_xticks(x)
     ax2.set_xticklabels(methods, fontsize=10)
