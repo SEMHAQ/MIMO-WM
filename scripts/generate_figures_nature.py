@@ -280,7 +280,7 @@ def fig6():
     categories = ['MSE', 'R²', '参数量', '推理速度', '内存']
     N = len(categories)
 
-    def normalize(vals, lower_better=True, floor=0.10):
+    def normalize(vals, lower_better=True, floor=0.40):
         mn, mx = min(vals), max(vals)
         if lower_better:
             return [floor + (1 - floor) * (mx - v) / (mx - mn + 1e-8) for v in vals]
