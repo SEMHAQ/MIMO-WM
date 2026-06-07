@@ -81,6 +81,11 @@ def fig1():
     ax.legend(loc='upper left', fontsize=10, handlelength=1.8)
     ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
 
+    # Speedup bracket
+    ax.annotate('', xy=(64, 4.5), xytext=(64, 27),
+                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
+    ax.text(68, 15.5, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, va='center')
+
     # Inset: zoom on low batch — placed in empty area right of legend
     axins = ax.inset_axes([0.35, 0.5, 0.3, 0.3])
     axins.plot(B, ssm, '-o', color=C_SSM, linewidth=2.0, markersize=6)
