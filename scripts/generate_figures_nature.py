@@ -310,9 +310,9 @@ def fig6():
 
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories, fontsize=13, fontweight='bold')
-    ax.set_ylim(0, 1.8)
-    ax.set_yticks([0.25, 0.5, 0.75, 1.0])
-    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=12, color='#666')
+    ax.tick_params(axis='x', pad=15)
+    ax.set_ylim(0, 1.15)
+    ax.set_yticks([])
     ax.grid(True, alpha=0.2, linewidth=0.4)
     ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=11, handlelength=1.5)
 
