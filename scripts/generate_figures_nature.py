@@ -295,7 +295,7 @@ def fig6():
 
     names  = ['SSM-WM', 'LSTM-WM', 'Trans.-WM', 'Mamba-WM']
     colors = [C_SSM, C_LSTM, C_TRANS, C_MAMBA]
-    markers = ['o', 's', '^', 'D']
+    markers = ['o', 's', 'v', 'D']
 
     angles = [n / float(N) * 2 * np.pi for n in range(N)]
     angles += angles[:1]
