@@ -276,7 +276,7 @@ def fig5():
 # Fig 6: Radar
 # ============================================================
 def fig6():
-    fig, ax = plt.subplots(figsize=(5.0, 5.0), subplot_kw=dict(polar=True))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5), subplot_kw=dict(polar=True))
     categories = ['MSE', 'R²', '参数量', '推理速度', '内存']
     N = len(categories)
 
