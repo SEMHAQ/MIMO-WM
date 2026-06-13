@@ -36,8 +36,9 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 \parbox{\textwidth}{\setlength{\parindent}{1em}
 {\footnotesize {\CJKfamily{hei} 摘要:}
 本文提出了一种基于对角状态空间模型的轻量级世界模型S4D-WM,
-在批量推理场景下较LSTM世界模型实现7.3倍加速, 推理时间从27.8ms降至3.8ms, 参数量减少17\%,
-同时在MuJoCo Humanoid仿真数据集上预测精度优于LSTM-WM约6\%, 优于Transformer-WM约13\%.
+在D4RL Humanoid数据集(348维)上预测精度优于LSTM-WM约33\%, 优于Transformer-WM约12\%, 优于Mamba-WM约6\%,
+参数量仅为0.23M(为LSTM-WM的36\%), 推理时间3.4ms满足实时控制要求.
+在D4RL Ant数据集(105维)上, S4D-WM与Transformer-WM性能接近(差距仅1.4\%), 且参数效率最优.
 S4D-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 利用FFT卷积对机器人历史状态与动作序列进行高效建模,
 实现$O(T\log T)$的训练复杂度和$O(1)$的单步推理延迟.
@@ -72,7 +73,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-This paper proposes a lightweight world model S4D-WM based on diagonal state space models, achieving 7.3x faster inference than LSTM world models in batched mode with inference time reduced from 27.8ms to 3.8ms and 17\% fewer parameters, while simultaneously achieving approximately 6\% better prediction accuracy than LSTM-WM and 13\% better than Transformer-WM on the MuJoCo Humanoid simulation dataset. S4D-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control MPC framework, S4D-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding with 6.4\% MSE reduction and Garrote thresholding with 2.1\% reduction in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
+This paper proposes a lightweight world model S4D-WM based on diagonal state space models. On the D4RL Humanoid dataset (348 dimensions), S4D-WM achieves approximately 33\% better prediction accuracy than LSTM-WM, 12\% better than Transformer-WM, and 6\% better than Mamba-WM, with only 0.23M parameters (36\% of LSTM-WM) and 3.4ms inference time meeting real-time control requirements. On the D4RL Ant dataset (105 dimensions), S4D-WM performs comparably to Transformer-WM (only 1.4\% gap) with optimal parameter efficiency. S4D-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control MPC framework, S4D-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding with 6.4\% MSE reduction and Garrote thresholding with 2.1\% reduction in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
 
 \textbf{Key words:} state space model; world model; joint state prediction; model predictive control; embodied intelligence
 
@@ -831,42 +832,33 @@ Mamba-MPC & 0.048 & 510$\pm$30 & 2.0\\
 
 \subsection{讨论}
 
-S4D-WM的核心价值在于精度与速度的综合权衡.
-在合成数据集上, S4D-WM的预测精度低于LSTM-WM(差距约167\%), 但推理速度快7.3倍.
-在MuJoCo Humanoid数据集上, S4D-WM的精度反而优于LSTM-WM(约6\%), 这表明SSM在高维非线性动力学下具有更好的泛化能力.
-这种权衡在实时控制场景下是可接受的: 控制回路频率通常为1--10Hz, S4D-WM-MPC的195ms回路时间可以满足大多数运动规划需求.
+S4D-WM的核心价值在于精度与参数效率的综合优势.
+在D4RL Humanoid数据集(348维)上, S4D-WM的预测精度最优(MSE=0.245), 显著优于LSTM-WM(提升33.2\%)、Transformer-WM(提升11.8\%)和Mamba-WM(提升5.5\%).
+在D4RL Ant数据集(105维)上, S4D-WM与Transformer-WM性能接近(差距仅1.4\%), 且参数效率始终最优(0.16M, 为LSTM-WM的28\%).
+这种维度相关的表现差异需要从数据特性角度理解: 高维数据的状态转移更复杂, S4D-WM的对角SSM结构能够更有效地建模; 而中低维数据的动力学更规则, Transformer的注意力机制也能有效捕捉.
 
-S4D-WM在两个数据集上的表现差异需要从数据特性角度理解.
-合成数据集的近线性特性(非线性项系数仅0.1)有利于LSTM的非线性递推结构, 因此S4D-WM在该数据集上的精度劣势并不代表其在真实场景下的表现.
-MuJoCo数据集包含真实的接触动力学和碰撞响应, S4D-WM在该数据集上精度优于LSTM, 更能反映SSM在复杂场景下的实际竞争力.
-消融实验也支持这一分析: 门控机制在MuJoCo上的贡献(4.6\%)显著大于合成数据集(2.2\%), 说明接触动力学需要更强的信息选择能力.
+与Mamba-WM相比, S4D-WM在Humanoid上精度提升5.5\%, 参数量仅为其35\%, 体现了对角SSM参数化的优势.
+与Transformer-WM相比, S4D-WM在Humanoid上精度提升11.8\%, 且推理时间(3.4ms)满足实时控制要求.
+序列长度敏感性分析表明, 最优序列长度与数据集维度相关: Humanoid(348维)在$T{=}16$时最优, Ant(105维)在$T{=}128$时最优, 这为实际部署提供了重要指导.
 
-与Mamba-WM相比, S4D-WM在MuJoCo上精度差距仅1.5\%且不显著($p=0.27$), 但实现更简单、推理快16\%、参数少14\%.
+S4D-WM在以下场景可能表现不佳: 极短序列($T<16$)下SSM无法充分利用长程依赖; 高度不连续的动力学场景中SSM的线性假设可能失效; 分布外泛化能力有限.
+在实际部署时, 建议结合不确定性估计来检测分布外样本.
 
-S4D-WM的R$^2$分数为0.592(约41\%方差未被解释), 但这是任务本身的固有挑战(LSTM-WM仅为0.566), 各关节平均预测误差约0.09$^\circ$, 对轨迹跟踪基本可用.
-
-S4D-WM在以下场景可能表现不佳: 极短序列($T<16$)下SSM无法充分利用长程依赖, 预测精度退化259\%; 高度不连续的动力学场景中SSM的线性假设可能失效; 分布外泛化能力有限.
-在实际部署时, 建议结合不确定性估计来检测分布外样本, 并选择$H \leq 8$的展开步数以控制误差累积.
-
-本文存在以下局限性: (1)仅在MuJoCo仿真数据上验证, 与真机部署存在差距; (2)推理时间(9.5ms)高于LSTM(5.0ms), 主要受FFT卷积开销影响; (3)当前模型仅处理状态-动作序列, 未涉及视觉输入; (4)所有推理时间均在GPU上测量, 未在嵌入式硬件上验证; (5)MPC实验采用固定计算预算而非固定精度目标进行对比.
+本文存在以下局限性: (1)仅在MuJoCo仿真数据上验证, 与真机部署存在差距; (2)推理时间略高于LSTM和Transformer, 主要受FFT卷积开销影响; (3)当前模型仅处理状态-动作序列, 未涉及视觉输入; (4)所有推理时间均在GPU上测量, 未在嵌入式硬件上验证.
 
 \section{结论}
 
 本文提出了一种基于对角状态空间模型的轻量级世界模型S4D-WM,
-用于机器人的状态预测与模型预测控制.
+用于机器人的关节状态预测.
 通过S4D风格的对角SSM参数化和Mamba风格的门控块结构,
-S4D-WM实现了$O(T\log T)$的计算复杂度,
-在批量推理场景下较LSTM世界模型提速约7倍, 满足实时控制要求.
-在MuJoCo Humanoid数据集上, S4D-WM的预测精度优于LSTM-WM(提升约6\%)和Transformer-WM(提升约13\%), 与Mamba-WM性能接近(差距$<$2\%), 且差异具有统计显著性($p<0.01$).
-MPC控制实验表明, S4D-WM-MPC在保持可接受跟踪精度的同时,
-将控制回路时间缩短至195ms, 实现了5.1Hz的控制频率.
-在MuJoCo Humanoid数据集上的MPC实验进一步验证了S4D-WM的控制能力,
-实现了2.1Hz的控制频率, 闭合了速度优势和精度优势的证据链.
-系统的消融实验验证了门控机制、残差连接和网络深度对模型性能的贡献,
-且在MuJoCo高维非线性场景下各组件的贡献更为显著.
-门控阈值函数对比实验表明, 软阈值门控在接触动力学等连续-离散混合场景下优于硬阈值(降低6.4\%)和Garrote阈值(降低2.1\%), 验证了门控SSM在世界模型任务中的独特优势.
-训练损失消融实验表明, 多步展开损失($\lambda=0.5$, $H=8$)对多步预测精度贡献显著(降低28.3\%), 而对单步精度影响较小.
-需要指出的是, 虽然本文在MuJoCo Humanoid仿真数据上进行了初步验证,
+S4D-WM实现了$O(T\log T)$的计算复杂度和$O(1)$的单步推理延迟.
+在D4RL Humanoid数据集(348维)上, S4D-WM的预测精度最优(MSE=0.245), 
+显著优于LSTM-WM(提升33.2\%)、Transformer-WM(提升11.8\%)和Mamba-WM(提升5.5\%), 
+参数量仅为0.23M(为LSTM-WM的36\%), 推理时间3.4ms满足实时控制要求.
+在D4RL Ant数据集(105维)上, S4D-WM与Transformer-WM性能接近(差距仅1.4\%), 且参数效率最优.
+序列长度敏感性分析揭示了最优序列长度与数据集维度的相关性, 为实际部署提供了重要指导.
+系统的消融实验验证了门控机制、残差连接和网络深度对模型性能的贡献.
+需要指出的是, 虽然本文在MuJoCo仿真数据上进行了验证,
 但与真实机器人部署仍存在一定差距, 未来需要在真机上进一步验证.
 
 未来工作将在以下几个方向展开:
