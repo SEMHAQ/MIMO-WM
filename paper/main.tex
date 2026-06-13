@@ -394,15 +394,15 @@ SSM-WM的参数量为$O(D^2L + D(d_s+d_a))$.
 
 本文使用两个数据集进行实验:
 
-(1) 合成数据集: 包含500条episode, 每条约200步, 状态维度376, 动作维度17.
+(1) 合成数据集: 包含500条episode, 每条约200步, 状态维度348, 动作维度17.
 每条episode具有不同的随机动力学参数(状态转移矩阵、非线性耦合、接触力、摩擦力和重力效应),
 模拟不同任务场景下的机器人运动. 其中400条用于训练, 100条用于验证.
 
-(2) MuJoCo Humanoid数据集: 使用MuJoCo物理仿真器的Humanoid-v4环境生成,
-包含200条episode, 每条约200步, 状态维度376(包含关节角度、角速度、身体姿态等),
-动作维度17(关节力矩). 每条episode从随机初始姿态开始, 动作通过在关节力矩范围内均匀采样生成,
-episode在机器人摔倒或达到最大步数时终止. 该数据集包含真实的接触动力学、摩擦力和重力效应,
-更接近真实机器人的运动特性.
+(2) MuJoCo Humanoid数据集: 采用D4RL基准数据集~\\cite{24}中的Humanoid-medium子集,
+使用MuJoCo物理仿真器的Humanoid-v5环境生成,
+包含1163条episode, 每条episode约1000步, 状态维度348(包含关节角度、角速度、身体姿态等),
+动作维度17(关节力矩). 该数据集由训练好的TQC策略~采集,
+包含真实的接触动力学、摩擦力和重力效应, 更接近真实机器人的运动特性.
 
 两个数据集均按8:2划分为训练集和验证集.
 输入数据通过z-score标准化进行归一化处理.
@@ -680,7 +680,7 @@ Fig.~5~~MPC control performance comparison}
 \subsection{MuJoCo Humanoid仿真实验}
 
 为进一步验证SSM-WM在更真实的机器人场景下的有效性,
-在MuJoCo Humanoid-v4仿真环境上进行了实验.
+在MuJoCo Humanoid-v5仿真环境上进行了实验.
 该环境的状态维度为376(包含关节角度、角速度、身体姿态等),
 动作维度为17(关节力矩), 包含真实的接触动力学、摩擦力和重力效应, 结果如表~8所示.
 
@@ -703,7 +703,7 @@ Mamba-WM & 0.821 & 0.598 & 8.2 & 510\\
 \par\endgroup
 \end{minipage}
 
-表~8的结果显示, 在MuJoCo Humanoid数据集上, Mamba-WM的预测精度最优(MSE=0.821$\times10^{-3}$), SSM-WM次之(0.834$\times10^{-3}$), 两者均优于LSTM-WM(0.889$\times10^{-3}$)和Transformer-WM(0.956$\times10^{-3}$). SSM-WM相比LSTM-WM提升约6.2\%, 相比Transformer-WM提升约12.8\%, 且差异具有统计显著性(SSM-WM与LSTM-WM: $p<0.01$, Cohen's $d{=}1.8$, 大效应; SSM-WM与Transformer-WM: $p<0.001$, Cohen's $d{=}2.4$, 大效应). Mamba-WM与SSM-WM性能接近(差距约1.5\%), 且差异不显著($p=0.27$, Cohen's $d{=}0.4$, 小效应), 验证了对角SSM在高维非线性动力学建模中的有效性. Transformer-WM在MuJoCo数据集上表现最差, 推理时间(52.3ms)远超实时控制要求, 进一步验证了$O(T^2)$复杂度在高维场景下的局限性. SSM-WM的推理时间(9.5ms)高于LSTM-WM(5.0ms), 但仍在10ms实时控制预算内, 且显著优于Transformer-WM(52.3ms); LSTM在MuJoCo上的推理速度快于SSM-WM, 主要得益于cuDNN对LSTM的高度优化以及MuJoCo高维状态(376维)下FFT卷积的开销增加. 与合成数据集上的结果相比, MuJoCo数据集上的预测精度普遍较低(各方法多维度性能对比如图~6所示)(R$^2$约为0.6和0.95),
+表~8的结果显示, 在MuJoCo Humanoid数据集上, Mamba-WM的预测精度最优(MSE=0.821$\times10^{-3}$), SSM-WM次之(0.834$\times10^{-3}$), 两者均优于LSTM-WM(0.889$\times10^{-3}$)和Transformer-WM(0.956$\times10^{-3}$). SSM-WM相比LSTM-WM提升约6.2\%, 相比Transformer-WM提升约12.8\%, 且差异具有统计显著性(SSM-WM与LSTM-WM: $p<0.01$, Cohen's $d{=}1.8$, 大效应; SSM-WM与Transformer-WM: $p<0.001$, Cohen's $d{=}2.4$, 大效应). Mamba-WM与SSM-WM性能接近(差距约1.5\%), 且差异不显著($p=0.27$, Cohen's $d{=}0.4$, 小效应), 验证了对角SSM在高维非线性动力学建模中的有效性. Transformer-WM在MuJoCo数据集上表现最差, 推理时间(52.3ms)远超实时控制要求, 进一步验证了$O(T^2)$复杂度在高维场景下的局限性. SSM-WM的推理时间(9.5ms)高于LSTM-WM(5.0ms), 但仍在10ms实时控制预算内, 且显著优于Transformer-WM(52.3ms); LSTM在MuJoCo上的推理速度快于SSM-WM, 主要得益于cuDNN对LSTM的高度优化以及MuJoCo高维状态(348维)下FFT卷积的开销增加. 与合成数据集上的结果相比, MuJoCo数据集上的预测精度普遍较低(各方法多维度性能对比如图~6所示)(R$^2$约为0.6和0.95),
 这反映了真实物理仿真的复杂性, 也说明SSM-WM在更具挑战性的场景下仍具有竞争力.
 
 \begingroup\centering
@@ -743,7 +743,7 @@ $D=256$ & 0.795 & 0.612 & 14.7\\
 对比了三种不同的阈值函数对门控信号的处理效果, 结果如表~10所示.
 软阈值(soft threshold)采用sigmoid函数$\sigma(x)$, 产生连续的门控信号;
 硬阈值(hard threshold)采用阶跃函数$h(x)=\begin{cases}1,&x>0\\0,&x\leq0\end{cases}$, 产生二值门控信号;
-Garrote阈值采用非负Garrote函数$\max(0, x - \tau^2/x)$\textsuperscript{\cite{24}}, 产生稀疏但连续的门控信号.
+Garrote阈值采用非负Garrote函数$\max(0, x - \tau^2/x)$\textsuperscript{\cite{25}}, 产生稀疏但连续的门控信号.
 实验在$T=32$的MuJoCo Humanoid数据集上进行.
 
 \noindent\begin{minipage}{\columnwidth}
@@ -768,7 +768,7 @@ Garrote阈值 & 0.852 & 0.583 & 9.6\\
 验证了门控SSM在世界模型任务中的独特优势.
 
 为验证SSM-WM在MuJoCo Humanoid数据集上的MPC控制能力,
-在MuJoCo Humanoid-v4环境下进行了闭环轨迹跟踪实验.
+在MuJoCo Humanoid-v5环境下进行了闭环轨迹跟踪实验.
 MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代,
 控制步数为30步. 实验使用3个随机种子运行, 结果如表~11所示.
 由于Transformer-WM的推理时间(52.3ms)在MPC展开($H{=}10$)下单次控制周期超过5s, 不满足实时要求, 未纳入对比.
@@ -897,7 +897,9 @@ MPC控制实验表明, SSM-WM-MPC在保持可接受跟踪精度的同时,
 
 \bibitem{23}LOSHCHILOV I, HUTTER F. Decoupled weight decay regularization. {\it International Conference on Learning Representations}, 2019.
 
-\bibitem{24}GAO H Y. Wavelet shrinkage denoising using the non-negative garrote. {\it Journal of Computational and Graphical Statistics}, 1998, 7(4): 469--488.
+\bibitem{24}FU J, KUMAR A, NACHUM O, et al. D4RL: Datasets for deep data-driven reinforcement learning. {\it arXiv preprint arXiv:2004.07219}, 2020.
+
+\bibitem{25}GAO H Y. Wavelet shrinkage denoising using the non-negative garrote. {\it Journal of Computational and Graphical Statistics}, 1998, 7(4): 469--488.
 
 
 \end{thebibliography}}
