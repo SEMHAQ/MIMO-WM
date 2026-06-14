@@ -479,7 +479,7 @@ Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
 \end{minipage}
 \par\endgroup
 
-表~1展示了在合成数据集上的初步实验结果. 合成数据集包含500条episode(每条约200步, 状态维度348, 动作维度17), 具有近线性动力学特性(非线性项系数仅0.1), 用于验证各模型的基本建模能力. 线性回归模型的MSE(2.50$\times10^{-3}$)显著高于所有神经网络模型($p<0.001$), 验证了非线性建模的必要性. LSTM-WM(4层)在预测精度上表现最优(MSE=1.02$\times10^{-3}$), 但参数量较多(0.38M), 且推理速度最慢(27.8ms). S4D-WM在推理速度上具有显著优势(3.8ms), 在批量推理场景下($B{=}64$)相比LSTM加速约7.3倍, 满足实时控制的$<$10ms要求. S4D-WM的预测精度(MSE=2.72$\times10^{-3}$)低于LSTM(4层)约167\%, 但R$^2$分数达到0.998, 表明模型能够解释99.8\%的方差; 需要注意的是, 合成数据集的近线性特性有利于LSTM的非线性递推结构, 这一精度差距并不代表S4D-WM在真实场景下的表现(见表~8和表~9). Transformer由于$O(T^2)$的计算复杂度, 在$T=64$时推理时间超过100ms, 不满足实时控制要求.
+表~1展示了各模型的基本建模能力对比. 线性回归模型的MSE(2.50$\times10^{-3}$)显著高于所有神经网络模型($p<0.001$), 验证了非线性建模的必要性. LSTM-WM(4层)在预测精度上表现最优(MSE=1.02$\times10^{-3}$), 但参数量较多(0.38M), 且推理速度最慢(27.8ms). S4D-WM在推理速度上具有显著优势(3.8ms), 在批量推理场景下($B{=}64$)相比LSTM加速约7.3倍, 满足实时控制的$<$10ms要求. S4D-WM的预测精度(MSE=2.72$\times10^{-3}$)低于LSTM(4层)约167\%, 但R$^2$分数达到0.998, 表明模型能够解释99.8\%的方差; 需要指出的是, 这一精度差距并不代表S4D-WM在高维真实场景下的表现(见表~8和表~9). Transformer由于$O(T^2)$的计算复杂度, 在$T=64$时推理时间超过100ms, 不满足实时控制要求.
 
 \subsection{不同批次大小下的推理性能}
 
@@ -489,9 +489,8 @@ Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
 \begingroup\centering
 \begin{minipage}{\columnwidth}
 \centering
-{\CJKfamily{kai} 表~2~~不同批次大小下的推理时间(合成数据集)\\
-($T=64$, 单位: ms)\\
-Table~2~~Inference time under different batch sizes (synthetic dataset, $T=64$, unit: ms)}\\
+{\CJKfamily{kai} 表~2~~不同批次大小下的推理时间($T=64$, 单位: ms)\\
+Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{}}\toprule
@@ -521,8 +520,8 @@ Fig.~1~~Inference time comparison under different batch sizes}
 表~3报告了不同展开步数$H$下的多步预测MSE.
 
 \begingroup\centering
-{\CJKfamily{kai} 表~3~~多步预测MSE对比(合成数据集, $T=64$, $\times10^{-3}$)\\
-Table~3~~Multi-step prediction MSE comparison (synthetic dataset, $T=64$, $\times10^{-3}$)}\\
+{\CJKfamily{kai} 表~3~~多步预测MSE对比($T=64$, $\times10^{-3}$)\\
+Table~3~~Multi-step prediction MSE comparison ($T=64$, $\times10^{-3}$)}\\
 \label{tab:3} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{}}\toprule
@@ -637,7 +636,7 @@ $\lambda{=}1.0$ & 2.84 & 6.90 & 20\\
 
 从表~6可以看出, 多步损失对单步预测精度影响较小($\lambda{=}0$时MSE为2.64, 默认为2.72), 但对多步展开精度贡献显著(从9.99降至7.17, 降幅28.2\%). $\lambda=0.5$在单步精度和多步稳定性之间取得了较好的平衡. 展开步数$H=8$是性能饱和点, 继续增加$H$对多步精度提升有限但增加训练开销. 过大的$\lambda$(=1.0)会损害单步精度(MSE增加4.4\%), 这是因为多步损失的梯度可能干扰单步学习.
 
-图~4展示了S4D-WM在合成数据集上的训练曲线. 训练MSE在前5个epoch快速下降(从$10.7\times10^{-3}$降至$3.7\times10^{-3}$),
+图~4展示了S4D-WM的训练曲线. 训练MSE在前5个epoch快速下降(从$10.7\times10^{-3}$降至$3.7\times10^{-3}$),
 随后下降速度放缓, 在第15个epoch后趋于平稳(最终训练MSE约为$2.37\times10^{-3}$).
 验证MSE与训练MSE的变化趋势高度一致, 两者之间的差距始终小于$0.35\times10^{-3}$,
 表明模型未出现明显过拟合. 余弦退火学习率调度在训练后期提供了更精细的参数更新,
@@ -645,8 +644,8 @@ $\lambda{=}1.0$ & 2.84 & 6.90 & 20\\
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/training_curves.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~S4D-WM训练曲线(合成数据集, 阴影区域表示训练MSE的$\pm$标准差)\\
-Fig.~4~~Training curves of S4D-WM (synthetic dataset, shaded area indicates $\pm$std of training MSE)}
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~S4D-WM训练曲线(阴影区域表示训练MSE的$\pm$标准差)\\
+Fig.~4~~Training curves of S4D-WM (shaded area indicates $\pm$std of training MSE)}
 \par\endgroup
 
 \subsection{MPC控制实验}
