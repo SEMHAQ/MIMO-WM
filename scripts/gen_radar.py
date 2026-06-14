@@ -1,4 +1,4 @@
-"""Radar chart: D4RL Humanoid, 4 models, Chinese labels, no overlap."""
+"""Radar chart: D4RL Humanoid, 4 models, clean layout."""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import os
 
-zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=9)
+zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=10)
 zhfont_s = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=8)
-zhfont_t = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=10)
 
 plt.rcParams.update({
     'font.family': 'serif',
@@ -22,7 +21,6 @@ models = ['S4D-WM', 'Mamba-WM', 'Trans.-WM', 'LSTM-WM']
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 markers = ['o', 's', '^', 'D']
 
-# D4RL Humanoid raw data (Table 8)
 raw = {
     'S4D-WM':    [0.694, 1/0.245, 3.4, 1/0.23],
     'Mamba-WM':  [0.676, 1/0.259, 3.5, 1/0.66],
@@ -30,7 +28,7 @@ raw = {
     'LSTM-WM':   [0.541, 1/0.367, 2.5, 1/0.64],
 }
 
-categories = ['R2(↑)', '1/MSE(↑)', '推理速度', '1/参数(↑)']
+categories = ['R2', '1/MSE', '推理速度', '1/参数量']
 N = len(categories)
 
 def norm(ci, higher_better=True):
@@ -45,7 +43,7 @@ all_n = [norm(0, True), norm(1, True), norm(2, False), norm(3, True)]
 angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
 angles += angles[:1]
 
-fig, ax = plt.subplots(figsize=(4.5, 4.0), subplot_kw=dict(polar=True))
+fig, ax = plt.subplots(figsize=(4.5, 4.2), subplot_kw=dict(polar=True))
 fig.patch.set_facecolor('white')
 
 for i, m in enumerate(models):
@@ -57,22 +55,24 @@ for i, m in enumerate(models):
                 markersize=6, markeredgecolor='white', markeredgewidth=0.6, zorder=4)
 
 ax.set_xticks(angles[:-1])
-ax.set_xticklabels(categories, fontproperties=zhfont_t, fontweight='bold')
-ax.set_ylim(0, 1.25)
-ax.set_yticks([0.4, 0.7, 1.0])
-ax.set_yticklabels(['0.4', '0.7', '1.0'], fontsize=7, color='gray')
-ax.grid(True, linewidth=0.4, alpha=0.5)
+ax.set_xticklabels(categories, fontproperties=zhfont, fontweight='bold')
+# Push labels outward to avoid overlap with data
+ax.tick_params(pad=14)
 
-# Legend with correct model-to-color mapping
+ax.set_ylim(0, 1.15)
+# Remove inner grid labels (0.4, 0.7, 1.0)
+ax.set_yticks([])
+ax.grid(True, linewidth=0.3, alpha=0.4)
+
 legend_lines = [plt.Line2D([0], [0], color=colors[i], marker=markers[i],
                 markersize=6, linewidth=1.5, markeredgecolor='white')
                 for i in range(N)]
-ax.legend(legend_lines, models, loc='upper right', bbox_to_anchor=(1.42, 1.18),
-          fontsize=8, frameon=True, fancybox=True, framealpha=0.9, edgecolor='gray',
+ax.legend(legend_lines, models, loc='upper right', bbox_to_anchor=(1.38, 1.15),
+          fontsize=8.5, frameon=True, fancybox=True, framealpha=0.9, edgecolor='gray',
           handletextpad=0.4, handlelength=1.5)
 
 plt.tight_layout()
 os.makedirs('paper/figures', exist_ok=True)
-plt.savefig('paper/figures/radar_comparison.pdf', bbox_inches='tight', pad_inches=0.08)
-plt.savefig('paper/figures/radar_comparison.png', bbox_inches='tight', pad_inches=0.08)
+plt.savefig('paper/figures/radar_comparison.pdf', bbox_inches='tight', pad_inches=0.1)
+plt.savefig('paper/figures/radar_comparison.png', bbox_inches='tight', pad_inches=0.1)
 print("Done")
