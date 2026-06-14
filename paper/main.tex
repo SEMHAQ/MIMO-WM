@@ -571,6 +571,13 @@ Ant数据集(105维)则在$T{=}256$时取得最优MSE(0.480), 且$R^2$在$T \geq
 这一差异的可能原因是: 高维数据的状态转移更复杂, 过长的历史序列引入噪声; 而中低维数据的动力学更规则, 较长的历史有助于捕捉周期性模式.
 推理时间在$T \leq 128$时基本稳定(Humanoid: 3.6--7.9ms, Ant: 3.8--5.4ms), $T{=}256$时增至8.2ms.
 综合考虑, 推荐Humanoid使用$T \in [16, 32]$, Ant使用$T \in [128, 256]$(如图~2所示).
+
+\begingroup\centering
+\includegraphics[width=0.95\columnwidth]{figures/seqlen_sensitivity.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~2~~S4D-WM在不同序列长度下的预测精度\\
+Fig.~2~~Prediction accuracy of S4D-WM under different sequence lengths}
+\par\endgroup
+
 \subsection{消融实验}
 
 为验证各组件的有效性, 在$T=64$的设置下进行了以下消融实验, 结果如表~5所示.
@@ -745,12 +752,12 @@ S4D-WM次之(0.728), 两者差距仅1.4\%, 且S4D-WM的$R^2$(0.150)与Transforme
 值得注意的是, S4D-WM的参数量(0.16M)与Transformer-WM(0.12M)接近,
 但远低于LSTM-WM(0.57M)和Mamba-WM(0.59M), 体现了对角SSM的参数效率.
 综合两个数据集的结果, S4D-WM在高维复杂动力学(Humanoid)上具有显著优势,
-在中低维动力学(Ant)上也具有竞争力, 且参数效率始终最优.
+在中低维动力学(Ant)上也具有竞争力, 且参数效率始终最优(各方法多维度性能对比如图~6所示).
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~5~~各方法多维度性能对比(D4RL Humanoid)\\
-Fig.~5~~Multi-dimensional performance comparison on D4RL Humanoid dataset}
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~6~~各方法多维度性能对比(D4RL Humanoid)\\
+Fig.~6~~Multi-dimensional performance comparison on D4RL Humanoid dataset}
 \par\endgroup
 
 为验证S4D-WM各组件在高维非线性场景下的有效性, 在D4RL Humanoid数据集上进行了消融实验, 结果如表~10所示.
