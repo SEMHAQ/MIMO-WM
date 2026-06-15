@@ -664,17 +664,20 @@ Table~7~~MPC control performance comparison (D4RL Humanoid)\\
 \label{tab:7} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
-方法 & 跟踪MSE & 回路$^{\text{a}}$ & 频率/Hz\\
+方法 & 回路时间$^{\text{a}}$ & 频率/Hz\\
 \midrule
-LSTM-MPC & 0.0032 & 1420$\pm$45 & 0.7\\
-Mamba-MPC & 0.0041 & 235$\pm$12 & 4.3\\
-\textbf{S4D-WM-MPC} & \textbf{0.0043} & \textbf{195$\pm$10} & \textbf{5.1}\\
+LSTM-MPC & 299$\pm$18 & 3.3\\
+Mamba-MPC & 1296$\pm$67 & 0.8\\
+\textbf{S4D-WM-MPC} & \textbf{1298$\pm$65} & \textbf{0.8}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-从表~7可以看出, S4D-WM-MPC的跟踪精度(0.0043)与LSTM-MPC(0.0032)处于同一数量级, 差距约34\%, 但差异不显著($p=0.12$, 95\%CI: $[-0.0003, 0.0025]$). S4D-WM-MPC的控制回路时间仅为195ms, 相比LSTM-MPC的1420ms加速约7倍($p<0.001$), 可实现5.1Hz的控制频率, 满足大多数机器人运动规划任务的需求(如图~5所示). Mamba-MPC与S4D-WM-MPC性能接近(跟踪MSE差异$p=0.62$), 进一步验证了对角SSM在MPC中的有效性.
+从表~7可以看出, LSTM-MPC的回路时间最短(299ms, 3.3Hz), 得益于cuDNN对LSTM反向传播的高度优化.
+S4D-WM-MPC和Mamba-MPC的回路时间相近(约1300ms, 0.8Hz), 这是由于SSM类模型的自定义CUDA kernel在反向传播时效率较低.
+在Ant(105维)数据集上的补充测试表明, MPC回路时间与状态维度关系不大(Humanoid和Ant的速度差异小于5\%), 
+瓶颈在于模型反向传播的计算开销而非状态维度本身(如图~5所示).
 
 
 
@@ -738,7 +741,7 @@ Table~9~~Gating mechanism comparison with different threshold functions (D4RL Hu
 Garrote阈值\textsuperscript{\cite{25}} & 0.250 & 0.687 & 3.4\\
 {\CJKfamily{zhhei}\textbf{软阈值(默认)}} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
 \bottomrule
-\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
+\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
