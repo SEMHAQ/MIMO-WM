@@ -390,65 +390,13 @@ S4D-WM的参数量为$O(D^2L + D(d_s+d_a))$.
 
 \subsection{实验设置}
 
-本文使用两个数据集进行实验:
+本文采用D4RL基准数据集\textsuperscript{\cite{24}}进行实验, 包含Humanoid-medium(348维, 1163条episode)和Ant-medium(105维, 1047条episode)两个子集, 均由MuJoCo物理仿真器生成、TQC策略采集, 按8:2划分训练集和验证集, 输入数据经z-score归一化.
 
-1)~~Humanoid数据集: 采用D4RL基准数据集\textsuperscript{\cite{24}}中的Humanoid-medium子集,
-使用MuJoCo物理仿真器的Humanoid-v5环境生成,
-包含1163条episode, 每条episode约1000步, 状态维度348,
-动作维度17(关节力矩). 该数据集由训练好的TQC策略采集,
-包含真实的接触动力学、摩擦力和重力效应, 代表高维复杂动力学场景.
-其中930条用于训练, 233条用于验证.
-
-2)~~Ant数据集: 采用D4RL基准数据集\textsuperscript{\cite{24}}中的Ant-medium子集,
-使用MuJoCo物理仿真器的Ant-v5环境生成, 代表中低维四足机器人动力学.
-该数据集包含1047条episode, 训练集837条、验证集210条, 平均每条约918步,
-状态维度105, 动作维度8(关节力矩).
-该数据集同样由训练好的TQC策略采集.
-
-两个数据集均按8:2划分为训练集和验证集.
-输入数据通过z-score标准化进行归一化处理.
-
-本文与以下方法进行对比:
-
-1)~~LSTM-WM: 基于长短期记忆网络(LSTM)的循环世界模型, 4层LSTM, 隐层维度128, 使用cuDNN优化的PyTorch原生LSTM实现(Humanoid: 0.64M参数, Ant: 0.57M参数);
-
-2)~~Transformer-WM: 基于标准Transformer的世界模型, 2层, 4头注意力, 隐层维度64(Humanoid: 0.15M参数, Ant: 0.12M参数);
-
-3)~~Mamba-WM: 基于Mamba\textsuperscript{\cite{8}}选择性SSM的世界模型, 4层, 隐层维度128, 状态维度16, 使用官方mamba-ssm库实现(Humanoid: 0.66M参数, Ant: 0.59M参数).
-
-本文采用以下评价指标:
-
-1)~~均方误差(MSE):
+对比方法包括LSTM-WM(4层, 隐层128)、Transformer-WM(2层, 4头, 隐层64)和Mamba-WM(4层, 隐层128). 评价指标为MSE、$R^2$、推理时间和参数量:
 \begin{equation}
-\text{MSE} = \frac{1}{N}\sum_{i=1}^{N}\|\hat{{\bm s}}_i - {\bm s}_i\|^2
-\end{equation}
-
-2)~~决定系数$R^2$:
-\begin{equation}
+\text{MSE} = \frac{1}{N}\sum_{i=1}^{N}\|\hat{{\bm s}}_i - {\bm s}_i\|^2, \quad
 R^2 = 1 - \frac{\sum_{i=1}^{N}(\hat{{\bm s}}_i - {\bm s}_i)^2}{\sum_{i=1}^{N}({\bm s}_i - \bar{{\bm s}})^2}
-\end{equation}
-
-
-3)~~推理时间: 单个批次的前向传播时间(ms), 包含GPU预热(warm-up)阶段后的稳定测量;
-
-4)~~参数量: 模型可训练参数数量(M).
-
-所有模型训练100个epoch, 使用AdamW优化器, 初始学习率$5\times10^{-4}$,
-权重衰减$1\times10^{-4}$, 余弦退火调度, 梯度裁剪阈值1.0.
-S4D-WM的隐空间维度$D=128$, SSM状态维度$N=16$, 层数$L=4$.
-序列长度默认设置为$T=32$, 批大小为64.
-实验在单块NVIDIA RTX 3090 GPU上进行, 使用PyTorch 2.1.2框架实现.
-推理时间测量包含5次GPU预热迭代, 随后取20次测量的平均值.
-为保证对比公平, 所有模型均采用相近的参数量和隐层维度设置.
-MPC实验中(表~7)因Transformer-WM的$O(T^2)$复杂度在多步展开时推理过慢而未纳入对比.
-每组实验使用固定随机种子(42)运行.
-由于D4RL数据集规模较大, 单次运行的结果已具有统计稳定性.
-
-需要指出的是, 本文的推理时间测量均在NVIDIA RTX 3090 GPU上进行, 而实际机器人通常使用嵌入式处理器.
-S4D-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台上的性能可能有所不同.
-具体而言, S4D-WM的递推模式具有$O(1)$的单步延迟, 适合逐步生成预测的在线控制场景, 这一特性在嵌入式平台上可能比卷积模式更具优势.
-此外, S4D-WM的参数量(0.24M)和内存占用(0.9MB)均较低, 适合部署在内存受限的嵌入式平台上.
-未来工作将在NVIDIA Jetson等嵌入式硬件上进行推理时间测量, 以验证S4D-WM在实际部署场景下的性能.
+\end{equation} 所有模型训练100个epoch, 使用AdamW优化器(学习率$5\times10^{-4}$, 余弦退火), 序列长度$T=32$, 批大小64, 随机种子42. 实验在NVIDIA RTX 3090 GPU上进行. MPC实验中因Transformer-WM的$O(T^2)$复杂度在多步展开时推理过慢而未纳入对比.
 
 \subsection{D4RL基准数据集实验}
 
