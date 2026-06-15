@@ -8,6 +8,7 @@ class DiagSSM(nn.Module):
     """
     S4D风格的对角SSM: 用对角A矩阵 + FFT卷积
     极快且数值稳定
+    支持两种模式: 'conv' (FFT卷积, 适合批量训练) 和 'recurrent' (递推, 适合单步推理)
     """
 
     def __init__(self, d_model: int, d_state: int = 64):
@@ -29,10 +30,18 @@ class DiagSSM(nn.Module):
         # dt
         self.log_dt = nn.Parameter(torch.randn(d_model) * 0.01)
 
-    def forward(self, x):
+    def forward(self, x, mode='conv'):
         """
         x: (B, L, D) -> (B, L, D)
+        mode: 'conv' for FFT convolution, 'recurrent' for recursive inference
         """
+        if mode == 'recurrent':
+            return self._forward_recurrent(x)
+        else:
+            return self._forward_conv(x)
+
+    def _forward_conv(self, x):
+        """FFT卷积模式: O(T log T) 训练复杂度"""
         batch, L, D = x.shape
         N = self.d_state
 
@@ -65,6 +74,32 @@ class DiagSSM(nn.Module):
 
         return y
 
+    def _forward_recurrent(self, x):
+        """递推模式: O(T*N) 时间复杂度, O(1) 单步延迟"""
+        batch, L, D = x.shape
+        N = self.d_state
+
+        dt = torch.exp(self.log_dt)  # (D,)
+        A = -torch.exp(self.log_A_real) + 1j * self.A_imag  # (D, N) complex
+
+        # 离散化系数
+        dtA = dt.unsqueeze(-1) * A  # (D, N)
+        A_bar = torch.exp(dtA)  # (D, N) complex
+        B_bar = (A_bar - 1) / A * self.B  # (D, N) complex, 近似
+
+        # 初始化隐状态
+        h = torch.zeros(batch, D, N, device=x.device, dtype=torch.cfloat)  # (B, D, N)
+
+        outputs = []
+        for t in range(L):
+            # 状态更新: h_t = A_bar * h_{t-1} + B_bar * x_t
+            h = A_bar.unsqueeze(0) * h + B_bar.unsqueeze(0) * x[:, t, :].unsqueeze(-1)
+            # 输出: y_t = C * h_t + D * x_t
+            y_t = (self.C.unsqueeze(0) * h).sum(dim=-1).real + self.D * x[:, t, :]
+            outputs.append(y_t)
+
+        return torch.stack(outputs, dim=1)  # (B, L, D)
+
 
 class SSMBlock(nn.Module):
     """SSM块: LayerNorm + SSM + 门控 + 残差"""
@@ -75,10 +110,10 @@ class SSMBlock(nn.Module):
         self.ssm = DiagSSM(d_model, d_state)
         self.gate = nn.Linear(d_model, d_model)
 
-    def forward(self, x):
+    def forward(self, x, mode='conv'):
         residual = x
         x_norm = self.norm(x)
-        ssm_out = self.ssm(x_norm)
+        ssm_out = self.ssm(x_norm, mode=mode)
         g = torch.sigmoid(self.gate(x_norm))
         out = g * ssm_out + (1 - g) * x_norm
         return residual + out
@@ -140,11 +175,12 @@ class SSMWorldModel(nn.Module):
                 if m.bias is not None:
                     nn.init.zeros_(m.bias)
 
-    def forward(self, states: torch.Tensor, actions: torch.Tensor):
+    def forward(self, states: torch.Tensor, actions: torch.Tensor, mode='conv'):
         """
         单步预测:
         states:  (B, T, state_dim)
         actions: (B, T-1, action_dim)
+        mode: 'conv' for FFT convolution, 'recurrent' for recursive inference
         返回: (B, state_dim)
         """
         # 对齐长度
@@ -160,7 +196,7 @@ class SSMWorldModel(nn.Module):
         x = self.encoder(x)
 
         for block in self.backbone:
-            x = block(x)
+            x = block(x, mode=mode)
 
         x = self.norm(x)
         x = x[:, -1, :]

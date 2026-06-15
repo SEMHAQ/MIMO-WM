@@ -14,6 +14,10 @@ class MPCController:
     1. 在每个控制时刻, 优化未来H步的动作序列
     2. 执行第一个动作
     3. 观测新状态, 重复步骤1
+
+    支持两种推理模式:
+    - 'conv': FFT卷积模式, 适合批量训练和长序列推理
+    - 'recurrent': 递推模式, 适合单步推理, O(1)延迟
     """
 
     def __init__(
@@ -25,6 +29,7 @@ class MPCController:
         n_iterations: int = 50,
         lr: float = 0.01,
         device: str = "cpu",
+        mode: str = "conv",
     ):
         self.world_model = world_model
         self.horizon = horizon
@@ -33,11 +38,11 @@ class MPCController:
         self.n_iterations = n_iterations
         self.lr = lr
         self.device = torch.device(device)
+        self.mode = mode
 
         self.world_model.eval()
         self.world_model.to(self.device)
 
-    @torch.no_grad()
     def plan(self, state_history, action_history, target_state):
         """
         规划: 给定历史状态和动作, 计算最优动作序列
@@ -72,7 +77,7 @@ class MPCController:
 
             total_cost = torch.tensor(0.0, device=self.device, requires_grad=False)
             for h in range(self.horizon):
-                pred = self.world_model(full_states, full_actions)
+                pred = self.world_model(full_states, full_actions, mode=self.mode)
 
                 # 状态跟踪代价
                 state_cost = self.Q_weight * torch.norm(pred - target, p=2)
