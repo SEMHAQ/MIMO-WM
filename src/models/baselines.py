@@ -1,5 +1,5 @@
 """
-基线模型: LSTM世界模型 和 Transformer世界模型
+基线模型: LSTM世界模型, Transformer世界模型 和 GRU世界模型
 用于与SSM-WM进行对比实验
 """
 import torch
@@ -31,6 +31,45 @@ class LSTMWorldModel(nn.Module):
         x = self.encoder(x)
         x, _ = self.lstm(x)
         x = x[:, -1, :]
+        delta_s = self.decoder(x)
+        return states[:, -1, :] + delta_s
+
+    def predict_trajectory(self, init_states, init_actions, future_actions):
+        states_seq = init_states.clone()
+        actions_seq = init_actions.clone()
+        predictions = []
+        for h in range(future_actions.shape[1]):
+            pred = self.forward(states_seq, actions_seq)
+            predictions.append(pred)
+            states_seq = torch.cat([states_seq[:, 1:], pred.unsqueeze(1)], dim=1)
+            actions_seq = torch.cat([actions_seq[:, 1:], future_actions[:, h:h+1]], dim=1)
+        return torch.stack(predictions, dim=1)
+
+
+class GRUWorldModel(nn.Module):
+    """基于GRU的循环世界模型"""
+
+    def __init__(self, state_dim=28, action_dim=7, hidden_dim=128, n_layers=2):
+        super().__init__()
+        self.encoder = nn.Linear(state_dim + action_dim, hidden_dim)
+        self.gru = nn.GRU(hidden_dim, hidden_dim, n_layers, batch_first=True)
+        self.decoder = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, state_dim),
+        )
+        self.state_dim = state_dim
+
+    def forward(self, states, actions):
+        # 对齐长度
+        if actions.shape[1] < states.shape[1]:
+            pad_len = states.shape[1] - actions.shape[1]
+            pad = torch.zeros(states.shape[0], pad_len, actions.shape[-1], device=actions.device, dtype=actions.dtype)
+            actions = torch.cat([pad, actions], dim=1)
+        x = torch.cat([states, actions], dim=-1)
+        x = torch.nn.functional.gelu(self.encoder(x))
+        out, _ = self.gru(x)
+        x = out[:, -1, :]
         delta_s = self.decoder(x)
         return states[:, -1, :] + delta_s
 
