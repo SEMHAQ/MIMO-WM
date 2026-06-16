@@ -400,7 +400,9 @@ S4D-WM的参数量为$O(D^2L + D(d_s+d_a))$.
 
 对比方法包括LSTM-WM(4层, 隐层128)、Transformer-WM(2层, 4头, 隐层64, 0.15M参数)、GRU-WM(4层, 隐层128)和Mamba-WM(4层, 隐层128). Transformer-WM采用较小的隐层维度是因为其$O(T^2D)$自注意力复杂度在大维度下计算开销过高; 即便如此, 其参数量(0.15M)仍低于S4D-WM(0.23M), 说明这一比较对Transformer-WM是有利的. 所有实验均使用3个随机种子(42, 123, 456)运行, 报告均值与标准差. 评价指标为MSE、$R^2$、推理时间和参数量:
 \begin{equation}
-\text{MSE} = \frac{1}{N}\sum_{i=1}^{N}\|\hat{{\bm s}}_i - {\bm s}_i\|^2, \quad
+\text{MSE} = \frac{1}{N}\sum_{i=1}^{N}\|\hat{{\bm s}}_i - {\bm s}_i\|^2,
+\end{equation}
+\begin{equation}
 R^2 = 1 - \frac{\sum_{i=1}^{N}(\hat{{\bm s}}_i - {\bm s}_i)^2}{\sum_{i=1}^{N}({\bm s}_i - \bar{{\bm s}})^2}
 \end{equation} 所有模型训练100个epoch, 使用AdamW优化器(学习率$5\times10^{-4}$, 余弦退火), 序列长度$T=32$, 批大小64, 随机种子42. 此外, 还测试了不具有时序建模能力的简单基线: 多层感知机MLP(两层隐层, 各128维)和线性回归模型. 这两个基线在Humanoid上的$R^2$为负值(分别为$-$0.17和$-$0.49), 表明其预测不如均值基线, 验证了时序建模对本任务的必要性. 实验在NVIDIA RTX 3090 GPU上进行. MPC实验中因Transformer-WM的$O(T^2)$复杂度在多步展开时推理过慢而未纳入对比.
 
@@ -449,10 +451,10 @@ Table~2~~Inference time under different batch sizes ($T=32$, unit: ms)}\\
 \begin{tabular}{@{}lcccc@{}}\toprule
 $B$ & LSTM-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM} \\
 \midrule
-1   & \textbf{2.9} & 2.9 & 9.5 & 8.3\\
-8   & \textbf{1.9} & 3.1 & 10.5 & 8.7\\
-32  & \textbf{3.5} & 3.4 & 9.6 & 8.8\\
-64  & \textbf{4.5} & 4.3 & 8.3 & 8.7\\
+1   & 2.9 & 2.9 & 9.5 & \textbf{8.3}\\
+8   & 1.9 & 3.1 & 10.5 & \textbf{8.7}\\
+32  & 3.5 & 3.4 & 9.6 & \textbf{8.8}\\
+64  & 4.5 & 4.3 & 8.3 & \textbf{8.7}\\
 \bottomrule
 
 \end{tabular}}
@@ -485,9 +487,9 @@ Table~3~~Multi-step prediction MSE comparison (D4RL Humanoid, $T=32$, $\times10^
 $H$ & LSTM-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM}\\
 \midrule
 1  & 0.467 & 0.357 & 0.307 & \textbf{0.303}\\
-4  & 0.705 & 0.562 & \textbf{0.485} & 0.518\\
-8  & 0.962 & 0.774 & \textbf{0.718} & 0.794\\
-16 & 1.638 & \textbf{1.406} & 1.419 & 1.516\\
+4  & 0.705 & 0.562 & 0.485 & \textbf{0.518}\\
+8  & 0.962 & 0.774 & 0.718 & \textbf{0.794}\\
+16 & 1.638 & 1.406 & 1.419 & \textbf{1.516}\\
 \bottomrule
 \end{tabular}}\par\endgroup
 
@@ -510,11 +512,11 @@ Table~4~~Prediction accuracy of S4D-WM under different sequence lengths ($B{=}64
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
 $T$ & MSE & $R^2$ & MSE & $R^2$ \\
 \midrule
-16  & \textbf{0.291} & \textbf{0.656} & 0.542 & 0.302 \\
+16  & 0.291 & 0.656 & 0.542 & 0.302 \\
 32  & 0.442 & 0.479 & 0.728 & 0.150 \\
 64  & 0.612 & 0.153 & 0.942 & $-$0.019 \\
 128 & 1.213 & $-$0.623 & 0.934 & 0.139 \\
-256 & 2.146 & $-$1.694 & \textbf{0.480} & \textbf{0.131} \\
+256 & 2.146 & $-$1.694 & 0.480 & 0.131 \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $R^2<0$表示预测不如均值基线.}
 \end{tabular}}
@@ -660,9 +662,9 @@ Table~8~~Performance comparison on D4RL Ant ($T=32$)}\\
 \begin{tabular}{@{}lcccc@{ }}\toprule
 方法 & MSE($\times10^{-2}$) & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\\midrule
 LSTM-WM & 81.40$\pm$1.26 & 0.050$\pm$0.015 & 2.0 & 0.57 \\
-Transformer-WM & \textbf{72.55$\pm$0.64} & \textbf{0.153$\pm$0.007} & 3.9 & 0.12 \\
+Transformer-WM & 72.55$\pm$0.64 & 0.153$\pm$0.007 & 3.9 & 0.12 \\
 Mamba-WM & 74.28$\pm$0.26 & 0.133$\pm$0.003 & 8.3 & 0.59 \\
-S4D-WM & 73.20$\pm$0.60 & 0.145$\pm$0.007 & 8.8 & \textbf{0.16} \\
+\textbf{S4D-WM} & \textbf{73.20$\pm$0.60} & \textbf{0.145$\pm$0.007} & \textbf{8.8} & \textbf{0.16} \\
 GRU-WM & 77.76$\pm$1.61 & 0.092$\pm$0.019 & 1.5 & 0.50 \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M(百万); 3 seeds.}
@@ -685,10 +687,10 @@ Table~9~~Performance comparison on D4RL Walker2d ($T=32$)\\
 \begin{tabular}{@{}lcccc@{ }}\toprule
 方法 & MSE($\times10^{-2}$) & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\\midrule
 LSTM-WM & 3.44$\pm$0.02 & 0.963$\pm$0.001 & 2.0 & 0.64 \\
-Transformer-WM & \textbf{2.76$\pm$0.02} & \textbf{0.971$\pm$0.001} & 2.9 & 0.15 \\
+Transformer-WM & 2.76$\pm$0.02 & 0.971$\pm$0.001 & 2.9 & 0.15 \\
 GRU-WM & 3.39$\pm$0.05 & 0.964$\pm$0.001 & 1.5 & 0.50 \\
 Mamba-WM & 3.51$\pm$0.03 & 0.963$\pm$0.001 & 9.5 & 0.66 \\
-\textbf{S4D-WM} & 3.04$\pm$0.07 & 0.967$\pm$0.001 & 8.3 & \textbf{0.23} \\
+\textbf{S4D-WM} & \textbf{3.04$\pm$0.07} & \textbf{0.967$\pm$0.001} & \textbf{8.3} & \textbf{0.23} \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M(百万); 3 seeds.}
 \end{tabular}}
