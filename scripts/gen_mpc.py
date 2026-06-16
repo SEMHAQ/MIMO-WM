@@ -1,4 +1,4 @@
-"""MPC comparison - horizontal bars, Nature/Science style, clean typography."""
+"""MPC comparison - top-bottom layout, Nature/Science style."""
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -17,51 +17,42 @@ plt.rcParams.update({
     'figure.dpi': 300,
 })
 
-methods = ['S4D-WM', 'Mamba', 'GRU', 'LSTM']
-loop_time = [1298, 1296, 1265, 299]
-freq = [0.8, 0.8, 0.8, 3.3]
+methods = ['LSTM', 'GRU', 'Mamba', 'S4D-WM']
+loop_time = [299, 1265, 1296, 1298]
+freq = [3.3, 0.8, 0.8, 0.8]
+colors = ['#B0B0B0', '#B0B0B0', '#B0B0B0', '#1f77b4']
 
-# Color: highlight our model, muted for others
-colors = ['#1f77b4', '#B0B0B0', '#B0B0B0', '#B0B0B0']
-edge_colors = ['#1565C0', '#888888', '#888888', '#888888']
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(4.2, 5.0))
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 3.0))
-y = np.arange(len(methods))
-h = 0.5
-
-# ---- (a) Loop time (horizontal) ----
-bars1 = ax1.barh(y, loop_time, height=h, color=colors, edgecolor=edge_colors,
-                 linewidth=0.8, zorder=3)
-ax1.set_xlabel('回路时间 (ms)', fontproperties=zhfont)
-ax1.set_yticks(y)
-ax1.set_yticklabels(methods, fontsize=9, fontweight='bold')
-ax1.invert_yaxis()
-ax1.grid(True, alpha=0.2, axis='x', linewidth=0.5)
+# (a) Loop time
+bars1 = ax1.bar(range(len(methods)), loop_time, 0.55, color=colors,
+                edgecolor='white', linewidth=0.5, zorder=3)
+ax1.set_ylabel('回路时间 (ms)', fontproperties=zhfont)
+ax1.set_xticks(range(len(methods)))
+ax1.set_xticklabels(methods, fontsize=9)
+ax1.grid(True, alpha=0.2, axis='y', linewidth=0.5)
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
-ax1.set_xlim(0, max(loop_time) * 1.25)
 for bar, val in zip(bars1, loop_time):
-    ax1.text(bar.get_width() + 20, bar.get_y() + bar.get_height()/2,
-             f'{val} ms', ha='left', va='center', fontsize=8, fontweight='bold')
+    ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 20,
+             f'{val}', ha='center', va='bottom', fontsize=8, fontweight='bold')
 ax1.set_title('(a) MPC回路时间', fontproperties=zhfont, fontsize=10, pad=8)
 
-# ---- (b) Control frequency (horizontal) ----
-bars2 = ax2.barh(y, freq, height=h, color=colors, edgecolor=edge_colors,
-                 linewidth=0.8, zorder=3)
-ax2.set_xlabel('控制频率 (Hz)', fontproperties=zhfont)
-ax2.set_yticks(y)
-ax2.set_yticklabels(methods, fontsize=9, fontweight='bold')
-ax2.invert_yaxis()
-ax2.grid(True, alpha=0.2, axis='x', linewidth=0.5)
+# (b) Control frequency
+bars2 = ax2.bar(range(len(methods)), freq, 0.55, color=colors,
+                edgecolor='white', linewidth=0.5, zorder=3)
+ax2.set_ylabel('控制频率 (Hz)', fontproperties=zhfont)
+ax2.set_xticks(range(len(methods)))
+ax2.set_xticklabels(methods, fontsize=9)
+ax2.grid(True, alpha=0.2, axis='y', linewidth=0.5)
 ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)
-ax2.axvline(x=10, color='#CC3333', linestyle='--', alpha=0.6, linewidth=1, zorder=2)
-ax2.text(10.2, -0.6, '典型控制需求\n(10 Hz)', fontproperties=zhfont_s,
-         fontsize=7, color='#CC3333', va='top')
-ax2.set_xlim(0, max(freq) * 3.5)
+ax2.axhline(y=10, color='#CC3333', linestyle='--', alpha=0.6, linewidth=1, zorder=2)
+ax2.text(len(methods)-0.5, 10.5, '典型控制需求 10Hz', fontproperties=zhfont_s,
+         fontsize=7.5, color='#CC3333', ha='right')
 for bar, val in zip(bars2, freq):
-    ax2.text(bar.get_width() + 0.08, bar.get_y() + bar.get_height()/2,
-             f'{val} Hz', ha='left', va='center', fontsize=8, fontweight='bold')
+    ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.15,
+             f'{val}', ha='center', va='bottom', fontsize=8, fontweight='bold')
 ax2.set_title('(b) MPC控制频率', fontproperties=zhfont, fontsize=10, pad=8)
 
 plt.tight_layout()
