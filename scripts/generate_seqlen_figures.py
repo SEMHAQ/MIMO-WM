@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""SeqLen: bar+line combo, recommendation zones as legend entries."""
+"""SeqLen: bar+line combo, 4-item legend, Chinese font fixed."""
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib.font_manager import FontProperties
-import matplotlib.patches as mpatches
+from matplotlib.lines import Line2D
 import numpy as np
 import json
 
@@ -37,11 +37,9 @@ r2_a = [r['r2'] for r in results['ant']]
 # ============ Top: MSE ============
 ax1.bar(x - w/2, mse_h, w, color='#2E86AB', alpha=0.5, edgecolor='white', linewidth=0.5, zorder=2)
 ax1.bar(x + w/2, mse_a, w, color='#A23B72', alpha=0.5, edgecolor='white', linewidth=0.5, zorder=2)
-# Lines at bar centers
-ax1.plot(x - w/2, mse_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zorder=3, label='Humanoid MSE')
-ax1.plot(x + w/2, mse_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3, label='Ant MSE')
+ax1.plot(x - w/2, mse_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zorder=3)
+ax1.plot(x + w/2, mse_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3)
 
-# Recommendation zones (no text labels, just shading)
 ax1.axvspan(-0.5, 1.5, alpha=0.08, color='#2E86AB', zorder=1)
 ax1.axvspan(3.5, 4.5, alpha=0.08, color='#A23B72', zorder=1)
 
@@ -51,13 +49,14 @@ ax1.set_xticklabels([])
 ax1.grid(True, alpha=0.2, axis='y', linewidth=0.5)
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
-ax1.set_title('(a) 预测MSE随序列长度的变化', fontproperties=zhfont, fontsize=10, pad=8)
+ax1.text(0.5, 1.02, '(a) 预测MSE随序列长度的变化', transform=ax1.transAxes,
+         fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
 
 # ============ Bottom: R2 ============
 ax2.bar(x - w/2, r2_h, w, color='#2E86AB', alpha=0.5, edgecolor='white', linewidth=0.5, zorder=2)
 ax2.bar(x + w/2, r2_a, w, color='#A23B72', alpha=0.5, edgecolor='white', linewidth=0.5, zorder=2)
-ax2.plot(x - w/2, r2_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zorder=3, label='Humanoid $R^2$')
-ax2.plot(x + w/2, r2_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3, label='Ant $R^2$')
+ax2.plot(x - w/2, r2_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zorder=3)
+ax2.plot(x + w/2, r2_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3)
 
 ax2.axvspan(-0.5, 1.5, alpha=0.08, color='#2E86AB', zorder=1)
 ax2.axvspan(3.5, 4.5, alpha=0.08, color='#A23B72', zorder=1)
@@ -70,20 +69,22 @@ ax2.set_xticklabels(['16', '32', '64', '128', '256'])
 ax2.grid(True, alpha=0.2, axis='y', linewidth=0.5)
 ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)
-ax2.set_title('(b) $R^2$随序列长度的变化', fontproperties=zhfont, fontsize=10, pad=8)
+ax2.text(0.5, 1.02, '(b) $R^2$随序列长度的变化', transform=ax2.transAxes,
+         fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
 
-# Legend: data lines + recommendation zone patches
-h1, l1 = ax1.get_legend_handles_labels()
-h2, l2 = ax2.get_legend_handles_labels()
-zone_h = [mpatches.Patch(facecolor='#2E86AB', alpha=0.15, label='Humanoid推荐区间'),
-          mpatches.Patch(facecolor='#A23B72', alpha=0.15, label='Ant推荐区间')]
-all_h = h1 + h2 + zone_h
-all_l = l1 + l2 + ['Humanoid推荐区间', 'Ant推荐区间']
-fig.legend(all_h, all_l, loc='lower center', ncol=3, fontsize=8,
-           bbox_to_anchor=(0.5, -0.04), frameon=True, fancybox=True,
+# 4-item legend
+legend_elements = [
+    Line2D([0], [0], color='#2E86AB', marker='o', linewidth=1.5, markersize=5, label='Humanoid MSE'),
+    Line2D([0], [0], color='#A23B72', marker='s', linewidth=1.5, markersize=5, label='Ant MSE'),
+    Line2D([0], [0], color='#2E86AB', marker='o', linewidth=1.5, markersize=5, linestyle='--', label='Humanoid $R^2$'),
+    Line2D([0], [0], color='#A23B72', marker='s', linewidth=1.5, markersize=5, linestyle='--', label='Ant $R^2$'),
+]
+fig.legend(legend_elements, [h.get_label() for h in legend_elements],
+           loc='lower center', ncol=2, fontsize=8.5,
+           bbox_to_anchor=(0.5, -0.02), frameon=True, fancybox=True,
            framealpha=0.9, edgecolor='gray')
 
 plt.tight_layout()
-plt.subplots_adjust(bottom=0.1)
+plt.subplots_adjust(bottom=0.08)
 plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
 print("Done: seqlen_sensitivity.pdf")
