@@ -1,4 +1,4 @@
-"""Radar chart: D4RL Humanoid, 5 models, intuitive Chinese labels."""
+"""Radar chart: D4RL Humanoid, 5 models, S4D-WM last in legend."""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -17,19 +17,17 @@ plt.rcParams.update({
     'figure.dpi': 300,
 })
 
-models = ['S4D-WM', 'Mamba-WM', 'Trans.-WM', 'LSTM-WM', 'GRU-WM']
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
-markers = ['o', 's', '^', 'D', 'v']
+# S4D-WM last
+models = ['LSTM', 'GRU', 'Trans.', 'Mamba', 'S4D-WM']
+colors = ['#d62728', '#9467bd', '#2ca02c', '#ff7f0e', '#1f77b4']
+markers = ['D', 'v', '^', 's', 'o']
 
-# D4RL Humanoid raw data (Table 1)
-# All metrics normalized so that HIGHER = BETTER
 raw_scores = {
-    #           R2     预测精度(1/MSE)  推理速度(1/ms)  参数效率(1/M)
-    'S4D-WM':    [0.690,  1/0.2479,       1/8.3,          1/0.23],
-    'Mamba-WM':  [0.677,  1/0.2584,       1/9.5,          1/0.66],
-    'Trans.-WM': [0.640,  1/0.2880,       1/2.9,          1/0.15],
-    'LSTM-WM':   [0.537,  1/0.3699,       1/2.9,          1/0.64],
-    'GRU-WM':    [0.598,  1/0.3214,       1/2.4,          1/0.50],
+    'LSTM':    [0.537,  1/0.3699,  1/2.9,  1/0.64],
+    'GRU':     [0.598,  1/0.3214,  1/2.4,  1/0.50],
+    'Trans.':  [0.640,  1/0.2880,  1/2.9,  1/0.15],
+    'Mamba':   [0.677,  1/0.2584,  1/9.5,  1/0.66],
+    'S4D-WM':  [0.690,  1/0.2479,  1/8.3,  1/0.23],
 }
 
 categories = ['R2', '预测精度', '推理速度', '参数效率']
@@ -38,7 +36,7 @@ N = len(categories)
 def normalize(col_idx):
     v = np.array([raw_scores[m][col_idx] for m in models])
     mn, mx = v.min(), v.max()
-    return 0.2 + 0.8 * (v - mn) / (mx - mn) if mx - mn > 1e-10 else np.full(5, 0.5)
+    return 0.2 + 0.8 * (v - mn) / (mx - mn) if mx - mn > 1e-10 else np.full(len(models), 0.5)
 
 all_n = [normalize(i) for i in range(N)]
 
@@ -50,11 +48,13 @@ fig.patch.set_facecolor('white')
 
 for i, m in enumerate(models):
     vals = [all_n[j][i] for j in range(N)] + [all_n[0][i]]
-    ax.plot(angles, vals, '-', color=colors[i], linewidth=1.5, zorder=3)
-    ax.fill(angles, vals, color=colors[i], alpha=0.08)
+    lw = 2.0 if m == 'S4D-WM' else 1.3
+    ax.plot(angles, vals, '-', color=colors[i], linewidth=lw, zorder=3)
+    ax.fill(angles, vals, color=colors[i], alpha=0.06 if m != 'S4D-WM' else 0.12)
     for j in range(N):
+        ms = 7 if m == 'S4D-WM' else 5.5
         ax.plot(angles[j], vals[j], marker=markers[i], color=colors[i],
-                markersize=6, markeredgecolor='white', markeredgewidth=0.6, zorder=4)
+                markersize=ms, markeredgecolor='white', markeredgewidth=0.6, zorder=4)
 
 ax.set_xticks(angles[:-1])
 ax.set_xticklabels(categories, fontproperties=zhfont, fontweight='bold')
