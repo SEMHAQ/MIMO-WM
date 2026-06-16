@@ -41,6 +41,11 @@ ax1.plot(x - w/2, mse_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zor
 ax1.plot(x + w/2, mse_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3)
 ax1.axvspan(-0.5, 1.5, alpha=0.08, color='#2E86AB', zorder=1)
 ax1.axvspan(3.5, 4.5, alpha=0.08, color='#A23B72', zorder=1)
+# Value labels
+for i, v in enumerate(mse_h):
+    ax1.text(x[i] - w/2, v + 0.03, f'{v:.2f}', ha='center', va='bottom', fontsize=6.5, color='#2E86AB')
+for i, v in enumerate(mse_a):
+    ax1.text(x[i] + w/2, v + 0.03, f'{v:.2f}', ha='center', va='bottom', fontsize=6.5, color='#A23B72')
 
 ax1.set_ylabel('MSE', fontsize=10)
 ax1.set_xticks(x)
@@ -58,6 +63,12 @@ ax2.plot(x - w/2, r2_h, 'o-', color='#2E86AB', linewidth=1.5, markersize=5, zord
 ax2.plot(x + w/2, r2_a, 's-', color='#A23B72', linewidth=1.5, markersize=5, zorder=3)
 ax2.axvspan(-0.5, 1.5, alpha=0.08, color='#2E86AB', zorder=1)
 ax2.axvspan(3.5, 4.5, alpha=0.08, color='#A23B72', zorder=1)
+# Value labels
+for i, v in enumerate(r2_h):
+    ax2.text(x[i] - w/2, v + 0.02, f'{v:.2f}', ha='center', va='bottom', fontsize=6.5, color='#2E86AB')
+for i, v in enumerate(r2_a):
+    offset = 0.02 if v >= 0 else -0.04
+    ax2.text(x[i] + w/2, v + offset, f'{v:.2f}', ha='center', va='bottom', fontsize=6.5, color='#A23B72')
 
 ax2.axhline(y=0, color='gray', linestyle='--', alpha=0.4, linewidth=0.6)
 ax2.set_xlabel('序列长度 T', fontproperties=zhfont, fontsize=10)
