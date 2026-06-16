@@ -24,7 +24,7 @@ with open('experiments/seqlen_results_final.json', 'r') as f:
 colors = {'humanoid': '#2E86AB', 'ant': '#A23B72'}
 labels = {'humanoid': 'Humanoid (348D)', 'ant': 'Ant (105D)'}
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 7.0))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 6.0))
 
 # Top: MSE
 for dataset, data in results.items():
@@ -32,6 +32,11 @@ for dataset, data in results.items():
     mse_values = [r['mse'] for r in data]
     ax1.plot(T_values, mse_values, 'o-', color=colors[dataset],
              label=labels[dataset], linewidth=1.5, markersize=5)
+
+# Recommended zones
+ax1.axvspan(16, 32, alpha=0.12, color='#2E86AB')
+ax1.annotate('推荐区域', xy=(18, ax1.get_ylim()[1]*0.9), fontproperties=zhfont_s,
+             fontsize=8, color='#2E86AB', fontweight='bold')
 
 ax1.set_xlabel('序列长度 T', fontproperties=zhfont)
 ax1.set_ylabel('MSE', fontsize=10)
@@ -48,6 +53,10 @@ for dataset, data in results.items():
     r2_values = [r['r2'] for r in data]
     ax2.plot(T_values, r2_values, 'o-', color=colors[dataset],
              label=labels[dataset], linewidth=1.5, markersize=5)
+
+ax2.axvspan(128, 256, alpha=0.12, color='#A23B72')
+ax2.annotate('推荐区域', xy=(130, ax2.get_ylim()[1]*0.9), fontproperties=zhfont_s,
+             fontsize=8, color='#A23B72', fontweight='bold')
 
 ax2.set_xlabel('序列长度 T', fontproperties=zhfont)
 ax2.set_ylabel('R2', fontsize=10)

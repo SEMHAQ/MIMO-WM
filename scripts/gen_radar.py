@@ -1,4 +1,4 @@
-"""Radar chart: D4RL Humanoid, 4 models, intuitive Chinese labels."""
+"""Radar chart: D4RL Humanoid, 5 models, intuitive Chinese labels."""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -17,18 +17,19 @@ plt.rcParams.update({
     'figure.dpi': 300,
 })
 
-models = ['S4D-WM', 'Mamba-WM', 'Trans.-WM', 'LSTM-WM']
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
-markers = ['o', 's', '^', 'D']
+models = ['S4D-WM', 'Mamba-WM', 'Trans.-WM', 'LSTM-WM', 'GRU-WM']
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+markers = ['o', 's', '^', 'D', 'v']
 
-# D4RL Humanoid raw data (Table 8)
+# D4RL Humanoid raw data (Table 1)
 # All metrics normalized so that HIGHER = BETTER
 raw_scores = {
-    #           R²     预测精度(1/MSE)  推理速度(1/ms)  参数效率(1/M)
-    'S4D-WM':    [0.694,  1/0.245,        1/3.4,          1/0.23],
-    'Mamba-WM':  [0.676,  1/0.259,        1/3.5,          1/0.66],
-    'Trans.-WM': [0.653,  1/0.278,        1/1.6,          1/0.15],
-    'LSTM-WM':   [0.541,  1/0.367,        1/2.5,          1/0.64],
+    #           R2     预测精度(1/MSE)  推理速度(1/ms)  参数效率(1/M)
+    'S4D-WM':    [0.690,  1/0.2479,       1/8.3,          1/0.23],
+    'Mamba-WM':  [0.677,  1/0.2584,       1/9.5,          1/0.66],
+    'Trans.-WM': [0.640,  1/0.2880,       1/2.9,          1/0.15],
+    'LSTM-WM':   [0.537,  1/0.3699,       1/2.9,          1/0.64],
+    'GRU-WM':    [0.598,  1/0.3214,       1/2.4,          1/0.50],
 }
 
 categories = ['R2', '预测精度', '推理速度', '参数效率']
@@ -37,7 +38,7 @@ N = len(categories)
 def normalize(col_idx):
     v = np.array([raw_scores[m][col_idx] for m in models])
     mn, mx = v.min(), v.max()
-    return 0.2 + 0.8 * (v - mn) / (mx - mn) if mx - mn > 1e-10 else np.full(4, 0.5)
+    return 0.2 + 0.8 * (v - mn) / (mx - mn) if mx - mn > 1e-10 else np.full(5, 0.5)
 
 all_n = [normalize(i) for i in range(N)]
 
@@ -65,7 +66,7 @@ ax.grid(True, linewidth=0.3, alpha=0.4)
 
 legend_lines = [plt.Line2D([0], [0], color=colors[i], marker=markers[i],
                 markersize=6, linewidth=1.5, markeredgecolor='white')
-                for i in range(N)]
+                for i in range(len(models))]
 ax.legend(legend_lines, models, loc='upper right', bbox_to_anchor=(1.38, 1.15),
           fontsize=8.5, frameon=True, fancybox=True, framealpha=0.9, edgecolor='gray',
           handletextpad=0.4, handlelength=1.5)
