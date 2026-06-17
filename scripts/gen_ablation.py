@@ -16,17 +16,19 @@ plt.rcParams.update({
     'figure.dpi': 300,
 })
 
-# D4RL Humanoid ablation data (Table 5)
-configs = ['默认', '无门控', '无残差', 'L=2', 'L=6', 'D=64', 'D=256']
-mse_vals = [0.245, 0.252, 0.249, 0.268, 0.238, 0.263, 0.235]
-r2_vals = [0.694, 0.682, 0.689, 0.661, 0.703, 0.668, 0.708]
-params = [0.23, 0.22, 0.24, 0.12, 0.36, 0.08, 0.85]
+# D4RL Humanoid ablation data (Table 5) - multi-seed results
+configs = ['默认', '无门控', '无残差', 'L=2', 'L=6', 'N=32', 'D=64', 'D=256']
+mse_vals = [0.248, 0.263, 0.262, 0.247, 0.246, 0.244, 0.301, 0.234]
+mse_errs = [0.003, 0.004, 0.002, 0.003, 0.005, 0.002, 0.006, 0.003]
+r2_vals = [0.690, 0.671, 0.672, 0.691, 0.693, 0.695, 0.623, 0.707]
+params = [0.23, 0.16, 0.23, 0.12, 0.28, 0.26, 0.09, 0.65]
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
-# (a) MSE
+# (a) MSE with error bars
 colors_mse = ['#1f77b4' if i == 0 else '#aec7e8' for i in range(len(configs))]
-bars = ax1.bar(range(len(configs)), mse_vals, color=colors_mse, alpha=0.85, edgecolor='white')
+bars = ax1.bar(range(len(configs)), mse_vals, yerr=mse_errs, color=colors_mse, 
+               alpha=0.85, edgecolor='none', capsize=3, error_kw={'linewidth': 0.8})
 ax1.set_xticks(range(len(configs)))
 ax1.set_xticklabels(configs, fontproperties=zhfont, fontsize=8, rotation=15)
 ax1.set_ylabel('MSE', fontsize=10)
@@ -38,7 +40,7 @@ bars[0].set_linewidth(1.5)
 
 # (b) Params
 colors_p = ['#1f77b4' if i == 0 else '#aec7e8' for i in range(len(configs))]
-bars2 = ax2.bar(range(len(configs)), params, color=colors_p, alpha=0.85, edgecolor='white')
+bars2 = ax2.bar(range(len(configs)), params, color=colors_p, alpha=0.85, edgecolor='none')
 ax2.set_xticks(range(len(configs)))
 ax2.set_xticklabels(configs, fontproperties=zhfont, fontsize=8, rotation=15)
 ax2.set_ylabel('参数量 (M)', fontsize=10)
