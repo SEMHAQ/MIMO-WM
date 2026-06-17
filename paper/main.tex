@@ -69,7 +69,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-High-dimensional joint state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes S4D-WM, a lightweight world model based on diagonal state space models, combining S4D parameterization with Mamba-style gated structure to achieve $O(T\log T)$ training and $O(1)$ per-step inference. Multi-seed experiments on three D4RL benchmarks show that S4D-WM achieves the best accuracy on high-dimensional Humanoid with MSE of 0.248, outperforming LSTM, Transformer, GRU, and Mamba by 33\%, 14\%, 23\%, and 4\% respectively, while remaining competitive on Ant and Walker2d. S4D-WM parameter count ranges from 0.14M to 0.23M across datasets. Sequence length analysis reveals that optimal length depends on dimensionality. Soft-threshold gating significantly outperforms hard and Garrote thresholding. MPC proof-of-concept shows similar loop time between S4D-WM and Mamba, bottlenecked by gradient backpropagation; sampling-based MPC with recursive mode could further improve control frequency.
+High-dimensional joint state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes S4D-WM, a lightweight world model based on diagonal state space models, combining S4D parameterization with Mamba-style gated structure to achieve $O(T\log T)$ training and $O(1)$ per-step inference, with only 0.14--0.23M parameters. Multi-seed experiments on three D4RL benchmarks (Humanoid 348D, Ant 105D, Walker2d 17D) show that S4D-WM achieves the best accuracy on high-dimensional Humanoid with MSE of 0.248, outperforming LSTM, Transformer, GRU, and Mamba by 33\%, 14\%, 23\%, and 4\% respectively, while remaining competitive on Ant and Walker2d. Sequence length analysis reveals that optimal length depends on dimensionality: shorter sequences suit Humanoid and Walker2d, while longer sequences benefit Ant. Soft-threshold gating significantly outperforms hard and Garrote thresholding by 13.7\% and 24.6\%. MPC proof-of-concept shows similar loop time between S4D-WM and Mamba, bottlenecked by gradient backpropagation; sampling-based MPC with recursive mode could further improve control frequency.
 
 \textbf{Key words:} state space model; world model; joint state prediction; model predictive control; embodied intelligence
 
@@ -507,7 +507,9 @@ Table~4~~Multi-step prediction MSE comparison (D4RL Humanoid, $T=32$, $\times10^
 \bottomrule
 \end{tabular}}\par\endgroup
 
-由表~4可知, 随着展开步数增加, 所有模型的预测误差均单调递增. S4D-WM在单步预测$H{=}1$时取得最优MSE为0.303, 在$H{=}4$和$H{=}8$时与Mamba-WM的差距分别为6.8\%和10.6\%.
+由表~4可知, 随着展开步数增加, 所有模型的预测误差均单调递增, 这是自回归展开中误差累积的典型特征.
+S4D-WM在$H{=}1$时取得最优MSE(0.303), $H{\geq}4$时Mamba-WM略优, 但GRU-WM在$H{=}16$时MSE高达7.015, 性能退化最为严重.
+综合参数效率来看, S4D-WM仅为Mamba-WM的35\%(0.23M vs 0.66M), 在资源受限的嵌入式场景中精度--效率权衡更为合理.
 
 \subsection{序列长度敏感性分析}
 
@@ -757,15 +759,10 @@ S4D-WM的核心价值在于精度、稳定性和参数效率的综合优势.
 与Mamba-WM相比, S4D-WM在Humanoid上精度提升4\%, 参数量仅为其35\%, 体现了对角SSM参数化的优势.
 序列长度敏感性分析表明, 最优序列长度与数据集维度相关, 为实际部署提供了重要指导.
 
-在多步预测精度方面(表~4), S4D-WM在单步预测($H{=}1$)时取得最优, 但在$H \geq 4$时Mamba-WM表现更好.
-这一精度差距需要结合参数效率来综合评估: S4D-WM的参数量仅为Mamba-WM的35\%, 在资源受限的嵌入式平台上具有显著优势.
+在多步预测精度方面(表~4), S4D-WM在单步预测时取得最优, 但展开步数增加后Mamba-WM表现更好, 这一差距需结合参数效率综合评估.
 
 训练损失消融实验(表~7)表明, 多步展开损失对单步预测精度影响较小, 但对多步展开精度有显著贡献: $\lambda{=}1.0$时$H{=}8$的MSE相比$\lambda{=}0$降低2.8\%.
-这一发现表明, 在训练时引入多步展开损失可以在不损害单步精度的前提下提升多步预测能力,
-对于需要多步展开的MPC控制场景尤为重要.
-
 阈值函数对比实验(表~11)验证了软阈值门控的优势: 软阈值MSE优于硬阈值(降低13.7\%)和Garrote阈值(降低24.6\%).
-
 
 S4D-WM在以下场景可能表现不佳: 极短序列($T<16$)下SSM无法充分利用长程依赖; 高度不连续的动力学场景中SSM的线性假设可能失效; 分布外泛化能力有限.
 在实际部署时, 建议结合不确定性估计来检测分布外样本.
