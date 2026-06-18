@@ -618,8 +618,9 @@ $\lambda{=}1.0$ & 0.244 & 0.772 & 100\\
 图~5展示了各模型在D4RL Humanoid数据集上的训练曲线.
 S4D-WM的训练MSE在前5个epoch快速下降(从$37.2{\times}10^{-2}$降至$24.7{\times}10^{-2}$, 降幅34\%),
 随后放缓, 在第15个epoch后趋于平稳(约$18.7{\times}10^{-2}$), 最终收敛至$8.4{\times}10^{-2}$.
-验证MSE收敛至$24.5{\times}10^{-2}$, 与测试MSE($24.8{\times}10^{-2}$)吻合, 且与训练MSE的差距始终小于$16{\times}10^{-2}$, 未观察到明显过拟合.
-相较之下, LSTM-WM的训练收敛最慢, 最终验证MSE($37.4{\times}10^{-2}$)为所有模型最高, 与其较低的预测精度一致.
+在所有模型中, Mamba-WM的训练损失收敛最低($4.0{\times}10^{-2}$), 但其验证损失($26.5{\times}10^{-2}$)高于S4D-WM($24.5{\times}10^{-2}$), 表明Mamba-WM存在一定程度的过拟合.
+S4D-WM的验证损失最终收敛至$24.5{\times}10^{-2}$, 与测试MSE($24.8{\times}10^{-2}$)一致.
+LSTM-WM和Trans.-WM的训练收敛较慢, 最终验证损失分别为$37.4{\times}10^{-2}$和$27.8{\times}10^{-2}$, 均高于S4D-WM.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/training_curves.pdf}\\
