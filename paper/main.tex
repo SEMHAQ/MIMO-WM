@@ -8,7 +8,7 @@
 % 标题，基金项目，作者，地址定义
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatother
-\title{\LARGE\textbf{S4D-WM：面向具身控制的高效状态空间世界模型}\\
+\title{\LARGE\textbf{S4D-WM：面向机器人状态预测的高效状态空间世界模型}\\
 \footnotetext{\scriptsize \hskip -6pt
 \hspace*{-0.1em}收稿日期: xxxx$-$xx$-$xx; 录用日期: xxxx$-$xx$-$xx.\\
 \hspace*{1.1em}$^{\dag}$通讯作者. E-mail: \mbox{semhaqx@gmail.com}.\\
@@ -23,7 +23,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 \scriptsize 3. 湖南工商大学~计算机学院, 湖南~长沙~410205;\\
 \scriptsize 4. 湖南工商大学~前沿交叉学院, 湖南~长沙~410205) \\}
 \date{}
-\fancyhead[CO]{{\footnotesize 周新民等: S4D-WM：面向具身控制的高效状态空间世界模型}}
+\fancyhead[CO]{{\footnotesize 周新民等: S4D-WM：面向机器人状态预测的高效状态空间世界模型}}
 \setlength{\abovedisplayskip}{1.5mm}
 \setlength{\belowdisplayskip}{1.5mm}
 \maketitle
@@ -46,7 +46,7 @@ S4D-WM在高维Humanoid上精度最优, MSE为0.248, 分别优于LSTM、Transfor
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 关节状态预测; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 张慧慧, 等. S4D-WM：面向具身控制的高效状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 张慧慧, 等. S4D-WM：面向机器人状态预测的高效状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
 
 \textbf{DOI:} 10.7641/CTA.202x.xxxxx
 
@@ -59,7 +59,7 @@ S4D-WM在高维Humanoid上精度最优, MSE为0.248, 分别优于LSTM、Transfor
 \vspace{.1cm}
 \begin{center}
 \parbox{\textwidth}{\setlength{\parindent}{1em}
-{\centering\large\textbf{S4D-WM: An Efficient State Space World Model for Embodied Control\\}} \vspace{-1.2mm}
+{\centering\large\textbf{S4D-WM: An Efficient State Space World Model for Robot State Prediction\\}} \vspace{-1.2mm}
 \begingroup\centering
 ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG Wei$^{3}$,~~CHEN Lu$^{4}$\\[2pt]
 \scriptsize{(1. School of Artificial Intelligence and Robotics, Hunan University of Technology and Business, Changsha Hunan 410205, China;\\
@@ -438,13 +438,13 @@ Mamba & 25.84$\pm$0.60 & 0.677$\pm$0.008 & 9.5 & 0.66 \\
 Table~2~~Paired $t$-test results between S4D-WM and baselines (D4RL Humanoid, $T=32$)\\
 \label{tab:2} \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
-对比方法 & $\Delta$MSE & $t$统计量 & $p$值 & 显著性 \\\midrule
-LSTM & $-$12.20 & $-$43.18 & $<$0.001 & *** \\
-Trans. & $-$4.02 & $-$10.95 & $<$0.01 & ** \\
-GRU & $-$7.36 & $-$16.14 & $<$0.01 & ** \\
-Mamba & $-$1.05 & $-$3.78 & 0.06 & \\\bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $\Delta$MSE单位为$\times10^{-2}$; 自由度$df{=}2$; ***$p{<}0.001$, **$p{<}0.01$; Mamba对比$p{=}0.06$未达显著水平.}
+\begin{tabular}{@{}lccc@{ }}\toprule
+对比方法 & $\Delta$MSE & $p$值 & 显著性 \\\midrule
+LSTM & $-$12.20 & $<$0.001 & *** \\
+Trans. & $-$4.02 & $<$0.01 & ** \\
+GRU & $-$7.36 & $<$0.01 & ** \\
+Mamba & $-$1.05 & 0.06 & --- \\\bottomrule
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $\Delta$MSE($\times10^{-2}$); $df{=}2$; ***$p{<}0.001$, **$p{<}0.01$.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
