@@ -92,13 +92,13 @@ High-dimensional state prediction for embodied intelligent robots faces the dual
 
 具身智能的核心在于智能体通过与物理环境的实时交互来学习、进化并执行任务\textsuperscript{\cite{1}}.
 机器人作为具身智能的重要载体, 其高维度、强非线性及欠驱动特性使得``感知--决策--控制"的闭环实现极具挑战.
-其中, 世界模型作为环境动力学的内部表征, 其核心功能包括:
+其中, 世界模型\textsuperscript{\cite{2}}作为环境动力学的内部表征, 其核心功能包括:
 (1)给定当前状态和动作预测未来状态(状态转移建模),
 (2)预测奖励信号和终止条件,
-(3)基于预测能力支持规划与决策\textsuperscript{\cite{2,10,11}}.
+(3)基于预测能力支持规划与决策.
 在模型预测控制(model predictive control, MPC)框架中,
 世界模型通过前向模拟多步未来状态轨迹为优化求解提供动力学约束,
-其预测精度和推理速度直接决定了控制性能\textsuperscript{\cite{12}}.
+其预测精度和推理速度直接决定了控制性能.
 
 近年来, 基于深度学习的世界模型取得了显著进展.
 基于循环神经网络RNN的方法\textsuperscript{\cite{3}}虽然能够建模时序依赖, 但存在梯度消失和长程依赖捕捉困难的问题.
