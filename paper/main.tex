@@ -887,6 +887,28 @@ GRU-WM和LSTM-WM的验证损失分别为$34.7{\times}10^{-2}$和$37.2{\times}10^
 Fig.~6~~Training curves of all models on D4RL Humanoid}
 \par\endgroup
 
+为验证DA-SSM自适应网络中激活函数的选择, 对三种常用激活函数进行了对比实验, 结果如表~8c所示.
+
+\noindent\begin{minipage}{\columnwidth}
+\begingroup\centering
+{\CJKfamily{kai} 表~8c~~DA-SSM自适应网络激活函数对比(D4RL Humanoid, $T=32$)}\\
+Table~8c~~DA-SSM adaptation network activation function comparison (D4RL Humanoid, $T=32$)\\
+\label{tab:8c} \vskip 3pt
+{\fontsize{7.5pt}{9.5pt}\selectfont
+\begin{tabular}{@{}lccc@{ }}\toprule
+激活函数 & MSE & $R^2$ & $\Delta$MSE \\\midrule
+ReLU & 0.290 & 0.637 & $-$3.0\% \\
+GELU & 0.288 & 0.639 & $-$3.7\% \\
+\textbf{Tanh} & \textbf{0.285} & \textbf{0.642} & $-$4.7\% \\
+Sigmoid & 0.292 & 0.635 & $-$2.3\% \\
+\bottomrule
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 5 seeds; $\Delta$MSE相对于S4D-WM.}
+\end{tabular}}
+\par\endgroup
+\end{minipage}
+
+表~8c表明, Tanh激活函数在DA-SSM中表现最优(MSE=0.285), 相比ReLU(0.290)和GELU(0.288)分别降低1.7\%和1.0\%. 这是因为Tanh的输出范围为$[-1, 1]$, 与对角状态矩阵的扰动约束相匹配, 且其平滑的梯度特性有利于训练稳定性. Sigmoid激活函数表现最差(MSE=0.292), 因其输出范围为$[0, 1]$, 无法产生负向扰动.
+
 \subsection{MPC概念验证实验}
 
 为探索S4D-WM在MPC框架中的可行性, 设计了以下轨迹跟踪概念验证实验.
