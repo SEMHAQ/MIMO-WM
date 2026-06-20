@@ -141,4 +141,7 @@ mkdocs.yml
 run.sh
 
 
-/architecture
+paper/peer_review_2/
+
+# Review iteration logs
+paper/paper_review_iteration/
