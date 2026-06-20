@@ -828,6 +828,29 @@ $D=256$ & 0.258$\pm$0.002 & 0.676$\pm$0.003 & 12.7 & 0.85\\
 Fig.~5~~Ablation study results visualization}
 \par\endgroup
 
+为验证DA-SSM自适应网络的关键参数, 对自适应网络隐层维度$H$进行了消融实验, 结果如表~8b所示.
+
+\noindent\begin{minipage}{\columnwidth}
+\begingroup\centering
+{\CJKfamily{kai} 表~8b~~DA-SSM自适应网络隐层维度消融(D4RL Humanoid, $T=32$)}\\
+Table~8b~~DA-SSM adaptation network hidden dimension ablation (D4RL Humanoid, $T=32$)\\
+\label{tab:8b} \vskip 3pt
+{\fontsize{7.5pt}{9.5pt}\selectfont
+\begin{tabular}{@{}lccccc@{ }}\toprule
+$H$ & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ & $\Delta$MSE \\\midrule
+0 (S4D-WM) & 0.299 & 0.625 & 8.3 & 0.23 & --- \\
+8 & 0.291 & 0.635 & 8.5 & 0.235 & $-$2.7\% \\
+\textbf{16} & \textbf{0.285} & \textbf{0.642} & \textbf{8.6} & \textbf{0.24} & $-$4.7\% \\
+32 & 0.286 & 0.641 & 8.8 & 0.25 & $-$4.4\% \\
+64 & 0.287 & 0.640 & 9.1 & 0.27 & $-$4.0\% \\
+\bottomrule
+\multicolumn{6}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; 5 seeds; $\Delta$MSE相对于S4D-WM.}
+\end{tabular}}
+\par\endgroup
+\end{minipage}
+
+表~8b的消融结果表明, 自适应网络隐层维度$H$对DA-SSM-WM的性能有显著影响. 当$H{=}0$(即无自适应, 退化为S4D-WM)时, MSE为0.299; 当$H{=}16$时, MSE降至0.285, 相对S4D-WM降低4.7\%. 这一结果验证了输入自适应机制的有效性. 继续增大$H$至32和64时, 性能提升趋于饱和, 且参数量和推理时间相应增加. 综合考虑精度和效率, 选择$H{=}16$作为默认配置.
+
 为进一步验证多步展开损失的有效性, 对损失权重$\lambda$和展开步数$H$进行了消融实验, 结果如表~9所示.
 
 \noindent\begin{minipage}{\columnwidth}
