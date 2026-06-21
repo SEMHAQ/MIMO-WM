@@ -1,24 +1,84 @@
-"""Mamba世界模型 — 与SSM-WM架构对齐，用Mamba替换DiagSSM"""
-import types, sys
-fake_gen = types.ModuleType('transformers.generation')
-fake_gen.GreedySearchDecoderOnlyOutput = type('x', (), {})
-fake_gen.SampleDecoderOnlyOutput = type('x', (), {})
-fake_gen.TextStreamer = type('x', (), {})
-sys.modules['transformers.generation'] = fake_gen
-
+"""Mamba世界模型 — 支持mamba_ssm和纯PyTorch两种实现"""
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
-from mamba_ssm import Mamba
-# SSM-WM reference only
+
+# 尝试导入mamba_ssm，如果失败则使用纯PyTorch实现
+try:
+    import types, sys
+    fake_gen = types.ModuleType('transformers.generation')
+    fake_gen.GreedySearchDecoderOnlyOutput = type('x', (), {})
+    fake_gen.SampleDecoderOnlyOutput = type('x', (), {})
+    fake_gen.TextStreamer = type('x', (), {})
+    sys.modules['transformers.generation'] = fake_gen
+    from mamba_ssm import Mamba
+    HAS_MAMBA_SSM = True
+    print("[INFO] Using mamba_ssm CUDA implementation")
+except Exception as e:
+    HAS_MAMBA_SSM = False
+    print(f"[INFO] mamba_ssm not available ({e}), using pure PyTorch fallback")
+
+
+class SelectiveSSM(nn.Module):
+    """纯PyTorch实现的选择性SSM（mamba_ssm不可用时的备用方案）"""
+    def __init__(self, d_model, d_state=16, d_conv=4, expand=2):
+        super().__init__()
+        self.d_model = d_model
+        self.d_state = d_state
+        d_inner = d_model * expand
+
+        self.in_proj = nn.Linear(d_model, d_inner * 2, bias=False)
+        self.conv1d = nn.Conv1d(d_inner, d_inner, d_conv, padding=d_conv-1, groups=d_inner)
+        self.x_proj = nn.Linear(d_inner, d_state * 2 + 1, bias=False)
+        A = torch.arange(1, d_state + 1, dtype=torch.float32).unsqueeze(0).expand(d_inner, -1)
+        self.log_A = nn.Parameter(torch.log(A))
+        self.D = nn.Parameter(torch.ones(d_inner))
+        self.out_proj = nn.Linear(d_inner, d_model, bias=False)
+
+    def forward(self, x):
+        B, L, D = x.shape
+        d_inner = self.d_model * 2
+
+        xz = self.in_proj(x)
+        x_proj, z = xz.chunk(2, dim=-1)
+
+        x_conv = x_proj.transpose(1, 2)
+        x_conv = self.conv1d(x_conv)[:, :, :L]
+        x_conv = x_conv.transpose(1, 2)
+        x_conv = F.silu(x_conv)
+
+        params = self.x_proj(x_conv)
+        B_param, C_param, dt = params.split([self.d_state, self.d_state, 1], dim=-1)
+        dt = F.softplus(dt)
+
+        A = -torch.exp(self.log_A)
+        dA = dt.unsqueeze(-1) * A.unsqueeze(0).unsqueeze(0)
+        dA = torch.exp(dA)
+        dB = dt.unsqueeze(-1) * B_param.unsqueeze(2)
+
+        h = torch.zeros(B, d_inner, self.d_state, device=x.device, dtype=x.dtype)
+        outputs = []
+        for t in range(L):
+            h = dA[:, t] * h + dB[:, t] * x_conv[:, t, :].unsqueeze(-1)
+            y_t = (h * C_param[:, t].unsqueeze(1)).sum(dim=-1)
+            outputs.append(y_t)
+
+        y = torch.stack(outputs, dim=1)
+        y = y + x_conv * self.D.unsqueeze(0).unsqueeze(0)
+        y = y * F.silu(z)
+        return self.out_proj(y)
 
 
 class MambaBlock(nn.Module):
-    """Mamba块: LayerNorm + Mamba + 门控 + 残差 (与SSMBlock结构一致)"""
+    """Mamba块: LayerNorm + Mamba/SelectiveSSM + 门控 + 残差"""
     def __init__(self, d_model, d_state=16):
         super().__init__()
         self.norm = nn.LayerNorm(d_model)
-        self.mamba = Mamba(d_model=d_model, d_state=d_state, d_conv=4, expand=2)
+        if HAS_MAMBA_SSM:
+            self.mamba = Mamba(d_model=d_model, d_state=d_state, d_conv=4, expand=2)
+        else:
+            self.mamba = SelectiveSSM(d_model, d_state)
         self.gate = nn.Linear(d_model, d_model)
 
     def forward(self, x):
@@ -49,7 +109,6 @@ class MambaWorldModel(nn.Module):
             nn.GELU(),
             nn.Linear(d_model, state_dim),
         )
-        # 与SSM-WM相同的权重初始化
         for m in self.modules():
             if isinstance(m, nn.Linear):
                 nn.init.xavier_uniform_(m.weight)
@@ -69,35 +128,3 @@ class MambaWorldModel(nn.Module):
         x = self.norm(x)
         delta_s = self.decoder(x[:, -1, :])
         return states[:, -1, :] + delta_s
-
-
-if __name__ == '__main__':
-    import time
-
-    device = torch.device('cuda')
-    state_dim = 376
-    action_dim = 17
-
-    model = MambaWorldModel(state_dim=state_dim, action_dim=action_dim,
-                            d_model=128, d_state=16, n_layers=4).to(device)
-    params = sum(p.numel() for p in model.parameters()) / 1e6
-    print(f"Mamba-WM params: {params:.2f}M")
-
-    # 推理时间测试 (B=64)
-    model.eval()
-    for T in [16, 32, 64, 128, 256, 512]:
-        states = torch.randn(64, T, state_dim).to(device)
-        actions = torch.randn(64, T - 1, action_dim).to(device)
-        with torch.no_grad():
-            for _ in range(5):
-                _ = model(states, actions)
-        torch.cuda.synchronize()
-        times = []
-        with torch.no_grad():
-            for _ in range(20):
-                torch.cuda.synchronize()
-                t0 = time.perf_counter()
-                _ = model(states, actions)
-                torch.cuda.synchronize()
-                times.append((time.perf_counter() - t0) * 1000)
-        print(f"T={T}: {np.median(times):.1f} ms")
