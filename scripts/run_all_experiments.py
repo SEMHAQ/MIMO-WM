@@ -141,9 +141,9 @@ def build_model(model_name, state_dim, action_dim):
     if model_name == 'S4D-WM':
         return SSMWorldModel(state_dim, action_dim, d_model=D_MODEL, d_state=D_STATE, n_layers=N_LAYERS)
     elif model_name == 'LSTM-WM':
-        return LSTMWorldModel(state_dim, action_dim, d_model=D_MODEL, n_layers=N_LAYERS)
+        return LSTMWorldModel(state_dim, action_dim, hidden_dim=D_MODEL, n_layers=N_LAYERS)
     elif model_name == 'GRU-WM':
-        return GRUWorldModel(state_dim, action_dim, d_model=D_MODEL, n_layers=N_LAYERS)
+        return GRUWorldModel(state_dim, action_dim, hidden_dim=D_MODEL, n_layers=N_LAYERS)
     elif model_name == 'Transformer-WM':
         return TransformerWorldModel(state_dim, action_dim, d_model=D_MODEL, n_layers=N_LAYERS)
     elif model_name == 'Mamba-WM':
