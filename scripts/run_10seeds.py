@@ -8,7 +8,7 @@ from src.models.baselines import LSTMWorldModel, TransformerWorldModel, GRUWorld
 from src.models.fusion_ssm import FSM
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-SEEDS = [42, 123, 456, 789, 1024, 2048, 3141, 4096, 5150, 7777]
+SEEDS = [42, 123, 456, 789, 1024]
 EPOCHS = 100
 BS = 64
 LR = 5e-4
