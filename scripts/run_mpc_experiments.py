@@ -95,6 +95,9 @@ def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=
     actions = torch.randn(1, horizon, init_actions.shape[-1], device=device, requires_grad=True)
     optimizer = torch.optim.Adam([actions], lr=lr)
 
+    # 保存原始状态
+    was_training = model.training
+
     for _ in range(n_iter):
         optimizer.zero_grad()
         # 前向展开 (需要training mode for RNN backward)
@@ -103,19 +106,21 @@ def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=
         cur_actions = init_actions.clone()
         total_cost = 0
 
-        for h in range(horizon):
-            # 拼接当前状态和动作
-            pred = model(cur_state, actions[:, h:h+1, :])
-            # 计算代价
-            cost = torch.sum((pred - ref_state) ** 2)
-            total_cost = cost
-            # 更新状态
-            cur_state = torch.cat([cur_state[:, 1:], pred.unsqueeze(1)], dim=1)
+        with torch.enable_grad():
+            for h in range(horizon):
+                # 拼接当前状态和动作
+                pred = model(cur_state, actions[:, h:h+1, :])
+                # 计算代价
+                cost = torch.sum((pred - ref_state) ** 2)
+                total_cost = cost
+                # 更新状态
+                cur_state = torch.cat([cur_state[:, 1:], pred.unsqueeze(1)], dim=1)
 
         total_cost.backward()
         optimizer.step()
 
-    model.eval()
+    # 恢复原始状态
+    model.train(was_training)
     return actions.detach()
 
 # ============================================================
@@ -190,7 +195,7 @@ if __name__ == '__main__':
 
     # 训练所有模型
     models = {}
-    for model_name in ['LSTM-WM', 'GRU-WM', 'Mamba-WM', 'S4D-WM', 'FSM-WM']:
+    for model_name in ['LSTM-WM', 'GRU-WM', 'Transformer-WM', 'Mamba-WM', 'S4D-WM', 'FSM-WM']:
         # 检查是否已有推理时间
         if model_name in mpc_results and 'inf_time_ms' in mpc_results[model_name]:
             print(f'\n{model_name}: 已有推理时间 {mpc_results[model_name]["inf_time_ms"]}ms, 跳过训练', flush=True)
