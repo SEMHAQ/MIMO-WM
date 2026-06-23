@@ -375,15 +375,39 @@ for T in seq_lengths:
     print(f'{T:<6} {h:<15.2f} {a:<15.2f}', flush=True)
 
 # ============================================================
-# 实验4: 阈值函数对比 (Humanoid, FSM-WM)
+# 实验4: MPC实验 (Humanoid)
 # ============================================================
 print('\n' + '='*60, flush=True)
-print('实验4: 阈值函数对比 (Humanoid, FSM-WM)', flush=True)
+print('实验4: MPC实验 (Humanoid)', flush=True)
 print('='*60, flush=True)
 
-# 注: 阈值函数对比需要修改FSM代码，这里先跳过
-# 如果需要，可以在FSM中添加不同的门控机制
-print('跳过 (需要修改FSM代码)', flush=True)
+Xs, Xa, Y, Xv, Xav, Yv, ds_cfg = data_cache['humanoid']
+mpc_results = {}
+
+# 训练所有模型
+for model_name in ['LSTM-WM', 'GRU-WM', 'Mamba-WM', 'S4D-WM', 'FSM-WM']:
+    print(f'\n训练 {model_name}...', flush=True)
+    ModelClass, kwargs = get_model_config(model_name, ds_cfg['sd'], ds_cfg['ad'])
+    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, SEEDS[0])
+    model.eval()
+
+    # 测量推理时间 (B=1, T=32)
+    inf_time = measure_inference_time(model, Xv, Xav)
+    mpc_results[model_name] = {'inf_time_ms': inf_time}
+    print(f'  推理时间: {inf_time:.2f}ms', flush=True)
+
+# CEM-MPC实验
+print('\nCEM-MPC实验:', flush=True)
+print('  需要实现CEM采样逻辑...', flush=True)
+
+with open('experiments/mpc_results.json', 'w') as f:
+    json.dump(mpc_results, f, indent=2)
+
+print('\nMPC实验结果:', flush=True)
+print(f'{"Model":<16} 推理时间(ms)', flush=True)
+print('-'*30, flush=True)
+for model_name, r in mpc_results.items():
+    print(f'{model_name:<16} {r["inf_time_ms"]:.2f}', flush=True)
 
 # ============================================================
 # 实验5: 超参搜索 (Humanoid, FSM-WM)
