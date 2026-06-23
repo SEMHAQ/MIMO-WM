@@ -176,11 +176,30 @@ if __name__ == '__main__':
 
     sd, ad = 348, 17
     os.makedirs('experiments', exist_ok=True)
-    mpc_results = {}
+    RESULTS_FILE = 'experiments/mpc_results.json'
+
+    # 加载已有结果
+    if os.path.exists(RESULTS_FILE):
+        with open(RESULTS_FILE) as f:
+            mpc_results = json.load(f)
+        print(f'已有结果:', flush=True)
+        for k, v in mpc_results.items():
+            print(f'  {k}: {v}', flush=True)
+    else:
+        mpc_results = {}
 
     # 训练所有模型
     models = {}
     for model_name in ['LSTM-WM', 'GRU-WM', 'Mamba-WM', 'S4D-WM', 'FSM-WM']:
+        # 检查是否已有推理时间
+        if model_name in mpc_results and 'inf_time_ms' in mpc_results[model_name]:
+            print(f'\n{model_name}: 已有推理时间 {mpc_results[model_name]["inf_time_ms"]}ms, 跳过训练', flush=True)
+            # 重新加载模型
+            ModelClass, kwargs = get_model_config(model_name, sd, ad)
+            model = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, SEEDS[0])
+            models[model_name] = model
+            continue
+
         print(f'\n训练 {model_name}...', flush=True)
         ModelClass, kwargs = get_model_config(model_name, sd, ad)
         model = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, SEEDS[0])
@@ -201,12 +220,21 @@ if __name__ == '__main__':
         mpc_results[model_name] = {'inf_time_ms': round(inf_time, 2)}
         print(f'  推理时间: {inf_time:.2f}ms', flush=True)
 
+        # 保存中间结果
+        with open(RESULTS_FILE, 'w') as f:
+            json.dump(mpc_results, f, indent=2)
+
     # 梯度MPC实验
     print('\n' + '='*60, flush=True)
     print('梯度MPC实验', flush=True)
     print('='*60, flush=True)
 
     for model_name, model in models.items():
+        # 检查是否已有梯度MPC结果
+        if model_name in mpc_results and 'gradient_ms' in mpc_results[model_name]:
+            print(f'\n{model_name}: 已有梯度MPC结果 {mpc_results[model_name]["gradient_ms"]}ms, 跳过', flush=True)
+            continue
+
         print(f'\n{model_name}:', flush=True)
         times = []
         for trial in range(5):
@@ -226,12 +254,21 @@ if __name__ == '__main__':
         mpc_results[model_name]['gradient_hz'] = round(1000 / np.mean(times), 1)
         print(f'  梯度MPC: {np.mean(times):.1f}ms, {1000/np.mean(times):.1f}Hz', flush=True)
 
+        # 保存中间结果
+        with open(RESULTS_FILE, 'w') as f:
+            json.dump(mpc_results, f, indent=2)
+
     # CEM-MPC实验
     print('\n' + '='*60, flush=True)
     print('CEM-MPC实验', flush=True)
     print('='*60, flush=True)
 
     for model_name, model in models.items():
+        # 检查是否已有CEM MPC结果
+        if model_name in mpc_results and 'cem_ms' in mpc_results[model_name]:
+            print(f'\n{model_name}: 已有CEM MPC结果 {mpc_results[model_name]["cem_ms"]}ms, 跳过', flush=True)
+            continue
+
         print(f'\n{model_name}:', flush=True)
         times = []
         for trial in range(5):
@@ -249,6 +286,10 @@ if __name__ == '__main__':
         mpc_results[model_name]['cem_ms'] = round(np.mean(times), 1)
         mpc_results[model_name]['cem_hz'] = round(1000 / np.mean(times), 1)
         print(f'  CEM-MPC: {np.mean(times):.1f}ms, {1000/np.mean(times):.1f}Hz', flush=True)
+
+        # 保存中间结果
+        with open(RESULTS_FILE, 'w') as f:
+            json.dump(mpc_results, f, indent=2)
 
     # 保存结果
     with open('experiments/mpc_results.json', 'w') as f:
