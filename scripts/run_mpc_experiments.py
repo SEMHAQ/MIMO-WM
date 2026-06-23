@@ -91,14 +91,14 @@ def get_model_config(model_name, sd, ad):
 # ============================================================
 def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=50, lr=0.01):
     """基于梯度的MPC"""
-    model.eval()
     # 初始化动作序列
     actions = torch.randn(1, horizon, init_actions.shape[-1], device=device, requires_grad=True)
     optimizer = torch.optim.Adam([actions], lr=lr)
 
     for _ in range(n_iter):
         optimizer.zero_grad()
-        # 前向展开
+        # 前向展开 (需要training mode for RNN backward)
+        model.train()
         cur_state = init_state.clone()
         cur_actions = init_actions.clone()
         total_cost = 0
@@ -115,6 +115,7 @@ def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=
         total_cost.backward()
         optimizer.step()
 
+    model.eval()
     return actions.detach()
 
 # ============================================================
