@@ -231,8 +231,6 @@ if __name__ == '__main__':
     print('='*60, flush=True)
 
     for model_name, model in models.items():
-        if model_name == 'Transformer-WM':
-            continue  # Transformer不适合MPC
         print(f'\n{model_name}:', flush=True)
         times = []
         for trial in range(5):
