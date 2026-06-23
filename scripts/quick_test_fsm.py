@@ -70,8 +70,8 @@ def train_eval(d_model, n_layers, Xs, Xa, Y, Xv, Xav, Yv):
 
 # 加载数据
 print('加载Humanoid数据...', flush=True)
-eps_tr = load_eps('data/humanoid', 'train', 200)
-eps_vl = load_eps('data/humanoid', 'val', 50)
+eps_tr = load_eps('data/humanoid', 'train')
+eps_vl = load_eps('data/humanoid', 'val')
 m, s = stats(eps_tr)
 Xs, Xa, Y = make_data(eps_tr, T, m, s)
 Xv, Xav, Yv = make_data(eps_vl, T, m, s)
