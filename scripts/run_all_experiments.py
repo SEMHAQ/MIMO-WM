@@ -5,6 +5,63 @@ from src.models.ssm_world_model import SSMWorldModel
 from src.models.mamba_world_model import MambaWorldModel
 from src.models.baselines import LSTMWorldModel, TransformerWorldModel, GRUWorldModel
 from src.models.fusion_ssm import FSM
+from src.models.ssm_world_model import DiagSSM
+
+class MultiScaleModel(nn.Module):
+    """多尺度动力学模型"""
+    def __init__(self, state_dim, action_dim, d_model=96, d_state=8, n_layers=1, window_size=5, fusion_type='gate'):
+        super().__init__()
+        self.state_dim = state_dim
+        self.fusion_type = fusion_type
+        self.encoder = nn.Sequential(
+            nn.Linear(state_dim + action_dim, d_model),
+            nn.GELU(),
+            nn.Linear(d_model, d_model),
+        )
+        self.slow_ssm = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'ssm': DiagSSM(d_model, d_state)})
+            for _ in range(n_layers)
+        ])
+        self.fast_ssm = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'ssm': DiagSSM(d_model, d_state // 2)})
+            for _ in range(n_layers)
+        ])
+        self.local_attn = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'conv': nn.Conv1d(d_model, d_model, kernel_size=window_size, padding=window_size//2, groups=d_model)})
+            for _ in range(n_layers)
+        ])
+        if fusion_type == 'gate':
+            self.fusion_gate = nn.Sequential(nn.Linear(d_model * 3, 3), nn.Softmax(dim=-1))
+            self.fusion_proj = nn.Linear(d_model, state_dim)
+        elif fusion_type == 'concat':
+            self.fusion = nn.Sequential(nn.Linear(d_model * 3, d_model), nn.GELU(), nn.Linear(d_model, state_dim))
+
+    def forward(self, states, actions):
+        if actions.shape[1] < states.shape[1]:
+            pad_len = states.shape[1] - actions.shape[1]
+            pad = torch.zeros(states.shape[0], pad_len, actions.shape[-1], device=actions.device)
+            actions = torch.cat([pad, actions], dim=1)
+        x = torch.cat([states, actions], dim=-1)
+        h = self.encoder(x)
+        slow_h = h
+        for block in self.slow_ssm:
+            residual = slow_h; x_norm = block['norm'](slow_h); slow_h = residual + block['ssm'](x_norm)
+        fast_h = h
+        for block in self.fast_ssm:
+            residual = fast_h; x_norm = block['norm'](fast_h); fast_h = residual + block['ssm'](x_norm)
+        local_h = h
+        for block in self.local_attn:
+            residual = local_h; x_norm = block['norm'](local_h); local_h = residual + block['conv'](x_norm.transpose(1,2)).transpose(1,2)
+        if self.fusion_type == 'gate':
+            features = torch.cat([slow_h[:, -1, :], fast_h[:, -1, :], local_h[:, -1, :]], dim=-1)
+            gate = self.fusion_gate(features)
+            stacked = torch.stack([slow_h[:, -1, :], fast_h[:, -1, :], local_h[:, -1, :]], dim=1)
+            fused = (stacked * gate.unsqueeze(-1)).sum(dim=1)
+            pred = self.fusion_proj(fused)
+        elif self.fusion_type == 'concat':
+            fused = torch.cat([slow_h[:, -1, :], fast_h[:, -1, :], local_h[:, -1, :]], dim=-1)
+            pred = self.fusion(fused)
+        return states[:, -1, :] + pred
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SEEDS = [42, 123, 456, 789, 1024]
@@ -89,6 +146,7 @@ datasets = {
     'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17},
     'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8},
     'walker2d': {'dir': 'data/walker2d', 'sd': 17, 'ad': 6},
+    'hopper': {'dir': 'data/hopper', 'sd': 11, 'ad': 3},
 }
 
 models = {
@@ -98,6 +156,7 @@ models = {
     'Mamba-WM': (MambaWorldModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'n_layers': 4}),
     'S4D-WM': (SSMWorldModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 4}),
     'FSM-WM': (FSM, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 2, 'window_size': 8}),
+    'MultiScale-WM': (MultiScaleModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 5, 'fusion_type': 'gate'}),
 }
 
 RESULTS_FILE = 'experiments/all_results.json'
