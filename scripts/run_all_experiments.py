@@ -143,7 +143,9 @@ def train_eval(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed):
 # Dataset configs (Gymnasium MuJoCo medium-v0)
 datasets = {
     'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17},
+    'humanoid_standup': {'dir': 'data/humanoid_standup', 'sd': 348, 'ad': 17},
     'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8},
+    'walker2d': {'dir': 'data/walker2d', 'sd': 17, 'ad': 6},
 }
 
 models = {
