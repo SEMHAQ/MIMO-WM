@@ -235,105 +235,145 @@ print('实验2: 消融实验 (Humanoid, FSM-WM)', flush=True)
 print('='*60, flush=True)
 
 Xs, Xa, Y, Xv, Xav, Yv, ds_cfg = data_cache['humanoid']
-ablation_results = {}
+ABLATION_FILE = 'experiments/ablation_results.json'
+
+# 加载已有结果
+if os.path.exists(ABLATION_FILE):
+    with open(ABLATION_FILE) as f:
+        ablation_results = json.load(f)
+    print(f'已有结果:', flush=True)
+    for k, v in ablation_results.items():
+        print(f'  {k}: MSE={v.get("mse_mean", 0)*100:.2f}', flush=True)
+else:
+    ablation_results = {}
 
 # 默认配置
-print('\n默认配置 (D=128, L=4, N=16):', flush=True)
-default_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'])
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    r['best_epoch'] = ep
-    default_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['default'] = {
-    'mse_mean': np.mean([r['mse'] for r in default_results]),
-    'mse_std': np.std([r['mse'] for r in default_results]),
-    'r2_mean': np.mean([r['r2'] for r in default_results]),
-    'params_m': default_results[0]['params_m'],
-}
+if 'default' not in ablation_results:
+    print('\n默认配置 (D=128, L=2, N=16):', flush=True)
+    default_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'])
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        r['best_epoch'] = ep
+        default_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['default'] = {
+        'mse_mean': np.mean([r['mse'] for r in default_results]),
+        'mse_std': np.std([r['mse'] for r in default_results]),
+        'r2_mean': np.mean([r['r2'] for r in default_results]),
+        'params_m': default_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\n默认配置: 已有结果，跳过', flush=True)
 
 # L=2
-print('\nL=2:', flush=True)
-l2_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], n_layers=2)
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    l2_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['L=2'] = {
-    'mse_mean': np.mean([r['mse'] for r in l2_results]),
-    'mse_std': np.std([r['mse'] for r in l2_results]),
-    'params_m': l2_results[0]['params_m'],
-}
+if 'L=2' not in ablation_results:
+    print('\nL=2:', flush=True)
+    l2_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], n_layers=2)
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        l2_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['L=2'] = {
+        'mse_mean': np.mean([r['mse'] for r in l2_results]),
+        'mse_std': np.std([r['mse'] for r in l2_results]),
+        'params_m': l2_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\nL=2: 已有结果，跳过', flush=True)
 
 # L=6
-print('\nL=6:', flush=True)
-l6_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], n_layers=6)
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    l6_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['L=6'] = {
-    'mse_mean': np.mean([r['mse'] for r in l6_results]),
-    'mse_std': np.std([r['mse'] for r in l6_results]),
-    'params_m': l6_results[0]['params_m'],
-}
+if 'L=6' not in ablation_results:
+    print('\nL=6:', flush=True)
+    l6_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], n_layers=6)
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        l6_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['L=6'] = {
+        'mse_mean': np.mean([r['mse'] for r in l6_results]),
+        'mse_std': np.std([r['mse'] for r in l6_results]),
+        'params_m': l6_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\nL=6: 已有结果，跳过', flush=True)
 
 # D=64
-print('\nD=64:', flush=True)
-d64_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_model=64)
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    d64_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['D=64'] = {
-    'mse_mean': np.mean([r['mse'] for r in d64_results]),
-    'mse_std': np.std([r['mse'] for r in d64_results]),
-    'params_m': d64_results[0]['params_m'],
-}
+if 'D=64' not in ablation_results:
+    print('\nD=64:', flush=True)
+    d64_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_model=64)
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        d64_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['D=64'] = {
+        'mse_mean': np.mean([r['mse'] for r in d64_results]),
+        'mse_std': np.std([r['mse'] for r in d64_results]),
+        'params_m': d64_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\nD=64: 已有结果，跳过', flush=True)
 
 # D=256
-print('\nD=256:', flush=True)
-d256_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_model=256)
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    d256_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['D=256'] = {
-    'mse_mean': np.mean([r['mse'] for r in d256_results]),
-    'mse_std': np.std([r['mse'] for r in d256_results]),
-    'params_m': d256_results[0]['params_m'],
-}
+if 'D=256' not in ablation_results:
+    print('\nD=256:', flush=True)
+    d256_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_model=256)
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        d256_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['D=256'] = {
+        'mse_mean': np.mean([r['mse'] for r in d256_results]),
+        'mse_std': np.std([r['mse'] for r in d256_results]),
+        'params_m': d256_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\nD=256: 已有结果，跳过', flush=True)
 
 # N=32
-print('\nN=32:', flush=True)
-n32_results = []
-for seed in SEEDS:
-    print(f'  seed={seed}...', end=' ', flush=True)
-    ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_state=32)
-    model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
-    r = evaluate_model(model, Xv, Xav, Yv)
-    n32_results.append(r)
-    print(f'MSE={r["mse"]:.4f}', flush=True)
-ablation_results['N=32'] = {
-    'mse_mean': np.mean([r['mse'] for r in n32_results]),
-    'mse_std': np.std([r['mse'] for r in n32_results]),
-    'params_m': n32_results[0]['params_m'],
-}
+if 'N=32' not in ablation_results:
+    print('\nN=32:', flush=True)
+    n32_results = []
+    for seed in SEEDS:
+        print(f'  seed={seed}...', end=' ', flush=True)
+        ModelClass, kwargs = get_model_config('FSM-WM', ds_cfg['sd'], ds_cfg['ad'], d_state=32)
+        model, ep = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
+        r = evaluate_model(model, Xv, Xav, Yv)
+        n32_results.append(r)
+        print(f'MSE={r["mse"]:.4f}', flush=True)
+    ablation_results['N=32'] = {
+        'mse_mean': np.mean([r['mse'] for r in n32_results]),
+        'mse_std': np.std([r['mse'] for r in n32_results]),
+        'params_m': n32_results[0]['params_m'],
+    }
+    with open(ABLATION_FILE, 'w') as f:
+        json.dump(ablation_results, f, indent=2)
+else:
+    print('\nN=32: 已有结果，跳过', flush=True)
 
 with open('experiments/ablation_results.json', 'w') as f:
     json.dump(ablation_results, f, indent=2)
