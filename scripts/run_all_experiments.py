@@ -4,7 +4,6 @@ sys.path.insert(0, '.')
 from src.models.ssm_world_model import SSMWorldModel
 from src.models.mamba_world_model import MambaWorldModel
 from src.models.baselines import LSTMWorldModel, TransformerWorldModel, GRUWorldModel
-from src.models.fusion_ssm import FSM
 from src.models.ssm_world_model import DiagSSM
 
 class MultiScaleModel(nn.Module):
@@ -141,12 +140,10 @@ def train_eval(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed):
     params = sum(p.numel() for p in model.parameters()) / 1e6
     return {'mse': round(mse, 6), 'r2': round(r2, 6), 'best_epoch': best_ep, 'inf_time_ms': round(inf_time, 2), 'params_m': round(params, 3)}
 
-# Dataset configs (Gymnasium MuJoCo expert-v0)
+# Dataset configs (Gymnasium MuJoCo medium-v0)
 datasets = {
     'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17},
     'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8},
-    'walker2d': {'dir': 'data/walker2d', 'sd': 17, 'ad': 6},
-    'hopper': {'dir': 'data/hopper', 'sd': 11, 'ad': 3},
 }
 
 models = {
@@ -155,8 +152,7 @@ models = {
     'GRU-WM': (GRUWorldModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'hidden_dim': 128, 'n_layers': 4}),
     'Mamba-WM': (MambaWorldModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'n_layers': 4}),
     'S4D-WM': (SSMWorldModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 4}),
-    'FSM-WM': (FSM, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 2, 'window_size': 8}),
-    'MultiScale-WM': (MultiScaleModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 5, 'fusion_type': 'gate'}),
+    'MS-WM': (MultiScaleModel, lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 5, 'fusion_type': 'gate'}),
 }
 
 RESULTS_FILE = 'experiments/all_results.json'
