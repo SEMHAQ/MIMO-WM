@@ -144,6 +144,8 @@ run.sh
 
 # Experiment backups
 experiments_backup/
+experiments/backup/
+scripts/backup/
 
 # Internal files
 CLAUDE_TASK.md

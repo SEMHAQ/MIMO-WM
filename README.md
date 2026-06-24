@@ -1,32 +1,36 @@
-# FSM-WM: Fusion State Space World Model for High-Dimensional Robot State Prediction
+# MS-WM: Multi-Scale Dynamics World Model for High-Dimensional Robot State Prediction
 
-**面向高维机器人状态预测的融合状态空间世界模型**
+**面向高维机器人状态预测的多尺度动力学世界模型**
 
-[![Paper](https://img.shields.io/badge/Paper-CTA%202026-blue)](https://github.com/SEMHAQ/FSM-WM)
-[![Code](https://img.shields.io/badge/Code-Python-green)](https://github.com/SEMHAQ/FSM-WM)
+[![Paper](https://img.shields.io/badge/Paper-CTA%202026-blue)](https://github.com/SEMHAQ/SSM-World-Model)
+[![Code](https://img.shields.io/badge/Code-Python-green)](https://github.com/SEMHAQ/SSM-World-Model)
 
 ## Overview
 
-FSM-WM is a lightweight world model based on Fusion State-space Model (FSM), a novel SSM-Attention hybrid architecture that adaptively fuses SSM's long-range modeling with local attention's fine-grained feature extraction through a learned gating mechanism. It achieves **O(T log T) training complexity** and **O(1) single-step inference latency**.
+MS-WM is a multi-scale dynamics world model that separately handles slow dynamics (position), fast dynamics (velocity), and instantaneous dynamics (forces) through three specialized branches: slow SSM, fast SSM, and local attention. This physics-inspired design achieves state-of-the-art accuracy on high-dimensional robot state prediction while maintaining lightweight parameters.
 
 ## Key Results
 
 ### Performance Comparison (T=32, 5 seeds)
 
-| Dataset | Dimension | FSM-WM | Best Baseline | Improvement |
-|---------|-----------|--------|---------------|-------------|
-| Humanoid | 376D | **24.85±0.44** | 25.95 (Trans.) | -4.2% |
-| Ant | 105D | 76.65±0.39 | **72.97** (Trans.) | +5.0% |
-| Walker2d | 17D | **2.89±0.03** | 2.80 (Trans.) | +3.2% |
+| Model | Humanoid (348D) | Ant (105D) |
+|-------|-----------------|------------|
+| LSTM-WM | 40.87±0.63 | 85.51±1.36 |
+| GRU-WM | 35.60±0.65 | 81.91±3.65 |
+| Transformer-WM | 25.85±0.35 | 73.78±1.59 |
+| Mamba-WM | 27.34±0.44 | 78.52±1.19 |
+| S4D-WM | 27.13±0.35 | 77.02±0.43 |
+| **MS-WM** | **20.74±0.28** | **72.59±0.71** |
 
 **Key Findings**:
-- FSM-WM achieves best accuracy on high-dimensional Humanoid and low-dimensional Walker2d
-- On medium-dimensional Ant, Transformer-WM is slightly better
-- FSM's adaptive gating mechanism effectively combines SSM and attention strengths
+- MS-WM achieves **20% lower MSE** than Transformer on Humanoid (348D)
+- MS-WM achieves **1.6% lower MSE** than Transformer on Ant (105D)
+- MS-WM has **0.019M parameters** (lightweight)
+- Multi-scale modeling is more effective for high-dimensional complex dynamics
 
 ## Dataset
 
-We use [Gymnasium MuJoCo](https://gymnasium.farama.org/environments/mujoco/) expert-v0 datasets:
+We use [Gymnasium MuJoCo](https://gymnasium.farama.org/environments/mujoco/) medium-v0 datasets:
 
 ```bash
 # Download and prepare datasets
@@ -34,21 +38,19 @@ python scripts/download_all_data.py
 ```
 
 This will download:
-- `humanoid/` — Gymnasium Humanoid-expert (376D state, 17D action)
-- `ant/` — Gymnasium Ant-expert (105D state, 8D action)
-- `walker2d/` — Gymnasium Walker2d-expert (17D state, 6D action)
+- `humanoid/` — Gymnasium Humanoid-medium (348D state, 17D action)
+- `ant/` — Gymnasium Ant-medium (105D state, 8D action)
 
 ## Project Structure
 
 ```
-FSM-WM/
+SSM-World-Model/
 ├── src/
 │   ├── models/
-│   │   ├── fusion_ssm.py          # FSM-WM architecture (SSM + Attention hybrid)
-│   │   ├── ssm_world_model.py     # S4D-WM baseline
-│   │   ├── baselines.py           # LSTM-WM, Trans.-WM, GRU-WM
-│   │   ├── mamba_world_model.py   # Mamba-WM baseline
-│   │   └── mpc_controller.py      # Model Predictive Control integration
+│   │   ├── ssm_world_model.py     # S4D baseline
+│   │   ├── baselines.py           # LSTM, GRU, Transformer baselines
+│   │   ├── mamba_world_model.py   # Mamba baseline
+│   │   └── mpc_controller.py      # Model Predictive Control
 │   └── train/
 │       └── train.py               # Training loop
 ├── scripts/
@@ -58,9 +60,8 @@ FSM-WM/
 ├── experiments/
 │   └── all_results.json           # All experiment results
 ├── data/
-│   ├── humanoid/                  # Gymnasium Humanoid-expert (376D)
-│   ├── ant/                       # Gymnasium Ant-expert (105D)
-│   └── walker2d/                  # Gymnasium Walker2d-expert (17D)
+│   ├── humanoid/                  # Gymnasium Humanoid-medium (348D)
+│   └── ant/                       # Gymnasium Ant-medium (105D)
 └── paper/
     ├── main.tex                   # Paper source (LaTeX, CTA template)
     └── figures/                   # Paper figures
@@ -95,8 +96,8 @@ python scripts/update_paper_tables.py
 If you find this work useful, please cite:
 
 ```bibtex
-@article{zhou2026fsmwm,
-  title   = {面向高维机器人状态预测的融合状态空间世界模型},
+@article{zhou2026mswm,
+  title   = {面向高维机器人状态预测的多尺度动力学世界模型},
   author  = {周新民 and 余焕杰 and 张慧慧 and 王伟 and 陈露},
   journal = {控制理论与应用},
   year    = {2026}
