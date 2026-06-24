@@ -170,10 +170,22 @@ def train_eval(model, Xs, Xa, Y, Xv, Xav, Yv, seed=SEED, epochs=EPOCHS):
         ss_t = torch.sum((Yv_g - torch.mean(Yv_g, dim=0))**2).item()
         r2 = 1 - ss_r / ss_t
 
+    # 测量推理时间
+    with torch.no_grad():
+        x_dummy = torch.FloatTensor(Xv[:1]).to(device)
+        a_dummy = torch.FloatTensor(Xav[:1]).to(device)
+        for _ in range(5): model(x_dummy, a_dummy)
+        torch.cuda.synchronize()
+        t0 = time.perf_counter()
+        for _ in range(100): model(x_dummy, a_dummy)
+        torch.cuda.synchronize()
+        inf_time = (time.perf_counter() - t0) / 100 * 1000
+
     return {
         'mse': round(mse, 6),
         'r2': round(r2, 4),
         'params': round(params, 3),
+        'inf_time': round(inf_time, 2),
         'train_time': round(elapsed, 1),
         'best_epoch': best_ep
     }
@@ -207,13 +219,13 @@ if __name__ == '__main__':
     else:
         results = {}
 
-    # 定义搜索空间
+    # 定义搜索空间（轻量级约束）
     search_space = {
-        'd_model': [64, 96, 128, 192],
-        'd_state': [8, 16, 32],
-        'n_layers': [1, 2, 3],
-        'window_size': [3, 5, 7],
-        'fusion_type': ['concat', 'gate', 'attention'],
+        'd_model': [64, 96, 128],  # 不用192，太重
+        'd_state': [8, 16],  # 不用32，太重
+        'n_layers': [1, 2],  # 不用3，太重
+        'window_size': [3, 5],  # 不用7，太重
+        'fusion_type': ['concat', 'gate'],  # 不用attention，太重
     }
 
     # 生成所有配置组合
@@ -231,7 +243,7 @@ if __name__ == '__main__':
                             'fusion_type': fusion_type,
                         })
 
-    print(f'\n总共 {len(configs)} 种配置', flush=True)
+    print(f'\n总共 {len(configs)} 种配置（轻量级约束）', flush=True)
 
     # 搜索
     print('\n' + '='*80, flush=True)
@@ -251,6 +263,14 @@ if __name__ == '__main__':
             if avg_mse < best_avg_mse:
                 best_avg_mse = avg_mse
                 best_config = cfg
+            continue
+
+        # 预估参数量（跳过太重的配置）
+        # MultiScale参数: encoder + 3 branches + fusion
+        # 粗略估计: 4 * d_model^2 * n_layers + 3 * d_model * state_dim
+        estimated_params = (4 * cfg['d_model']**2 * cfg['n_layers'] + 3 * cfg['d_model'] * 348) / 1e6
+        if estimated_params > 0.5:
+            print(f'\n[{i+1}/{len(configs)}] {config_key}: 跳过（预估参数{estimated_params:.2f}M > 0.5M）', flush=True)
             continue
 
         print(f'\n[{i+1}/{len(configs)}] {config_key}:', flush=True)
@@ -297,25 +317,27 @@ if __name__ == '__main__':
     print(f'配置: {best_config}', flush=True)
     print(f'平均MSE: {best_avg_mse:.4f}', flush=True)
 
-    # 打印前10名
-    print('\n前10名配置:', flush=True)
-    print('{:<35} {:<10} {:<10} {:<10} {:<10}'.format('配置', 'Humanoid', 'Ant', 'Walker2d', '平均'))
-    print('-'*80)
+    # 打印前10名（按平均MSE排序，且推理时间<10ms）
+    print('\n前10名配置（推理时间<10ms）:', flush=True)
+    print('{:<35} {:<10} {:<10} {:<10} {:<10} {:<10}'.format('配置', 'Humanoid', 'Ant', 'Walker2d', '平均', '推理(ms)'))
+    print('-'*90)
 
-    # 按平均MSE排序
+    # 按平均MSE排序，且推理时间<10ms
     ranked = []
     for cfg_key, cfg_results in results.items():
         valid = [cfg_results[ds] for ds in cfg_results if 'mse' in cfg_results[ds]]
         if len(valid) == 3:
             avg_mse = np.mean([r['mse'] for r in valid])
-            ranked.append((cfg_key, cfg_results, avg_mse))
+            avg_inf_time = np.mean([r.get('inf_time', 0) for r in valid])
+            if avg_inf_time < 10:  # 推理时间<10ms
+                ranked.append((cfg_key, cfg_results, avg_mse, avg_inf_time))
 
     ranked.sort(key=lambda x: x[2])
 
-    for cfg_key, cfg_results, avg_mse in ranked[:10]:
+    for cfg_key, cfg_results, avg_mse, avg_inf_time in ranked[:10]:
         h = cfg_results.get('humanoid', {}).get('mse', 0)
         a = cfg_results.get('ant', {}).get('mse', 0)
         w = cfg_results.get('walker2d', {}).get('mse', 0)
-        print('{:<35} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f}'.format(cfg_key, h, a, w, avg_mse))
+        print('{:<35} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.4f} {:<10.2f}'.format(cfg_key, h, a, w, avg_mse, avg_inf_time))
 
     print('\nDone!', flush=True)
