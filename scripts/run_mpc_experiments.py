@@ -126,7 +126,7 @@ def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=
 # ============================================================
 # CEM采样MPC
 # ============================================================
-def cem_mpc(model, init_state, init_actions, ref_state, horizon=10, n_samples=200, n_elite=30, n_iter=2):
+def cem_mpc(model, init_state, init_actions, ref_state, horizon=10, n_samples=100, n_elite=20, n_iter=1):
     """CEM采样MPC - GPU批量并行版本"""
     model.eval()
     action_dim = init_actions.shape[-1]
