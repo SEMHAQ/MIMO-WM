@@ -233,24 +233,27 @@ if __name__ == '__main__':
         # 检查是否已有推理时间
         if model_name in mpc_results and 'inf_time_ms' in mpc_results[model_name]:
             print(f'\n{model_name}: 已有推理时间 {mpc_results[model_name]["inf_time_ms"]}ms, 跳过训练', flush=True)
+        else:
+            print(f'\n训练 {model_name}...', flush=True)
             ModelClass, kwargs = get_model_config(model_name, sd, ad)
             model = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv)
             models[model_name] = model
-            continue
 
-        print(f'\n训练 {model_name}...', flush=True)
-        ModelClass, kwargs = get_model_config(model_name, sd, ad)
-        model = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv)
-        models[model_name] = model
+            # 测量推理时间
+            inf_time = measure_inference_time(model, Xv, Xav)
+            mpc_results[model_name] = {'inf_time_ms': round(inf_time, 2)}
+            print(f'  推理时间: {inf_time:.2f}ms', flush=True)
 
-        # 测量推理时间
-        inf_time = measure_inference_time(model, Xv, Xav)
-        mpc_results[model_name] = {'inf_time_ms': round(inf_time, 2)}
-        print(f'  推理时间: {inf_time:.2f}ms', flush=True)
+            # 保存中间结果
+            with open(RESULTS_FILE, 'w') as f:
+                json.dump(mpc_results, f, indent=2)
 
-        # 保存中间结果
-        with open(RESULTS_FILE, 'w') as f:
-            json.dump(mpc_results, f, indent=2)
+        # 无论是否跳过训练，都需要加载模型用于MPC实验
+        if model_name not in models:
+            print(f'  加载模型用于MPC实验...', flush=True)
+            ModelClass, kwargs = get_model_config(model_name, sd, ad)
+            model = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv)
+            models[model_name] = model
 
     # 梯度MPC实验
     print('\n' + '='*60, flush=True)
