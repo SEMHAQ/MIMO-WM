@@ -164,6 +164,36 @@ def cem_mpc(model, init_state, init_actions, ref_state, horizon=10, n_samples=10
 
     return mean.unsqueeze(0)
 
+def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=50, lr=0.01):
+    """基于梯度的MPC"""
+    # 初始化动作序列
+    actions = torch.randn(1, horizon, init_actions.shape[-1], device=device, requires_grad=True)
+    optimizer = torch.optim.Adam([actions], lr=lr)
+
+    # 保存原始状态
+    was_training = model.training
+
+    for _ in range(n_iter):
+        optimizer.zero_grad()
+        # 前向展开 (需要training mode for RNN backward)
+        model.train()
+        cur_state = init_state.clone()
+        total_cost = 0
+
+        with torch.enable_grad():
+            for h in range(horizon):
+                pred = model(cur_state, actions[:, h:h+1, :])
+                cost = torch.sum((pred - ref_state) ** 2)
+                total_cost = cost
+                cur_state = torch.cat([cur_state[:, 1:], pred.unsqueeze(1)], dim=1)
+
+        total_cost.backward()
+        optimizer.step()
+
+    # 恢复原始状态
+    model.train(was_training)
+    return actions.detach()
+
 # 模型配置
 def get_model_config(model_name, sd, ad):
     configs = {
@@ -222,6 +252,39 @@ if __name__ == '__main__':
         with open(RESULTS_FILE, 'w') as f:
             json.dump(mpc_results, f, indent=2)
 
+    # 梯度MPC实验
+    print('\n' + '='*60, flush=True)
+    print('梯度MPC实验', flush=True)
+    print('='*60, flush=True)
+
+    for model_name, model in models.items():
+        # 检查是否已有梯度MPC结果
+        if model_name in mpc_results and 'gradient_ms' in mpc_results[model_name]:
+            print(f'\n{model_name}: 已有梯度MPC结果 {mpc_results[model_name]["gradient_ms"]}ms, 跳过', flush=True)
+            continue
+
+        print(f'\n{model_name}:', flush=True)
+        times = []
+        for trial in range(5):
+            idx = np.random.randint(len(Xv))
+            init_state = torch.FloatTensor(Xv[idx:idx+1]).to(device)
+            init_actions = torch.FloatTensor(Xav[idx:idx+1]).to(device)
+            ref_state = torch.FloatTensor(Yv[idx:idx+1]).to(device)
+
+            t0 = time.perf_counter()
+            actions = gradient_mpc(model, init_state, init_actions, ref_state)
+            torch.cuda.synchronize()
+            t1 = time.perf_counter()
+            times.append((t1 - t0) * 1000)
+
+        mpc_results[model_name]['gradient_ms'] = round(np.mean(times), 1)
+        mpc_results[model_name]['gradient_hz'] = round(1000 / np.mean(times), 1)
+        print(f'  梯度MPC: {np.mean(times):.1f}ms, {1000/np.mean(times):.1f}Hz', flush=True)
+
+        # 保存中间结果
+        with open(RESULTS_FILE, 'w') as f:
+            json.dump(mpc_results, f, indent=2)
+
     # CEM-MPC实验
     print('\n' + '='*60, flush=True)
     print('CEM-MPC实验', flush=True)
@@ -259,16 +322,17 @@ if __name__ == '__main__':
     print('\n' + '='*60, flush=True)
     print('MPC实验结果', flush=True)
     print('='*60, flush=True)
-    print('{:<16} {:<12} {:<12}'.format('模型', '推理(ms)', 'CEM-MPC(Hz)'))
-    print('-'*45)
+    print('{:<16} {:<12} {:<12} {:<12}'.format('模型', '推理(ms)', '梯度MPC(Hz)', 'CEM-MPC(Hz)'))
+    print('-'*60)
 
     for model_name in ['LSTM-WM', 'GRU-WM', 'Transformer-WM', 'Mamba-WM', 'S4D-WM', 'MS-WM']:
         if model_name in mpc_results:
             r = mpc_results[model_name]
             inf = r.get('inf_time_ms', '-')
+            grad = r.get('gradient_hz', '-')
             cem = r.get('cem_hz', '-')
-            print('{:<16} {:<12} {:<12}'.format(model_name, inf, cem))
+            print('{:<16} {:<12} {:<12} {:<12}'.format(model_name, inf, grad, cem))
         else:
-            print('{:<16} {:<12} {:<12}'.format(model_name, '---', '---'))
+            print('{:<16} {:<12} {:<12} {:<12}'.format(model_name, '---', '---', '---'))
 
     print('\nDone!', flush=True)
