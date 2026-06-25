@@ -297,11 +297,87 @@ def run_loss_ablation():
                 ))
 
 # ============================================================
-# 实验2: 阈值函数对比 (表12)
+# 实验2: 架构消融 (表8)
+# ============================================================
+def run_architecture_ablation():
+    print('\n' + '='*60, flush=True)
+    print('实验2: 架构消融 (Humanoid)', flush=True)
+    print('='*60, flush=True)
+
+    RESULTS_FILE = 'experiments/architecture_ablation_results.json'
+    if os.path.exists(RESULTS_FILE):
+        with open(RESULTS_FILE) as f:
+            results = json.load(f)
+    else:
+        results = {}
+
+    eps_tr = load_eps('data/humanoid', 'train')
+    eps_vl = load_eps('data/humanoid', 'val')
+    m, s = stats(eps_tr)
+    Xs, Xa, Y = make_data(eps_tr, T, m, s)
+    Xv, Xav, Yv = make_data(eps_vl, T, m, s)
+
+    # 测试不同配置
+    configs = {
+        'default': {'d_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 5},
+        'd_model_64': {'d_model': 64, 'd_state': 8, 'n_layers': 1, 'window_size': 5},
+        'd_model_128': {'d_model': 128, 'd_state': 8, 'n_layers': 1, 'window_size': 5},
+        'd_model_192': {'d_model': 192, 'd_state': 8, 'n_layers': 1, 'window_size': 5},
+        'd_state_16': {'d_model': 96, 'd_state': 16, 'n_layers': 1, 'window_size': 5},
+        'n_layers_2': {'d_model': 96, 'd_state': 8, 'n_layers': 2, 'window_size': 5},
+        'n_layers_3': {'d_model': 96, 'd_state': 8, 'n_layers': 3, 'window_size': 5},
+        'window_3': {'d_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 3},
+        'window_7': {'d_model': 96, 'd_state': 8, 'n_layers': 1, 'window_size': 7},
+    }
+
+    for config_name, config in configs.items():
+        if config_name in results and len(results[config_name]) >= len(SEEDS):
+            print(f'\n{config_name}: 已有完整结果，跳过', flush=True)
+            continue
+
+        print(f'\n{config_name}:', flush=True)
+        if config_name not in results:
+            results[config_name] = {}
+
+        for seed in SEEDS:
+            seed_key = f'seed{seed}'
+            if seed_key in results[config_name]:
+                print(f'  seed={seed} 已有，跳过', flush=True)
+                continue
+
+            print(f'  seed={seed}...', end=' ', flush=True)
+            model = MultiScaleModel(348, 17, **config)
+            r = train_with_multistep_loss(model, Xs, Xa, Y, Xv, Xav, Yv, seed)
+            results[config_name][seed_key] = r
+            print(f'MSE={r["mse"]:.4f}', flush=True)
+
+            with open(RESULTS_FILE, 'w') as f:
+                json.dump(results, f, indent=2)
+
+    # 打印结果
+    print('\n架构消融结果:', flush=True)
+    print('{:<20} {:<15} {:<15} {:<10}'.format('配置', 'MSE(×10⁻²)', 'R²', '参数(M)'))
+    print('-'*65)
+    for config_name in configs:
+        if config_name in results:
+            valid = [results[config_name][s] for s in results[config_name] if 'mse' in results[config_name][s]]
+            if valid:
+                mses = [r['mse'] for r in valid]
+                r2s = [r['r2'] for r in valid]
+                params = valid[0]['params_m']
+                print('{:<20} {:.2f}±{:.2f}    {:.4f}    {:.3f}'.format(
+                    config_name,
+                    np.mean(mses)*100, np.std(mses)*100,
+                    np.mean(r2s),
+                    params
+                ))
+
+# ============================================================
+# 实验3: 阈值函数对比 (表12)
 # ============================================================
 def run_threshold_experiment():
     print('\n' + '='*60, flush=True)
-    print('实验2: 阈值函数对比 (Humanoid)', flush=True)
+    print('实验3: 阈值函数对比 (Humanoid)', flush=True)
     print('='*60, flush=True)
 
     RESULTS_FILE = 'experiments/threshold_results.json'
@@ -368,6 +444,7 @@ if __name__ == '__main__':
     print(f'开始时间: {time.strftime("%Y-%m-%d %H:%M:%S")}', flush=True)
 
     run_loss_ablation()
+    run_architecture_ablation()
     run_threshold_experiment()
 
     print('\n' + '='*60, flush=True)
