@@ -553,11 +553,11 @@ MPC需要在每个控制周期内对多步未来状态进行展开预测, 因此
 在Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8, 16$步后的状态, 结果如表~4所示.
 
 \begingroup\centering
-{\CJKfamily{kai} 表~3~~多步预测MSE对比(Humanoid, $T=32$, $\times10^{-3}$)\\
-Table~3~~Multi-step prediction MSE comparison (Humanoid, $T=32$, $\times10^{-3}$)}\\
-\label{tab:3} \vskip 3pt
+{\CJKfamily{kai} 表~4~~多步预测MSE对比(Humanoid, $T=32$, $\times10^{-3}$)\\
+Table~4~~Multi-step prediction MSE comparison (Humanoid, $T=32$, $\times10^{-3}$)}\\
+\label{tab:4} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccccc@{}}\toprule
+\begin{tabular}{lcccccc}\toprule
 & \multicolumn{6}{c}{展开步数} \\
 \cmidrule(lr){2-7}
 模型 & $H{=}1$ & $H{=}4$ & $H{=}8$ & $H{=}16$ \\\midrule
