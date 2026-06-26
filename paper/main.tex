@@ -333,7 +333,7 @@ Fig.~1~~Overall architecture of MS-WM}
 将状态${\bm s}_t \in \mathbb{R}^{d_s}$和动作${\bm a}_t \in \mathbb{R}^{d_a}$拼接后通过两层全连接网络投影到隐空间:
 \begin{eqnarray}
 &&{\bm z}_t' = {\bm W}_1[{\bm s}_t; {\bm a}_t] + {\bm b}_1, \\
-&&{\bm z}_t = {\bm W}_2\text{GELU}({\bm z}_t') + {\bm b}_2,
+&&{\bm z}_t = {\bm W}_2\text{GELU}\textsuperscript{\cite{26}}({\bm z}_t') + {\bm b}_2,
 \end{eqnarray}
 其中${\bm W}_1 \in \mathbb{R}^{D \times (d_s + d_a)}$, ${\bm W}_2 \in \mathbb{R}^{D \times D}$为可学习参数, $D$为隐空间维度.
 
@@ -951,11 +951,7 @@ MPC概念验证实验表明GPU批量并行CEM采样式MPC可将MS-WM的控制频
 
 \bibitem{29}BROCKMAN G, CHEUNG V, PETTERSSON L, et al. OpenAI Gym. {\it arXiv preprint arXiv:1606.01540}, 2016.
 
-\bibitem{30}GAO H Y. Wavelet shrinkage denoising using the non-negative garrote. {\it Journal of Computational and Graphical Statistics}, 1998, 7(4): 469--488.
-
-\bibitem{31}RUBINSTEIN R Y, KROESE D P. The Cross-Entropy Method: A Unified Approach to Combinatorial Optimization, Monte-Carlo Simulation, and Machine Learning. {\it Springer}, 2004.
-
-\bibitem{32}WILLIAMS G, ALDIGER A, PANDYA R, et al. Information theoretic MPC for model-based reinforcement learning. {\it IEEE International Conference on Robotics and Automation}, 2017: 1714--1721.
+\bibitem{30}RUBINSTEIN R Y, KROESE D P. The Cross-Entropy Method: A Unified Approach to Combinatorial Optimization, Monte-Carlo Simulation, and Machine Learning. {\it Springer}, 2004.
 
 \end{thebibliography}}
 
