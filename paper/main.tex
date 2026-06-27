@@ -37,8 +37,8 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 {\footnotesize {\CJKfamily{hei} 摘要:}
 机器人的高维状态预测面临精度与实时性的双重挑战.
 本文提出多尺度动力学世界模型MS-WM, 通过慢速SSM、快速SSM和局部注意力三个分支分别处理不同时间尺度的物理变化, 实现自适应多尺度建模.
-在Gymnasium MuJoCo基准的Humanoid(348维)、HumanoidStandup(348维)、Ant(105维)和Walker2d(17维)四个数据集上的多种子实验5个随机种子表明:
-MS-WM在高维Humanoid上取得最优精度(MSE=21.00$\times10^{-2}$), 比Transformer-WM提升18.8\%;
+在Gymnasium MuJoCo基准的Humanoid 348维、HumanoidStandup 348维、Ant 105维和Walker2d 17维四个数据集上的多种子实验表明:
+MS-WM在高维Humanoid上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%;
 在中维Ant上也优于所有基线.
 对于低维简单系统, 传统方法已足够, 表明多尺度建模对高维复杂动力学更有效.
 MPC概念验证表明MS-WM具备世界模型的基本功能; GPU批量并行CEM采样式MPC将控制频率提升至10Hz以上, 满足典型实时控制需求.
@@ -68,7 +68,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes the Multi-Scale Dynamics World Model MS-WM, which separately handles slow dynamics (position), fast dynamics (velocity), and instantaneous dynamics (forces) through three specialized branches: slow SSM, fast SSM, and local attention. Multi-seed experiments 5 seeds on three Gymnasium MuJoCo benchmarks Humanoid 348D, Ant 105D, Walker2d 17D show that MS-WM achieves the best accuracy on high-dimensional Humanoid (MSE=21.00$\times10^{-2}$), 18.8\% lower than Transformer-WM, and also outperforms all baselines on medium-dimensional Ant. For low-dimensional simple systems, traditional methods are sufficient, demonstrating that multi-scale modeling is more effective for high-dimensional complex dynamics. MPC proof-of-concept demonstrates the world model's planning capability; GPU-batched CEM sampling-based MPC achieves 10Hz+, meeting typical real-time control requirements.
+High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes the Multi-Scale Dynamics World Model MS-WM, which separately handles slow dynamics, fast dynamics, and instantaneous dynamics through three specialized branches: slow SSM, fast SSM, and local attention. Multi-seed experiments on four Gymnasium MuJoCo benchmarks Humanoid 348D, HumanoidStandup 348D, Ant 105D, Walker2d 17D show that MS-WM achieves the best accuracy on high-dimensional Humanoid with MSE of $21.00\times10^{-2}$, 18.8\% lower than Transformer-WM, and also outperforms all baselines on medium-dimensional Ant. For low-dimensional simple systems, traditional methods are sufficient, demonstrating that multi-scale modeling is more effective for high-dimensional complex dynamics. MPC proof-of-concept demonstrates the world model's planning capability; GPU-batched CEM sampling-based MPC achieves 10Hz+, meeting typical real-time control requirements.
 
 \textbf{Key words:} state space model; world model; state prediction; model predictive control; embodied intelligence
 
