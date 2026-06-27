@@ -37,7 +37,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 {\footnotesize {\CJKfamily{hei} 摘要:}
 机器人的高维状态预测面临精度与实时性的双重挑战.
 本文提出多尺度动力学世界模型MS-WM, 通过慢速SSM、快速SSM和局部注意力三个分支分别处理不同时间尺度的物理变化, 实现自适应多尺度建模.
-在Gymnasium MuJoCo基准的Humanoid 348维、HumanoidStandup 348维、Ant 105维和Walker2d 17维四个数据集上的多种子实验表明:
+在Gymnasium MuJoCo基准的Humanoid数据集，348维、HumanoidStandup数据集，348维、Ant数据集，105维和Walker2d数据集，17维四个数据集上的多种子实验表明:
 MS-WM在高维Humanoid上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%;
 在中维Ant上也优于所有基线.
 对于低维简单系统, 传统方法已足够, 表明多尺度建模对高维复杂动力学更有效.
@@ -68,7 +68,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes the Multi-Scale Dynamics World Model MS-WM, which separately handles slow dynamics, fast dynamics, and instantaneous dynamics through three specialized branches: slow SSM, fast SSM, and local attention. Multi-seed experiments on four Gymnasium MuJoCo benchmarks Humanoid 348D, HumanoidStandup 348D, Ant 105D, Walker2d 17D show that MS-WM achieves the best accuracy on high-dimensional Humanoid with MSE of $21.00\times10^{-2}$, 18.8\% lower than Transformer-WM, and also outperforms all baselines on medium-dimensional Ant. For low-dimensional simple systems, traditional methods are sufficient, demonstrating that multi-scale modeling is more effective for high-dimensional complex dynamics. MPC proof-of-concept demonstrates the world model's planning capability; GPU-batched CEM sampling-based MPC achieves 10Hz+, meeting typical real-time control requirements.
+High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes the Multi-Scale Dynamics World Model MS-WM, which separately handles slow dynamics, fast dynamics, and instantaneous dynamics through three specialized branches: slow SSM, fast SSM, and local attention. Multi-seed experiments on four Gymnasium MuJoCo benchmarks Humanoid 348D dataset, HumanoidStandup 348D dataset, Ant 105D dataset, Walker2d 17D dataset show that MS-WM achieves the best accuracy on high-dimensional Humanoid with MSE of $21.00\times10^{-2}$, 18.8\% lower than Transformer-WM, and also outperforms all baselines on medium-dimensional Ant. For low-dimensional simple systems, traditional methods are sufficient, demonstrating that multi-scale modeling is more effective for high-dimensional complex dynamics. MPC proof-of-concept demonstrates the world model's planning capability; GPU-batched CEM sampling-based MPC achieves 10Hz+, meeting typical real-time control requirements.
 
 \textbf{Key words:} state space model; world model; state prediction; model predictive control; embodied intelligence
 
@@ -131,7 +131,7 @@ Mamba}的选择性扫描机制虽然具有输入自适应能力, 但其参数量
 
 1)~~提出多尺度动力学世界模型MS-WM, 通过慢速SSM、快速SSM和局部注意力三个分支分别处理不同时间尺度的物理变化. 慢速SSM捕捉长程依赖如位置变化, 快速SSM捕捉短程依赖如速度变化, 局部注意力捕捉瞬时变化如力变化. 通过门控机制自适应融合三个分支, 实现多尺度建模;
 
-2)~~在Gymnasium MuJoCo基准的Humanoid 348维、Ant 105维和Walker2d 17维四个数据集上进行了系统实验. 多种子实验表明, MS-WM在高维Humanoid上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant上也优于所有基线;
+2)~~在Gymnasium MuJoCo基准的Humanoid数据集，348维、Ant数据集，105维和Walker2d数据集，17维四个数据集上进行了系统实验. 多种子实验表明, MS-WM在高维Humanoid上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant上也优于所有基线;
 
 3)~~首次在机器人世界模型状态预测任务上系统比较了LSTM、Transformer、GRU、Mamba、S4D和MS-WM六种序列模型, 揭示了多尺度建模对高维复杂动力学更有效的规律;
 
@@ -592,9 +592,9 @@ S4D-WM & 2.88$\pm$0.02 & 0.969$\pm$0.001 \\
 \par\endgroup
 \end{minipage}
 
-在Walker2d 17维数据集上, Transformer-WM取得了最优精度, MSE为$2.80\times10^{-2}$, S4D-WM次之为$2.88\times10^{-2}$, MS-WM为$3.75\times10^{-2}$表现不如传统方法, 结果如表~5所示. 这表明对于低维简单动力学系统, 多尺度建模的优势不明显, 传统方法已足够.
+在Walker2d数据集，17维数据集上, Transformer-WM取得了最优精度, MSE为$2.80\times10^{-2}$, S4D-WM次之为$2.88\times10^{-2}$, MS-WM为$3.75\times10^{-2}$表现不如传统方法, 结果如表~5所示. 这表明对于低维简单动力学系统, 多尺度建模的优势不明显, 传统方法已足够.
 
-综合四个数据集的结果, MS-WM在高维复杂动力学Humanoid 348维上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant 105维上也优于所有基线; 但在低维Walker2d 17维上不如传统方法. 这表明多尺度建模对高维复杂动力学更有效, 而对于低维简单系统, 传统方法已足够.
+综合四个数据集的结果, MS-WM在高维复杂动力学Humanoid数据集，348维上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant数据集，105维上也优于所有基线; 但在低维Walker2d数据集，17维上不如传统方法. 这表明多尺度建模对高维复杂动力学更有效, 而对于低维简单系统, 传统方法已足够.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
