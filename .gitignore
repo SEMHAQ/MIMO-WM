@@ -84,6 +84,7 @@ Thumbs.db
 !paper/ssm_architecture_redraw_bundle/*.pdf
 !paper/ssm_architecture_redraw_bundle/*.png
 !paper/ssm_architecture_redraw_bundle/*.svg
+!paper/version/*.pdf
 !references/*.pdf
 .claude/
 refs/
@@ -95,7 +96,6 @@ paper/peer_review/
 paper/ssm_architecture_redraw_bundle/
 paper/template/
 paper/template_gbk/
-paper/version
 paper/sections/
 paper/missfont.log
 paper/1-1.eps
