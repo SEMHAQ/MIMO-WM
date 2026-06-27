@@ -21,10 +21,10 @@ plt.rcParams.update({
     'mathtext.fontset': 'stix',
 })
 
-# Load new format and convert
 with open('experiments/seqlen_results.json', 'r') as f:
     raw = json.load(f)
 
+# Convert new format to old format
 seq_keys = ['T16', 'T32', 'T64', 'T128', 'T256']
 humanoid_data = []
 for key in seq_keys:
@@ -42,7 +42,7 @@ results = {'humanoid': humanoid_data, 'ant': ant_data}
 x = np.arange(5)
 w = 0.35
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.5))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 6.5))
 
 mse_h = [r['mse'] for r in results['humanoid']]
 mse_a = [r['mse'] for r in results['ant']]
@@ -92,11 +92,11 @@ legend_elements = [
     mpatches.Patch(facecolor='#2E86AB', alpha=0.15, label='Humanoid推荐区间'),
     mpatches.Patch(facecolor='#A23B72', alpha=0.15, label='Ant推荐区间'),
 ]
-fig.legend(handles=legend_elements, loc='center', ncol=4, fontsize=8.5, prop=zhfont_s,
-           bbox_to_anchor=(0.5, 0.5), frameon=True, fancybox=True,
+fig.legend(handles=legend_elements, loc='lower center', ncol=4, fontsize=8.5, prop=zhfont_s,
+           bbox_to_anchor=(0.5, -0.03), frameon=True, fancybox=True,
            framealpha=0.9, edgecolor='gray')
 
 plt.tight_layout()
-plt.subplots_adjust(hspace=0.35)
+plt.subplots_adjust(bottom=0.08)
 plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
 print("Done: seqlen_sensitivity.pdf")
