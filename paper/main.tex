@@ -654,19 +654,18 @@ Fig.~4~~Sequence length sensitivity}
 Table~7~~Ablation study on Humanoid ($T=32$)\\
 \label{tab:7} \vskip 3pt
 {\fontsize{7.5pt}{9.5pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
-配置 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$\\
+\begin{tabular}{@{}lccc@{ }}\toprule
+配置 & MSE$(\times10^{-2})$ & $R^2$ & 参数$^{\text{a}}$(M)\\
 \midrule
-去除门控机制 & --- & --- & 7.8 & 0.22\\
-去除残差连接 & --- & --- & 8.3 & 0.24\\
-$L=2$层 & 0.306$\pm$0.003 & 0.618$\pm$0.003 & 5.1 & 0.12\\
-$L=6$层 & 0.299$\pm$0.001 & 0.626$\pm$0.002 & 11.7 & 0.36\\
-$N=32$ & 0.298$\pm$0.003 & 0.627$\pm$0.003 & 8.5 & 0.25\\
-$D=64$ & 0.376$\pm$0.006 & 0.530$\pm$0.007 & 4.6 & 0.08\\
-$D=256$ & 0.258$\pm$0.002 & 0.676$\pm$0.003 & 12.7 & 0.85\\
-\textbf{S4D-WM} & \textbf{0.299$\pm$0.003} & \textbf{0.625$\pm$0.003} & \textbf{8.3} & \textbf{0.23}\\
+$D=64$ & 21.57$\pm$0.18 & 0.727 & 0.055\\
+$D=96$ & 20.74$\pm$0.15 & 0.740 & 0.085\\
+\textbf{默认}($D$=128) & \textbf{20.82$\pm$0.12} & \textbf{0.741} & \textbf{0.085}\\
+$D=192$ & 19.94$\pm$0.41 & 0.751 & 0.189\\
+$N=16$ & 21.36$\pm$0.36 & 0.726 & 0.090\\
+$L=2$ & 21.09$\pm$0.36 & 0.738 & 0.091\\
+$L=3$ & 21.41$\pm$0.31 & 0.730 & 0.098\\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; 10 seeds; MSE为单步预测损失$\mathcal{L}_{\text{s}}$.}
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$M; 5 seeds; 默认配置$D$=128, $N$=8, $L$=1, $W$=5.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
@@ -691,16 +690,16 @@ Table~8~~Training loss ablation (Humanoid, $T=32$)\\
 \label{tab:8} \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
-配置 & MSE & 多步MSE($H{=}8$) & 轮数\\
+配置 & MSE$(\times10^{-2})$ & 多步MSE$(\times10^{-3})$ & 收敛轮数\\
 \midrule
-$\lambda{=}0$ (仅单步) & 0.245 & 0.794 & 100\\
-$\lambda{=}0.1$ & 0.244 & 0.785 & 100\\
-$\lambda{=}0.5$, $H{=}4$ & 0.245 & 0.782 & 100\\
-{\CJKfamily{zhhei}\textbf{$\lambda{=}0.5$, $H{=}8$ (默认)}} & \textbf{0.244} & \textbf{0.787} & \textbf{90}\\
-$\lambda{=}0.5$, $H{=}16$ & 0.244 & 0.775 & 100\\
-$\lambda{=}1.0$ & 0.244 & 0.772 & 100\\
+$\lambda{=}0$ (仅单步) & 20.74 & 1223.5 & 59\\
+$\lambda{=}0.1$ & 20.80 & 977.0 & 55\\
+$\lambda{=}0.5$, $H{=}4$ & 20.95 & 990.3 & 58\\
+{\CJKfamily{zhhei}\textbf{$\lambda{=}0.5$, $H{=}8$ (默认)}} & \textbf{21.26} & \textbf{981.0} & \textbf{54}\\
+$\lambda{=}0.5$, $H{=}16$ & 21.16 & 974.7 & 72\\
+$\lambda{=}1.0$ & 21.30 & 983.9 & 66\\
 \bottomrule
-\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: MSE为验证集单步MSE; 多步MSE为$H{=}8$展开MSE; 10 seeds.}
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 5 seeds.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
@@ -799,14 +798,14 @@ Fig.~7~~MPC control performance comparison}
 Table~11~~Gating mechanism comparison with different threshold functions (Humanoid, $T=32$)\\
 \label{tab:11} \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-阈值函数 & MSE & $R^2$ & 时间$^{\text{a}}$\\
+\begin{tabular}{@{}lcc@{ }}\toprule
+阈值函数 & MSE$(\times10^{-2})$ & $R^2$ \\
 \midrule
-硬阈值 & 0.300$\pm$0.000 & 0.629$\pm$0.000 & 7.8\\
-Garrote阈值} & 0.279$\pm$0.005 & 0.655$\pm$0.006 & 8.3\\
-{\CJKfamily{zhhei}\textbf{软阈值}} & \textbf{0.272$\pm$0.002} & \textbf{0.664$\pm$0.003} & \textbf{8.3}\\
+硬阈值 & 24.84$\pm$3.37 & 0.689\\
+Garrote阈值 & 21.99$\pm$0.57 & 0.725\\
+{\CJKfamily{zhhei}\textbf{软阈值}} & \textbf{20.82$\pm$0.12} & \textbf{0.741}\\
 \bottomrule
-\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); 10 seeds.}
+\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 5 seeds.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
@@ -821,15 +820,13 @@ Table~12~~Hyperparameter grid search results for MS-WM (Humanoid, $T=32$)}\\
 \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
-$\lambda$ & $H$ & MSE & 多步MSE($H{=}8$) \\\midrule
-0 & --- & 0.245 & 0.794 \\
-0.1 & 8 & 0.244 & 0.785 \\
-0.5 & 4 & 0.245 & 0.782 \\
-\textbf{0.5} & \textbf{8} & \textbf{0.244} & \textbf{0.787} \\
-0.5 & 16 & 0.244 & 0.775 \\
-1.0 & 8 & 0.244 & 0.772 \\
+$D$ & MSE$(\times10^{-2})$ & $R^2$ & 参数$^{\text{a}}$(M) \\\midrule
+64 & 21.68$\pm$0.19 & 0.727 & 0.055 \\
+96 & 20.74$\pm$0.15 & 0.740 & 0.085 \\
+\textbf{128} & \textbf{20.51$\pm$0.34} & \textbf{0.741} & \textbf{0.118} \\
+192 & 20.11$\pm$0.20 & 0.751 & 0.189 \\
 \bottomrule
-\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: MSE为验证集单步MSE; 多步MSE为$H{=}8$展开MSE.}
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$M; 5 seeds; 默认$N$=8, $L$=1, $W$=5.}
 \end{tabular}}
 \end{minipage}
 
