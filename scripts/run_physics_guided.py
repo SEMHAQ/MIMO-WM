@@ -289,7 +289,7 @@ if __name__ == '__main__':
 
     for ds_name in datasets:
         print(f'\n{ds_name}:', flush=True)
-        print(f'{\"配置\":<20} {\"MSE(×10⁻²)\":<15} {\"R²\":<10} {\"参数(M)\":<10}')
+        print('{:<20} {:<15} {:<10} {:<10}'.format('配置', 'MSE(×10⁻²)', 'R²', '参数(M)'))
         print('-'*60)
         for config_name in configs:
             key = f'{config_name}_{ds_name}'
@@ -299,6 +299,6 @@ if __name__ == '__main__':
                     mses = [r['mse'] for r in valid]
                     r2s = [r['r2'] for r in valid]
                     params = valid[0]['params_m']
-                    print(f'{config_name:<20} {np.mean(mses)*100:.2f}±{np.std(mses)*100:.2f}    {np.mean(r2s):.4f}    {params:.3f}')
+                    print('{:<20} {:.2f}±{:.2f}    {:.4f}    {:.3f}'.format(config_name, np.mean(mses)*100, np.std(mses)*100, np.mean(r2s), params))
 
     print('\nDone!', flush=True)
