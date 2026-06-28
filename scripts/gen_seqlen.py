@@ -43,6 +43,7 @@ ax1.axvspan(-0.5, 1.5, alpha=0.08, color='#2E86AB', zorder=1)
 ax1.axvspan(3.5, 4.5, alpha=0.08, color='#A23B72', zorder=1)
 
 ax1.set_ylabel('MSE', fontsize=10)
+ax1.set_xlabel('序列长度 T', fontproperties=zhfont, fontsize=10)
 ax1.set_xticks(x)
 ax1.set_xticklabels(['16', '32', '64', '128', '256'])
 ax1.grid(True, alpha=0.2, axis='y', linewidth=0.5)
@@ -77,11 +78,11 @@ legend_elements = [
     mpatches.Patch(facecolor='#2E86AB', alpha=0.15, label='Humanoid推荐区间'),
     mpatches.Patch(facecolor='#A23B72', alpha=0.15, label='Ant推荐区间'),
 ]
-fig.legend(handles=legend_elements, loc='center', ncol=4, fontsize=8.5, prop=zhfont_s,
-           bbox_to_anchor=(0.5, 0.5), frameon=True, fancybox=True,
+fig.legend(handles=legend_elements, loc='upper center', ncol=4, fontsize=8.5, prop=zhfont_s,
+           bbox_to_anchor=(0.5, 0.48), frameon=True, fancybox=True,
            framealpha=0.9, edgecolor='gray')
 
 plt.tight_layout()
-plt.subplots_adjust(hspace=0.35)
+plt.subplots_adjust(hspace=0.4)
 plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
 print("Done: seqlen_sensitivity.pdf")
