@@ -169,7 +169,9 @@ if __name__ == '__main__':
             model = model_fn()
             r = train_eval(model, Xs, Xa, Y, Xv, Xav, Yv, seed)
             results[name][seed_key] = r
-            print(f'MSE={r[\"mse\"]:.4f}, R²={r[\"r2\"]:.4f}', flush=True)
+            mse_val = r['mse']
+            r2_val = r['r2']
+            print(f'MSE={mse_val:.4f}, R²={r2_val:.4f}', flush=True)
             with open(RESULTS_FILE, 'w') as f:
                 json.dump(results, f, indent=2)
 
