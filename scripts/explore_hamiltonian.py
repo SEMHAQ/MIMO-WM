@@ -142,21 +142,6 @@ class HamiltonianWorldModel(nn.Module):
         for block in self.ssm:
             residual = h; x_norm = block['norm'](h); h = residual + block['ssm'](x_norm)
 
-        # 哈密顿方程：用梯度计算状态变化
-        h_last = h[:, -1, :].requires_grad_(True)
-        H = self.hamiltonian(h_last)
-
-        # 计算哈密顿梯度
-        dH = torch.autograd.grad(H.sum(), h_last, create_graph=True)[0]
-
-        # 分离位置和速度的梯度
-        dH_dq = dH[:, :self.pos_dim]  # ∂H/∂q
-        dH_dp = dH[:, self.pos_dim:]  # ∂H/∂p
-
-        # 哈密顿方程：dq/dt = ∂H/∂p, dp/dt = -∂H/∂q
-        # 这里用梯度作为状态变化的估计
-        state_change = torch.cat([dH_dp, -dH_dq], dim=-1)
-
         # 预测下一状态
         state_pred = states[:, -1, :] + self.decoder(h[:, -1, :])
 
