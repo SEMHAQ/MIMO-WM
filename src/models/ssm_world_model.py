@@ -102,21 +102,18 @@ class DiagSSM(nn.Module):
 
 
 class SSMBlock(nn.Module):
-    """SSM块: LayerNorm + SSM + 门控 + 残差"""
+    """SSM块: LayerNorm + SSM + 残差（S4D原版，无门控）"""
 
     def __init__(self, d_model: int, d_state: int = 64):
         super().__init__()
         self.norm = nn.LayerNorm(d_model)
         self.ssm = DiagSSM(d_model, d_state)
-        self.gate = nn.Linear(d_model, d_model)
 
     def forward(self, x, mode='conv'):
         residual = x
         x_norm = self.norm(x)
         ssm_out = self.ssm(x_norm, mode=mode)
-        g = torch.sigmoid(self.gate(x_norm))
-        out = g * ssm_out + (1 - g) * x_norm
-        return residual + out
+        return residual + ssm_out
 
 
 class SSMWorldModel(nn.Module):

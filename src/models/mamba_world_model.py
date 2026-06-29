@@ -71,7 +71,7 @@ class SelectiveSSM(nn.Module):
 
 
 class MambaBlock(nn.Module):
-    """Mamba块: LayerNorm + Mamba/SelectiveSSM + 门控 + 残差"""
+    """Mamba块: LayerNorm + Mamba/SelectiveSSM + 残差（原版，无门控）"""
     def __init__(self, d_model, d_state=16):
         super().__init__()
         self.norm = nn.LayerNorm(d_model)
@@ -79,15 +79,12 @@ class MambaBlock(nn.Module):
             self.mamba = Mamba(d_model=d_model, d_state=d_state, d_conv=4, expand=2)
         else:
             self.mamba = SelectiveSSM(d_model, d_state)
-        self.gate = nn.Linear(d_model, d_model)
 
     def forward(self, x):
         residual = x
         x_norm = self.norm(x)
         mamba_out = self.mamba(x_norm)
-        g = torch.sigmoid(self.gate(x_norm))
-        out = g * mamba_out + (1 - g) * x_norm
-        return residual + out
+        return residual + mamba_out
 
 
 class MambaWorldModel(nn.Module):
@@ -103,7 +100,6 @@ class MambaWorldModel(nn.Module):
         self.backbone = nn.ModuleList([
             MambaBlock(d_model, d_state) for _ in range(n_layers)
         ])
-        self.norm = nn.LayerNorm(d_model)
         self.decoder = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.GELU(),
@@ -125,6 +121,5 @@ class MambaWorldModel(nn.Module):
         x = self.encoder(x)
         for block in self.backbone:
             x = block(x)
-        x = self.norm(x)
         delta_s = self.decoder(x[:, -1, :])
         return states[:, -1, :] + delta_s
