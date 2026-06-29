@@ -146,14 +146,14 @@ class HyenaBlock(nn.Module):
         super().__init__()
         self.norm = nn.LayerNorm(d_model)
         self.conv = nn.Conv1d(d_model, d_model, kernel_size=kernel_size,
-                             padding=kernel_size//2, groups=d_model)
+                             padding=kernel_size//2, groups=d_model, bias=False)
         self.gate = nn.Linear(d_model, d_model)
 
     def forward(self, x):
         residual = x
         x_norm = self.norm(x)
-        # 长卷积
-        conv_out = self.conv(x_norm.transpose(1, 2)).transpose(1, 2)
+        # 长卷积（保持长度）
+        conv_out = self.conv(x_norm.transpose(1, 2))[:, :, :x.shape[1]].transpose(1, 2)
         # 门控
         g = torch.sigmoid(self.gate(x_norm))
         return residual + g * conv_out
