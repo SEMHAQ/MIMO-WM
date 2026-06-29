@@ -219,8 +219,8 @@ if __name__ == '__main__':
         results = {}
 
     configs = {
-        'SimpleSSM': lambda: SimpleSSM(348, 17, d_model=96, d_state=16, n_layers=2),
         'HamiltonianWM': lambda: HamiltonianWorldModel(348, 17, d_model=96, d_state=16, n_layers=2),
+        'SimpleSSM': lambda: SimpleSSM(348, 17, d_model=96, d_state=16, n_layers=2),
     }
 
     print('\n' + '='*60, flush=True)
