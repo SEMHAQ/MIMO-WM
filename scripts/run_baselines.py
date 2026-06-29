@@ -35,7 +35,7 @@ def make_data(eps, T, mean, std):
     return np.array(Xs), np.array(Xa), np.array(Y)
 
 def train_eval(model, Xs, Xa, Y, Xv, Xav, Yv, seed=SEED):
-    torch.manual_seed(seed); np.random.seed(seed)
+    torch.manual_seed(int(seed)); np.random.seed(int(seed))
     model = model.to(device)
     params = sum(p.numel() for p in model.parameters()) / 1e6
     opt = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-4)
