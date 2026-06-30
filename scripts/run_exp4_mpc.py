@@ -15,6 +15,33 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 T = 32
 SEEDS = [42]
 
+def evaluate_mpc_quality(model, episodes, mean, std, n_episodes=3, n_steps=10):
+    """闭环仿真质量：模型做仿真器，MPC规划动作，测跟踪误差"""
+    model.eval()
+    cem = CEMMPC(model, horizon=10, n_samples=32, n_elite=4, n_iterations=2)
+    errors = []
+    for states, actions in episodes[:n_episodes]:
+        if len(states) < T + n_steps: continue
+        s_norm = (states - mean) / (std + 1e-8)
+        s_hist = s_norm[:T].copy()
+        a_hist = actions[:T-1].copy()
+        ref_idx = T
+        ep_errors = []
+        for step in range(n_steps):
+            target = s_norm[ref_idx] if ref_idx < len(s_norm) else s_norm[-1]
+            planned_action = cem.plan(s_hist, a_hist, target)
+            with torch.no_grad():
+                s_t = torch.FloatTensor(s_hist).unsqueeze(0).to(device)
+                a_t = torch.FloatTensor(a_hist).unsqueeze(0).to(device)
+                pred = model(s_t, a_t).cpu().numpy().flatten()
+            ep_errors.append(np.mean((pred - target) ** 2))
+            s_hist = np.vstack([s_hist[1:], pred.reshape(1, -1)])
+            a_hist = np.vstack([a_hist[1:], planned_action.reshape(1, -1)])
+            ref_idx = min(ref_idx + 1, len(s_norm) - 1)
+        if ep_errors:
+            errors.append(np.mean(ep_errors))
+    return round(float(np.mean(errors)), 6) if errors else 0
+
 print(f'Device: {device}', flush=True)
 
 def load_eps(d, s):
@@ -222,7 +249,11 @@ if __name__ == '__main__':
 
     RESULTS_FILE = 'experiments/exp4_mpc.json'
     os.makedirs('experiments', exist_ok=True)
-    results = {}
+    if os.path.exists(RESULTS_FILE):
+        with open(RESULTS_FILE) as f:
+            results = json.load(f)
+    else:
+        results = {}
 
     eps_tr = load_eps(ds_cfg['dir'], 'train')
     eps_vl = load_eps(ds_cfg['dir'], 'val')
@@ -232,34 +263,47 @@ if __name__ == '__main__':
     print(f'Train: {len(Xs)}, Val: {len(Xv)}', flush=True)
 
     for model_name, (ModelClass, kwargs) in models.items():
+        g_key = f'{model_name}_GradMPC'
+        c_key = f'{model_name}_CEMMPC'
+        q_key = f'{model_name}_Quality'
+        if g_key in results and c_key in results and q_key in results:
+            print(f'\n[{model_name}]: 已有结果，跳过', flush=True)
+            continue
+
         print(f'\n[{model_name}]', flush=True)
         print(f'  训练模型...', flush=True)
         model = train_world_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv)
         model.eval()
 
-        print(f'  评估梯度MPC...', flush=True)
+        print(f'  评估梯度MPC速度...', flush=True)
         grad_mpc = GradientMPC(model, horizon=10, n_iterations=30, lr=0.01)
         r = evaluate_mpc_speed(grad_mpc, eps_vl, mean, std)
         results[f'{model_name}_GradMPC'] = r
         print(f'    {r["hz"]:.2f} Hz ({r["avg_step_time_ms"]:.1f} ms)', flush=True)
 
-        print(f'  评估CEM-MPC...', flush=True)
+        print(f'  评估CEM-MPC速度...', flush=True)
         cem_mpc = CEMMPC(model, horizon=10, n_samples=256, n_elite=32, n_iterations=5)
         r = evaluate_mpc_speed(cem_mpc, eps_vl, mean, std)
         results[f'{model_name}_CEMMPC'] = r
         print(f'    {r["hz"]:.2f} Hz ({r["avg_step_time_ms"]:.1f} ms)', flush=True)
 
+        print(f'  评估闭环规划质量...', flush=True)
+        q = evaluate_mpc_quality(model, eps_vl, mean, std)
+        results[f'{model_name}_Quality'] = q
+        print(f'    tracking MSE = {q:.6f}', flush=True)
+
         with open(RESULTS_FILE, 'w') as f:
             json.dump(results, f, indent=2)
 
     # 汇总
-    print('\n' + '='*75, flush=True)
-    print('MPC控制频率对比 (Hz)', flush=True)
-    print('='*75)
-    print('{:<18} {:<12} {:<12} {:<10}'.format('模型', '梯度MPC', 'CEM-MPC', '加速比'))
-    print('-'*75)
+    print('\n' + '='*85, flush=True)
+    print('MPC规划结果', flush=True)
+    print('='*85)
+    print('{:<18} {:<12} {:<12} {:<10} {:<12}'.format('模型', 'Grad(Hz)', 'CEM(Hz)', '加速比', '质量MSE'))
+    print('-'*85)
     for m in models:
         g = results[f'{m}_GradMPC']['hz']
         c = results[f'{m}_CEMMPC']['hz']
-        print('{:<18} {:<12.2f} {:<12.2f} {:.1f}x'.format(m, g, c, c/g if g>0 else 0))
+        q = results[f'{m}_Quality']
+        print('{:<18} {:<12.2f} {:<12.2f} {:<10.1f}x {:<12.6f}'.format(m, g, c, c/g if g>0 else 0, q))
     print('\nDone!', flush=True)
