@@ -184,6 +184,7 @@ def train_world_model(model, Xs, Xa, Y, rewards, Xv, Xav, Yv, val_rewards, seed=
 # 基线：简单SSM
 # ============================================================
 class SimpleSSM(nn.Module):
+    """简单SSM基线（返回三个值，与WorldModel接口一致）"""
     def __init__(self, state_dim, action_dim, d_model=128, d_state=16, n_layers=1):
         super().__init__()
         self.encoder = nn.Sequential(nn.Linear(state_dim + action_dim, d_model), nn.GELU(), nn.Linear(d_model, d_model))
@@ -192,6 +193,9 @@ class SimpleSSM(nn.Module):
             for _ in range(n_layers)
         ])
         self.decoder = nn.Sequential(nn.Linear(d_model, d_model), nn.GELU(), nn.Linear(d_model, state_dim))
+        # 奖励和不确定性头（简化版）
+        self.reward_head = nn.Linear(d_model, 1)
+        self.uncertainty_head = nn.Sequential(nn.Linear(d_model, 1), nn.Softplus())
 
     def forward(self, states, actions):
         if actions.shape[1] < states.shape[1]:
@@ -201,7 +205,11 @@ class SimpleSSM(nn.Module):
         h = self.encoder(x)
         for block in self.backbone:
             residual = h; x_norm = block['norm'](h); h = residual + block['ssm'](x_norm)
-        return states[:, -1, :] + self.decoder(h[:, -1, :])
+        h_last = h[:, -1, :]
+        state_pred = states[:, -1, :] + self.decoder(h_last)
+        reward_pred = self.reward_head(h_last)
+        uncertainty = self.uncertainty_head(h_last)
+        return state_pred, reward_pred, uncertainty
 
 # ============================================================
 # 主实验
