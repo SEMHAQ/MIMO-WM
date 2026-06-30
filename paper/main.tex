@@ -655,7 +655,7 @@ GRU & 717.8 & 1.4\\
 Transformer & 1692.3 & 0.6\\
 Mamba & 1657.5 & 0.6\\
 S4D & 1683.9 & 0.6\\
-\textbf{MIMO-WM} & \textbf{1942.3} & \textbf{0.5}\\
+\textbf{MIMO-WM} & 2511.9 & 0.4\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
@@ -681,18 +681,18 @@ Table~10~~CEM sampling-based MPC control performance (Humanoid)}\\
 LSTM & 48.4 & 20.7 \\
 GRU & 49.8 & 20.1 \\
 Transformer & 142.0 & 7.0 \\
-Mamba & 103.6 & 9.7 \\
-S4D & 111.3 & 9.0 \\
-\textbf{MIMO-WM} & \textbf{128.7} & \textbf{7.8} \\\bottomrule
+Mamba & 103.6 & 9.4 \\
+S4D & 111.3 & 7.3 \\
+\textbf{MIMO-WM} & 153.8 & 6.5 \\\bottomrule
 \multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms; $K{=}100$, $H{=}10$, 1轮迭代, GPU批量并行; 5次独立试验均值.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
 表~5表明, CEM-MPC相比梯度MPC(表~4)可将控制频率提升1--2个数量级.
-MIMO-WM达到21.7Hz, 显著优于所有基线, 满足典型MPC控制需求(10Hz);
-GRU-WM达到19.5Hz, S4D-WM达到11.3Hz, 也满足10Hz需求;
-Transformer-WM仅6.2Hz, 不满足实时控制需求.
+LSTM和GRU达到20Hz以上, 满足典型MPC控制需求(10Hz);
+Mamba达到9.4Hz, 接近实时需求;
+MIMO-WM达到6.5Hz, S4D达到7.3Hz.
 各方法MPC性能对比如图~6所示.
 
 \begingroup\centering
@@ -714,7 +714,7 @@ Humanoid数据集上的实验结果(表~2)表明MIMO-WM取得了最优精度, MS
 本文将MIMO-WM定位为一种轻量级世界模型, 其核心功能是状态转移预测, 并通过MPC框架验证了其在规划决策中的可行性.
 与Dreamer系列等完整世界模型框架相比, MIMO-WM不涉及潜在空间建模、奖励预测和策略学习, 而是专注于状态-动作序列的高效预测.
 这一聚焦定位使得MIMO-WM能够以极低的参数开销实现高质量的状态预测, 为资源受限场景下的世界模型部署提供了一种可行方案.
-MPC实验表明, CEM采样式MPC可将MIMO-WM的控制频率提升至7.8Hz, LSTM和GRU达到20Hz以上.
+MPC实验表明, CEM采样式MPC可将控制频率提升1--2个数量级, LSTM和GRU达到20Hz以上.
 
 训练损失消融实验表明, 多步展开损失对单步预测精度影响较小, 但对多步展开精度有显著贡献.
 阈值函数对比实验验证了软阈值门控的优势: 软阈值MSE优于硬阈值和Garrote阈值, 其可微性和单调性保证了梯度的稳定传播.
