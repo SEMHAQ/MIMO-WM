@@ -331,35 +331,30 @@ $D$为隐空间维度. 解码器将最后一层输出映射回状态空间:
 
 \subsection{MIMO块}
 
-MIMO块是MIMO-WM的核心组件. 如图~1所示, 每个MIMO块包含
-\textbf{层归一化}、\textbf{并行SSM层}和\textbf{门控融合}:
+\begin{Def}
+MIMO块是MIMO-WM的核心组件, 每个块包含并行SSM层和门控融合两个部分.
 
-\begin{enumerate}
-\item \textbf{并行SSM层}: 对输入$\tilde{{\bm z}}_t \in \mathbb{R}^D$的
-每个维度$d=1,\ldots,D$, 并行运行一个独立SSM:
+\textbf{并行SSM层}: 对输入$\tilde{{\bm z}}_t \in \mathbb{R}^D$的每个维度
+$d=1,\ldots,D$, 并行运行一个独立SSM
 \begin{eqnarray}
 {\bm h}_t^{(d)} = \bar{{\bm A}}^{(d)}{\bm h}_{t-1}^{(d)} + \bar{{\bm B}}^{(d)}\tilde{z}_t^{(d)},
 \end{eqnarray}
-其中$\bar{{\bm A}}^{(d)} \in \mathbb{C}^{N \times N}$为对角矩阵,
+其中$\bar{{\bm A}}^{(d)} \in \mathbb{C}^{N \times N}$为对角状态矩阵,
 ${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态.
-所有维度共享相同结构但参数独立,
-使得不同维度能够捕获不同类型的动力学特征.
+所有维度参数独立, 可捕获不同类型的动力学特征.
 
-\item \textbf{门控融合}: 通过sigmoid门控机制动态调节SSM输出的信息流:
+\textbf{门控融合}: 先对输入进行层归一化, 再经SSM变换和sigmoid门控
 \begin{eqnarray}
 \tilde{{\bm z}}_t = \text{LayerNorm}({\bm z}_t), \quad
 {\bm h}_t = \text{DiagSSM}(\tilde{{\bm z}}_t), \quad
 {\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g),
 \end{eqnarray}
 其中$\sigma$为sigmoid函数, ${\bm W}_g \in \mathbb{R}^{D \times D}$为门控参数.
-门控输出通过残差连接:
-\begin{eqnarray}
-{\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o,
-\end{eqnarray}
+门控输出经残差连接${\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o$,
 其中${\bm W}_o \in \mathbb{R}^{D \times D}$.
-\end{enumerate}
+\end{Def}
 
-门控机制使模型能够根据当前输入动态选择保留或抑制SSM输出的每个维度,
+门控机制使模型能动态选择保留或抑制SSM输出的每个维度,
 仅需$O(D^2)$额外参数.
 
 \begin{Ste}编码: ${\bm z} \leftarrow \text{Encoder}([{\bm s}_{0:T{-}1}; {\bm a}_{0:T{-}1}])$.\end{Ste}
@@ -424,10 +419,15 @@ ${\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau$
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-由引理, $y_t = {\bm C}{\bm h}_t + {\bm D}x_t
-= {\bm C}\sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau}\bar{{\bm B}} x_\tau + {\bm D}x_t$.
-$\bar{{\bm A}}$为对角, 故$\bar{{\bm A}}^{t-\tau} = \diag(\bar{a}_n^{t-\tau})$,
-${\bm C}\bar{{\bm A}}^{t-\tau}\bar{{\bm B}} = \sum_n C_n\bar{a}_n^{t-\tau}\bar{b}_n = K[t{-}\tau]$.
+由引理,
+\begin{eqnarray}
+y_t = {\bm C}{\bm h}_t + {\bm D}x_t
+= {\bm C}\sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau}\bar{{\bm B}} x_\tau + {\bm D}x_t.
+\end{eqnarray}
+$\bar{{\bm A}}$为对角, 故$\bar{{\bm A}}^{t-\tau} = \diag(\bar{a}_n^{t-\tau})$, 代入得
+\begin{eqnarray}
+{\bm C}\bar{{\bm A}}^{t-\tau}\bar{{\bm B}} = \sum_n C_n\bar{a}_n^{t-\tau}\bar{b}_n = K[t{-}\tau].
+\end{eqnarray}
 因此$y_t = \sum_{\tau=0}^{t} K[t{-}\tau]x_\tau + {\bm D}x_t$, 与卷积模式一致. \hfill$\square$
 
 \begin{Thm}
@@ -481,7 +481,11 @@ $J({\bm a}) \geqslant J^* + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2$.
 \end{Site}
 
 {\CJKfamily{hei}证}~~
-全样本方差${\bm \Sigma}_{\mathcal{S}}^{(k)} = \frac{1}{K-1}\sum({\bm a} - \bar{{\bm \mu}})({\bm a} - \bar{{\bm \mu}})^{\rm T}$.
+全样本方差为
+\begin{eqnarray}
+{\bm \Sigma}_{\mathcal{S}}^{(k)} = \frac{1}{K-1}\sum_{{\bm a} \in \mathcal{S}^{(k)}}
+({\bm a} - \bar{{\bm \mu}})({\bm a} - \bar{{\bm \mu}})^{\rm T}.
+\end{eqnarray}
 精英方差是其子集估计, 以概率$1-N_e/K$缩减. \hfill$\square$
 
 \begin{Thm}
