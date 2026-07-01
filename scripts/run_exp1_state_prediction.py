@@ -8,7 +8,7 @@
 import torch, torch.nn as nn, numpy as np, sys, os, json, time, math
 sys.path.insert(0, '.')
 from src.models.ssm_world_model import SSMWorldModel, DiagSSM
-from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel, SimpleSSMWorldModel, MLPWorldModel, TCNWorldModel
+from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel, SimpleSSMWorldModel, TCNWorldModel
 from src.models.mamba_world_model import MambaWorldModel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
