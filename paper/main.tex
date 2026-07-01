@@ -351,7 +351,7 @@ $d=1,\ldots,D$, 并行运行一个独立SSM
 ${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态.
 所有维度参数独立, 可捕获不同类型的动力学特征.
 
-\textbf{门控融合}: 先层归一化, 再经SSM变换和sigmoid门控
+\textbf{门控融合}: 门控机制的计算流程如下
 \begin{equation}
 \left\{\begin{aligned}
 \tilde{{\bm z}}_t &= \text{LayerNorm}({\bm z}_t), \\
@@ -359,9 +359,7 @@ ${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态.
 {\bm o}_t &= {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g).
 \end{aligned}\right.
 \end{equation}
-其中$\sigma$为sigmoid函数, ${\bm W}_g \in \mathbb{R}^{D \times D}$.
-门控输出经残差连接${\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o$,
-其中${\bm W}_o \in \mathbb{R}^{D \times D}$.
+其中$\sigma$为sigmoid激活函数, 用于控制SSM输出${\bm h}_t$的信息保留比例, ${\bm W}_g \in \mathbb{R}^{D \times D}$为门控权重. 门控输出${\bm o}_t$经残差连接得到MIMO块的最终输出${\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o$.
 \end{Def}
 
 门控机制使模型能动态选择保留或抑制SSM输出的每个维度,
