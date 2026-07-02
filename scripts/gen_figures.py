@@ -93,27 +93,25 @@ def gen_ablation():
                       linewidth=0.8, zorder=3, alpha=0.85)
     for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
-        ax_params.text(params[i] + 0.02, y[i], f'{params[i]:.1f}M',
+        ax_params.text(params[i] + 0.03, y[i], f'{params[i]:.3f}',
                        fontsize=7, va='center', color='#222', fontweight=fw)
     ax_params.set_xlabel('Parameters (M)', fontsize=9)
-    ax_params.set_xlim(0, 0.72)
+    ax_params.set_xlim(0, 0.75)
     ax_params.set_title('(c) Parameters', fontsize=9, fontweight='bold', loc='left')
     ax_params.spines['top'].set_visible(False)
     ax_params.spines['right'].set_visible(False)
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_params.invert_yaxis()
 
-    # Y轴标签只在最上图
-    ax_mse.set_yticks(y)
-    ax_mse.set_yticklabels(labels, fontsize=8)
-    for i, tick in enumerate(ax_mse.get_yticklabels()):
-        if i == 0:
-            tick.set_fontweight('bold')
-            tick.set_color(HL)
-
-    # 中下图隐藏Y轴
-    ax_r2.set_yticks([])
-    ax_params.set_yticks([])
+    # Y轴标签: 三个子图都显示
+    for ax in [ax_mse, ax_r2, ax_params]:
+        ax.set_yticks(y)
+        ax.set_yticklabels(labels, fontsize=7.5)
+        for i, tick in enumerate(ax.get_yticklabels()):
+            if i == 0:
+                tick.set_fontweight('bold')
+                tick.set_color(HL)
+        ax.invert_yaxis()
 
     plt.tight_layout(pad=0.5, h_pad=0.8)
     plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.1)
