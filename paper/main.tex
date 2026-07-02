@@ -442,35 +442,30 @@ y_t^{(d)} &= {\bm C}^{(d)}{\bm h}_t^{(d)} + {\bm D}x_t^{(d)} \\
 与卷积模式一致. $D$个通道相互独立, 同时成立. 证毕.
 \begin{Thm}
 \label{thm:complexity}
-设输入序列长度$T$, SSM隐状态维度$N$, MIMO-WM隐空间维度$D$,
-MIMO块层数$L$, 状态维度$d_s$, 动作维度$d_a$.
-对角SSM单层的递推模式时间复杂度为$O(TN)$, 卷积模式为$O(T\log T)$.
-MIMO-WM整体时间复杂度为$O(LTD\log T + LTD^2 + TD(d_s+d_a))$.
-作为对比, LSTM的时间复杂度为$O(TLD^2)$, Transformer为$O(T^2LD+TLD^2)$.
-当$T > D/\log D$时, MIMO-WM在长序列下的计算效率最优.
+设序列长度$T$, SSM状态维度$N$, 隐空间维度$D$, 层数$L$.
+对角SSM单层的递推模式和卷积模式的时间复杂度分别为$O(TN)$和$O(T\log T)$.
+MIMO-WM整体复杂度为
+\begin{equation}
+O\big(LTD\log T + LTD^2 + TD(d_s+d_a)\big).
+\end{equation}
+作为对比, LSTM和Transformer的复杂度分别为$O(TLD^2)$和$O(T^2LD+TLD^2)$.
+当序列较长($T > D/\log D$)时, MIMO-WM的计算效率最优.
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-递推模式每步执行一次$N$维复向量点乘和一次标量乘法,
-共计$T$步, 时间复杂度$O(TN)$, 空间复杂度$O(N)$.
-卷积模式将序列处理转化为$T$点循环卷积, 通过FFT实现,
-时间复杂度$O(T\log T)$, 空间复杂度$O(T)$.
-当$N > \log_2 T$时, $T\log T < TN$, 卷积模式更高效.
-对本文$T=32$, $N=16$, $\log_2 32 = 5 < 16$, 故选用卷积模式.
+递推模式每步执行$N$维向量运算, 共$T$步, 故为$O(TN)$.
+卷积模式通过FFT计算$T$点循环卷积, 复杂度$O(T\log T)$.
+当$N > \log_2 T$时卷积更优, 本文$N=16 > \log_2 32 = 5$.
 
-MIMO-WM的整体复杂度由其各模块求和得到:
-编码器将$T$个$d_s+d_a$维向量映射至$D$维, 复杂度$O(TD(d_s+d_a))$;
-每个MIMO块包含层归一化$O(TD)$, SSM卷积$O(TD\log T)$,
-门控和输出投影$O(TD^2)$, 残差连接$O(TD)$,
-$L$层总计$O(LTD\log T + LTD^2)$;
-解码器复杂度$O(TDd_s)$.
-总和即$O(LTD\log T + LTD^2 + TD(d_s+d_a))$.
+MIMO-WM各模块复杂度如下:
+编码器$O(TD(d_s+d_a))$, 每个MIMO块$O(TD\log T + TD^2)$,
+$L$层共$O(LTD\log T + LTD^2)$, 解码器$O(TDd_s)$,
+求和即得式(22).
 
-LSTM每步需计算遗忘门、输入门、输出门和候选状态,
-每组$O(D^2)$, 共$4$组, 总计$O(4TLD^2) = O(TLD^2)$.
-Transformer每层的自注意力为$O(T^2D)$, 前馈网络为$O(TD^2)$.
-MIMO-WM的$O(TD\log T)$在$T$较大时显著优于Transformer的$O(T^2D)$.
-以本文配置$T=32$, $D=96$计算, MIMO-WM比Transformer约快6倍.
+LSTM每步$4$组$O(D^2)$运算, 共$O(TLD^2)$;
+Transformer自注意力$O(T^2D)$, 前馈网络$O(TD^2)$.
+MIMO-WM的$O(TD\log T)$远优于Transformer的$O(T^2D)$,
+本文$T=32$, $D=96$时约快$6$倍.
 证毕.
 
 \begin{Def}
