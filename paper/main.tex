@@ -412,7 +412,11 @@ y_t^{(d)} &= {\bm C}^{(d)}{\bm h}_t^{(d)} + {\bm D}x_t^{(d)}.
 \end{aligned}\right.
 \end{equation}
 
-卷积模式通过核$K^{(d)}[t] = \sum_n C_n^{(d)}\bar{b}_n^{(d)}(\bar{a}_n^{(d)})^t$并行计算
+卷积模式通过核
+\begin{equation}
+K^{(d)}[t] = \sum_n C_n^{(d)}\bar{b}_n^{(d)}(\bar{a}_n^{(d)})^t
+\end{equation}
+并行计算
 \begin{equation}
 \label{eq:convolution}
 y_t^{(d)} = \sum_{\tau=0}^{t} K^{(d)}[t{-}\tau] x_\tau^{(d)} + {\bm D}x_t^{(d)}.
