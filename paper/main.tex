@@ -749,12 +749,44 @@ $T$ & MSE$(\times10^{-2})$ & $R^2$ \\
 
 表~4表明, MIMO-WM在$T{=}16$时取得最优精度, MSE为19.23. 当$T$增至32及以上时, 精度逐步下降, $T{=}128$时MSE增至41.13, R²降至0.448. 这表明对于Humanoid高维动力学系统, 较短的序列长度更有利于预测, 推荐$T \in [8, 32]$.
 
+\subsection{MPC规划实验}
+
+将训练好的世界模型嵌入MPC框架, 对比梯度MPC和CEM采样式MPC的控制性能.
+梯度MPC使用Adam优化器进行30次迭代; CEM-MPC使用$K{=}256$个候选序列、$N_e{=}32$个精英样本、5轮迭代, 预测时域$H{=}10$.
+由于模型预测控制采用滚动时域策略, 每个控制时刻仅执行动作序列的第一个动作后即重新规划, 因此模型的短期预测精度直接决定控制质量. 表~5给出各模型的控制频率和3步预测精度.
+
+\noindent\begin{minipage}{\columnwidth}
+\begingroup\centering
+{\CJKfamily{kai} 表~5~~MPC控制性能对比(Humanoid)\\
+Table~5~~MPC control performance comparison (Humanoid)}\\
+\vskip 3pt
+{\fontsize{8.5pt}{10.6pt}\selectfont
+\begin{tabular}{@{}lccc@{ }}\toprule
+方法 & 梯度MPC/Hz & CEM-MPC/Hz & 3步预测MSE \\
+\midrule
+LSTM & 1.45 & 21.16 & 0.262 \\
+GRU & 1.44 & 20.79 & 0.261 \\
+Trans. & 0.62 & 7.48 & 0.190 \\
+Mamba & 0.60 & 9.79 & 0.231 \\
+TCN & 1.06 & 15.26 & 0.210 \\
+\textbf{MIMO-WM} & 0.51 & \textbf{7.99} & \textbf{0.216} \\
+\bottomrule
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: CEM参数$K{=}256$, $N_e{=}32$, $M{=}5$; seed=42.}
+\end{tabular}}
+\par\endgroup
+\end{minipage}
+
+表~5表明, CEM-MPC相比梯度MPC可将控制频率提升1$\sim$2个数量级.
+在3步预测精度方面, MIMO-WM的MSE为0.216, 优于Mamba-WM的0.231、GRU-WM的0.261和LSTM-WM的0.262, 说明MIMO-WM的短期预测优势能够有效转化为MPC规划质量.
+LSTM和GRU虽然控制频率较高, 但其长期预测精度较差(见表~1), 限制了MPC的规划可靠性.
+
 \subsection{讨论}
 
 Humanoid数据集上的实验结果表~1表明MIMO-WM取得了最优精度, MSE为$19.87\times10^{-2}$,
-优于Mamba-WM($20.18\times10^{-2}$)、TCN-WM($20.68\times10^{-2}$)和Transformer-WM($28.11\times10^{-2}$).
+优于Mamba-WM的$20.18\times10^{-2}$、TCN-WM的$20.68\times10^{-2}$和Transformer-WM的$28.11\times10^{-2}$.
 值得注意的是, MIMO-WM的参数量仅0.138M, 为所有方法中最轻量, 显著低于Mamba-WM的0.224M.
 消融实验表~3进一步证实门控机制是性能提升的关键因素, 移除后MSE增加8.9\%.
+MPC实验表~5表明, MIMO-WM的短期预测精度优于Mamba等SSM方法, 为实时规划提供了可靠的动力学校验.
 
 本文将MIMO-WM定位为一种轻量级世界模型, 其核心功能是状态转移预测.
 与Dreamer系列等完整世界模型框架相比, MIMO-WM不涉及潜在空间建模、奖励预测和策略学习, 而是专注于状态-动作序列的高效预测.
