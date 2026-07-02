@@ -57,9 +57,9 @@ def gen_ablation():
     ax_mse.errorbar(mses, y, xerr=mse_stds, fmt='none', ecolor='#333', capsize=2, linewidth=0.7, zorder=4)
     for i, v in enumerate(mses):
         fw = 'bold' if i == 0 else 'normal'
-        ax_mse.text(v + 0.5, y[i], f'{v:.1f}', fontsize=7, va='center', color='#222', fontweight=fw)
+        ax_mse.text(v + mse_stds[i] + 0.5, y[i], f'{v:.1f}', fontsize=7, va='center', color='#222', fontweight=fw)
     ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9)
-    ax_mse.set_xlim(0, 43)
+    ax_mse.set_xlim(0, 44)
     ax_mse.set_title('(a) MSE', fontsize=9, fontweight='bold')
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
