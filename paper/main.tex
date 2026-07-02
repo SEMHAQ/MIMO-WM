@@ -608,9 +608,12 @@ $\{{\bm a}^{(k)}\}_{k=1}^K \sim \mathcal{N}({\bm \mu}, \diag({\bm \sigma}^2))$, 
 选取代价最小的$N_e$个精英样本构成精英集$E$,
 用精英样本的均值和方差更新分布参数:
 \begin{equation}
-{\bm \mu} \leftarrow \frac{1}{N_e}\sum_{{\bm a} \in E} {\bm a},\qquad
-{\bm \sigma} \leftarrow \sqrt{\frac{1}{N_e}\sum_{{\bm a} \in E} ({\bm a} - {\bm \mu})^2} + \epsilon.
-\end{equation}\end{Ste}
+\left\{\begin{aligned}
+{\bm \mu} &\leftarrow \frac{1}{N_e}\sum_{{\bm a} \in E} {\bm a},\\
+{\bm \sigma} &\leftarrow \sqrt{\frac{1}{N_e}\sum_{{\bm a} \in E} ({\bm a} - {\bm \mu})^2} + \epsilon.
+\end{aligned}\right.
+\end{equation}
+\end{Ste}
 \begin{Ste}输出${\bm a}_T^* \leftarrow {\bm \mu}[0]$作为当前控制时刻的最优动作.\end{Ste}
 
 其中$K$个候选序列的评估通过GPU批量并行实现,
