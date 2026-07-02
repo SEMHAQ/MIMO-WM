@@ -434,8 +434,10 @@ MIMO-SSM的$D$个通道并行运行, 输出为各通道结果拼接.
 \end{equation}
 代入输出方程得
 \begin{equation}
-y_t^{(d)} = {\bm C}^{(d)}{\bm h}_t^{(d)} + {\bm D}x_t^{(d)}
-= \sum_{\tau=0}^{t} K^{(d)}[t{-}\tau] x_\tau^{(d)} + {\bm D}x_t^{(d)},
+\begin{aligned}
+y_t^{(d)} &= {\bm C}^{(d)}{\bm h}_t^{(d)} + {\bm D}x_t^{(d)} \\
+&= \sum_{\tau=0}^{t} K^{(d)}[t{-}\tau] x_\tau^{(d)} + {\bm D}x_t^{(d)},
+\end{aligned}
 \end{equation}
 与卷积模式一致. $D$个通道相互独立, 同时成立. 证毕.
 \begin{Thm}
