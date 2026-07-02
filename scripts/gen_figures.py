@@ -20,57 +20,90 @@ plt.rcParams.update({
 # 图4: 消融实验 (水平条形图, 上下分组结构)
 # ============================================================
 def gen_ablation():
+    from matplotlib.patches import FancyBboxPatch
+    import matplotlib.patheffects as pe
+
     configs = [
-        ('Full-MIMO-WM', 18.69, 0.31, '#e74c3c'),
-        ('w/o gate',     20.36, 0.10, '#95a5a6'),
-        ('w/o residual', 26.14, 0.26, '#95a5a6'),
-        ('w/o LayerNorm',21.25, 0.48, '#95a5a6'),
-        ('SSM→LSTM',     38.10, 0.44, '#95a5a6'),
-        ('SSM→GRU',      32.94, 0.58, '#95a5a6'),
-        ('D=64',          21.69, 0.35, '#95a5a6'),
-        ('D=256',         18.15, 0.26, '#95a5a6'),
-        ('L=1',           19.48, 0.21, '#95a5a6'),
-        ('L=4',           18.49, 0.22, '#95a5a6'),
-        ('N=8',           18.77, 0.22, '#95a5a6'),
+        # (label, MSE, std, params, group)
+        ('MIMO-WM',       18.69, 0.31, 0.208, 0),
+        ('w/o gate',      20.36, 0.10, 0.142, 0),
+        ('w/o residual',  26.14, 0.26, 0.208, 0),
+        ('w/o LayerNorm', 21.25, 0.48, 0.208, 0),
+        ('SSM$\\to$LSTM', 38.10, 0.44, 0.389, 1),
+        ('SSM$\\to$GRU',  32.94, 0.58, 0.323, 1),
+        ('$D$=64',         21.69, 0.35, 0.080, 2),
+        ('$D$=256',        18.15, 0.26, 0.613, 2),
+        ('$L$=1',          19.48, 0.21, 0.166, 2),
+        ('$L$=4',          18.49, 0.22, 0.292, 2),
+        ('$N$=8',          18.77, 0.22, 0.200, 2),
     ]
+
+    group_colors = ['#3498db', '#e67e22', '#2ecc71']
+    group_names = ['Component ablation', 'Backbone replacement', 'Hyperparameter']
 
     labels = [c[0] for c in configs]
     mses = [c[1] for c in configs]
     stds = [c[2] for c in configs]
-    colors = [c[3] for c in configs]
+    params = [c[3] for c in configs]
+    groups = [c[4] for c in configs]
 
-    fig, ax = plt.subplots(figsize=(4.2, 4.5))
+    fig, ax = plt.subplots(figsize=(4.5, 5.0))
     fig.patch.set_facecolor('white')
 
     y = np.arange(len(labels))
-    bars = ax.barh(y, mses, height=0.6, color=colors, edgecolor='white', linewidth=0.5)
-    ax.errorbar(mses, y, xerr=stds, fmt='none', ecolor='#555', capsize=2, linewidth=0.8)
+    bar_colors = [group_colors[g] for g in groups]
+    # MIMO-WM 第一条加粗高亮
+    bar_colors[0] = '#e74c3c'
 
-    # 分组分隔线
-    ax.axhline(y=3.5, color='#bbb', linewidth=0.5, linestyle='--')
-    ax.axhline(y=5.5, color='#bbb', linewidth=0.5, linestyle='--')
-    ax.axhline(y=10.5, color='#bbb', linewidth=0.5, linestyle='--')
+    bars = ax.barh(y, mses, height=0.55, color=bar_colors, edgecolor='white',
+                   linewidth=0.8, alpha=0.85, zorder=3)
+    ax.errorbar(mses, y, xerr=stds, fmt='none', ecolor='#444', capsize=2.5,
+                linewidth=0.9, zorder=4)
 
-    # 组标签
-    ax.text(42, 0.5, 'Component', fontsize=7, color='#666', va='center', style='italic')
-    ax.text(42, 4.5, 'Backbone', fontsize=7, color='#666', va='center', style='italic')
-    ax.text(42, 8, 'Hyperparameter', fontsize=7, color='#666', va='center', style='italic')
+    # 分组分隔线和背景
+    ax.axhline(y=3.5, color='#ccc', linewidth=0.8, linestyle='-', zorder=1)
+    ax.axhline(y=5.5, color='#ccc', linewidth=0.8, linestyle='-', zorder=1)
+    ax.axhline(y=10.5, color='#ccc', linewidth=0.8, linestyle='-', zorder=1)
+
+    # 组背景色带
+    for gi, (ystart, yend) in enumerate([(-0.5, 3.5), (3.5, 5.5), (5.5, 10.5)]):
+        ax.axhspan(ystart, yend, alpha=0.04, color=group_colors[gi], zorder=0)
+
+    # 组标签 (右侧)
+    ax.text(44, 1.5, group_names[0], fontsize=7, color=group_colors[0],
+            va='center', ha='center', fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor=group_colors[0], alpha=0.8, linewidth=0.6))
+    ax.text(44, 4.5, group_names[1], fontsize=7, color=group_colors[1],
+            va='center', ha='center', fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor=group_colors[1], alpha=0.8, linewidth=0.6))
+    ax.text(44, 8, group_names[2], fontsize=7, color=group_colors[2],
+            va='center', ha='center', fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor=group_colors[2], alpha=0.8, linewidth=0.6))
+
+    # 数值标注 (MSE + params)
+    for i, (mse, p) in enumerate(zip(mses, params)):
+        fw = 'bold' if i == 0 else 'normal'
+        col = '#e74c3c' if i == 0 else '#555'
+        ax.text(mse + 0.8, y[i], f'{mse:.1f}  ({p:.1f}M)',
+                fontsize=6.5, color=col, va='center', fontweight=fw)
 
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=8)
+    ylabels = []
+    for i, l in enumerate(labels):
+        if i == 0:
+            ylabels.append(f'$\\bf{{{l}}}$')
+        else:
+            ylabels.append(l)
+    ax.set_yticklabels(ylabels, fontsize=8)
     ax.invert_yaxis()
-    ax.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9)
-    ax.set_xlim(0, 45)
+    ax.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9, fontweight='bold')
+    ax.set_xlim(0, 50)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.tick_params(axis='x', labelsize=8)
-    ax.grid(axis='x', linewidth=0.3, alpha=0.3)
+    ax.grid(axis='x', linewidth=0.3, alpha=0.25, zorder=0)
 
-    # 标注 Full-MIMO-WM
-    ax.annotate('18.69', xy=(18.69, 0), xytext=(20, 0),
-                fontsize=7, color='#e74c3c', va='center')
-
-    plt.tight_layout(pad=0.3)
+    plt.tight_layout(pad=0.4)
     plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight')
     plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight')
     print('Done: ablation_results.pdf')
