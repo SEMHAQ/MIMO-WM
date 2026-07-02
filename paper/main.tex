@@ -340,29 +340,27 @@ $D$为隐空间维度. 解码器将最后一层输出映射回状态空间:
 \subsection{MIMO块}
 
 \begin{Def}
-MIMO块是MIMO-WM的核心组件, 每个块包含并行SSM层和门控融合两个部分.
-并行SSM层对输入$\tilde{{\bm z}}_t \in \mathbb{R}^D$的每个维度$d$并行运行一个独立SSM
+MIMO块是MIMO-WM的核心组件.
+给定输入${\bm z}_t \in \mathbb{R}^D$, MIMO块依次执行层归一化、并行SSM变换、门控融合和残差连接.
+首先, 对输入进行层归一化$\tilde{{\bm z}}_t = \text{LayerNorm}({\bm z}_t)$,
+其中$\tilde{{\bm z}}_t$的每个维度$d$由一个独立SSM处理:
 \begin{eqnarray}
 {\bm h}_t^{(d)} = \bar{{\bm A}}^{(d)}{\bm h}_{t-1}^{(d)} + \bar{{\bm B}}^{(d)}\tilde{z}_t^{(d)},
 \end{eqnarray}
-其中$\bar{{\bm A}}^{(d)} \in \mathbb{C}^{N \times N}$为对角状态矩阵,
-${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态, 各维度参数独立.
-
-门控融合先对输入进行层归一化, 再经SSM变换和sigmoid门控:
+其中$\bar{{\bm A}}^{(d)} \in \mathbb{C}^{N \times N}$为第$d$维的对角状态矩阵, 各维度参数独立.
+SSM变换的输出${\bm h}_t$经sigmoid门控调节:
 \begin{equation}
-\left\{\begin{aligned}
-\tilde{{\bm z}}_t &= \text{LayerNorm}({\bm z}_t), \\
-{\bm h}_t &= \text{DiagSSM}(\tilde{{\bm z}}_t), \\
-{\bm o}_t &= {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g).
-\end{aligned}\right.
+{\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g),
 \end{equation}
-其中$\sigma$为sigmoid激活函数, 用于控制SSM输出${\bm h}_t$的信息保留比例, ${\bm W}_g \in \mathbb{R}^{D \times D}$为门控权重. 门控输出${\bm o}_t$经残差连接得到MIMO块的最终输出${\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o$.
+其中${\bm W}_g \in \mathbb{R}^{D \times D}$为门控权重, $\sigma$为sigmoid函数.
+门控机制根据输入内容动态控制SSM输出的信息保留比例.
+最终, 门控输出经残差连接得到MIMO块的输出:
+\begin{equation}
+{\bm z}_t' = {\bm z}_t + {\bm W}_o{\bm o}_t + {\bm b}_o.
+\end{equation}
 \end{Def}
 
-门控机制使模型能动态选择保留或抑制SSM输出的每个维度,
-仅需$O(D^2)$额外参数.
-
-MIMO-WM的完整前向推理过程如下:
+MIMO-WM的前向推理过程如下:
 \begin{Ste}编码: ${\bm z} \leftarrow \text{Encoder}([{\bm s}_{0:T{-}1}; {\bm a}_{0:T{-}1}])$.\end{Ste}
 \begin{Ste}对$\ell = 1, \ldots, L$层MIMO块:
 归一化$\tilde{{\bm z}} \leftarrow \text{LayerNorm}({\bm z})$,
