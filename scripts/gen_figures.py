@@ -3,11 +3,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from matplotlib.lines import Line2D
+import matplotlib.patches as mpatches
 import numpy as np
 
-zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=7)
-
-
+zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=10)
+zhfont_s = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=9)
 
 plt.rcParams.update({
     'font.family': 'serif',
@@ -17,7 +18,6 @@ plt.rcParams.update({
     'figure.dpi': 300,
     'mathtext.fontset': 'stix',
 })
-
 
 # ============================================================
 def gen_ablation():
@@ -67,7 +67,8 @@ def gen_ablation():
                     fontsize=8, va='center', color='#222', fontweight=fw)
     ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=11)
     ax_mse.set_xlim(0, 44)
-    ax_mse.set_title('(a) MSE', fontsize=11, fontweight='bold', loc='left')
+    ax_mse.text(0.5, 1.02, '(a) MSE', transform=ax_mse.transAxes,
+                fontproperties=zhfont, fontsize=11, fontweight='bold', ha='center', va='bottom')
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
     ax_mse.grid(axis='x', linewidth=0.3, alpha=0.2)
@@ -81,14 +82,15 @@ def gen_ablation():
                    fontsize=8, va='center', color='#222', fontweight=fw)
     ax_r2.set_xlabel('$R^2$', fontsize=11)
     ax_r2.set_xlim(0.48, 0.80)
-    ax_r2.set_title('(b) $R^2$', fontsize=11, fontweight='bold', loc='left')
+    ax_r2.text(0.5, 1.02, '(b) $R^2$', transform=ax_r2.transAxes,
+                fontproperties=zhfont, fontsize=11, fontweight='bold', ha='center', va='bottom')
     ax_r2.spines['top'].set_visible(False)
     ax_r2.spines['right'].set_visible(False)
     ax_r2.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_r2.tick_params(axis='x', labelsize=9)
     plt.setp(ax_r2.get_yticklabels(), visible=False)
 
-    # (c) Parameters
+    # (c) 参数量
     bubble_sizes = [p * 500 for p in params]
     ax_params.scatter(params, y, s=bubble_sizes, c=colors, edgecolors='white',
                       linewidth=0.8, zorder=3, alpha=0.85)
@@ -96,9 +98,10 @@ def gen_ablation():
         fw = 'bold' if i == 0 else 'normal'
         ax_params.text(params[i] + 0.015, y[i], f'{params[i]:.3f}',
                        fontsize=8, va='center', color='#222', fontweight=fw)
-    ax_params.set_xlabel('Parameters (M)', fontsize=11)
+    ax_params.set_xlabel('参数量 (M)', fontproperties=zhfont, fontsize=11)
     ax_params.set_xlim(0, 0.75)
-    ax_params.set_title('(c) Parameters', fontsize=11, fontweight='bold', loc='left')
+    ax_params.text(0.5, 1.02, '(c) 参数量', transform=ax_params.transAxes,
+                fontproperties=zhfont, fontsize=11, fontweight='bold', ha='center', va='bottom')
     ax_params.spines['top'].set_visible(False)
     ax_params.spines['right'].set_visible(False)
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
@@ -128,71 +131,76 @@ def gen_ablation():
 
 # ============================================================
 def gen_seqlen():
-    ts = np.array([8, 16, 32, 64, 128])
+    x = np.arange(5)
+    w = 0.35
+    ts_labels = ['8', '16', '32', '64', '128']
 
     # Humanoid
     h_mse = [20.14, 19.23, 21.18, 21.28, 41.13]
-    h_mse_std = [0.13, 0.14, 0.04, 0.16, 0.36]
     h_r2 = [0.765, 0.764, 0.735, 0.708, 0.448]
 
-    # HumanoidStandup (placeholder, replace after experiment)
+    # HumanoidStandup (placeholder - replace after experiment)
     hs_mse = [49.66, 48.5, 53.10, 55.0, 75.0]
     hs_r2 = [0.480, 0.490, 0.444, 0.420, 0.300]
 
-    c_h = '#3498db'
-    c_hs = '#e67e22'
-    w = 2.5
+    c_h = '#2E86AB'
+    c_hs = '#A23B72'
 
-    fig, (ax_mse, ax_r2) = plt.subplots(2, 1, figsize=(5.5, 6.0), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 6.5))
     fig.patch.set_facecolor('white')
 
-    # === (a) MSE ===
-    ax_mse.bar(ts - w/2 - 0.3, h_mse, width=w, color=c_h, alpha=0.8,
-               edgecolor='white', linewidth=0.5, label='Humanoid')
-    ax_mse.bar(ts + w/2 + 0.3, hs_mse, width=w, color=c_hs, alpha=0.8,
-               edgecolor='white', linewidth=0.5, label='HumanoidStandup')
-    ax_mse.plot(ts - w/2 - 0.3, h_mse, 'o--', color=c_h, markersize=4, linewidth=1.2)
-    ax_mse.plot(ts + w/2 + 0.3, hs_mse, 'o--', color=c_hs, markersize=4, linewidth=1.2)
-    ax_mse.errorbar(ts - w/2 - 0.3, h_mse, yerr=h_mse_std, fmt='none',
-                    ecolor='#555', capsize=2, linewidth=0.7)
-    ax_mse.set_ylabel('MSE ($\\times 10^{-2}$)', fontsize=10)
-    ax_mse.set_title('(a) MSE', fontsize=10, fontweight='bold', loc='left')
-    ax_mse.set_ylim(0, 82)
-    ax_mse.spines['top'].set_visible(False)
-    ax_mse.spines['right'].set_visible(False)
-    ax_mse.grid(axis='y', linewidth=0.3, alpha=0.2)
-    ax_mse.tick_params(axis='both', labelsize=9)
+    # ============ (a) MSE ============
+    ax1.bar(x - w/2, h_mse, w, color=c_h, alpha=0.5, edgecolor='none', zorder=2)
+    ax1.bar(x + w/2, hs_mse, w, color=c_hs, alpha=0.5, edgecolor='none', zorder=2)
+    ax1.plot(x - w/2, h_mse, 'o-', color=c_h, linewidth=1.5, markersize=5, zorder=3)
+    ax1.plot(x + w/2, hs_mse, 's-', color=c_hs, linewidth=1.5, markersize=5, zorder=3)
+    # 推荐区间
+    ax1.axvspan(-0.5, 1.5, alpha=0.08, color=c_h, zorder=1)
+    ax1.axvspan(-0.5, 1.5, alpha=0.08, color=c_hs, zorder=1)
 
-    # === (b) R² ===
-    ax_r2.bar(ts - w/2 - 0.3, h_r2, width=w, color=c_h, alpha=0.8,
-              edgecolor='white', linewidth=0.5)
-    ax_r2.bar(ts + w/2 + 0.3, hs_r2, width=w, color=c_hs, alpha=0.8,
-              edgecolor='white', linewidth=0.5)
-    ax_r2.plot(ts - w/2 - 0.3, h_r2, 'o--', color=c_h, markersize=4, linewidth=1.2)
-    ax_r2.plot(ts + w/2 + 0.3, hs_r2, 'o--', color=c_hs, markersize=4, linewidth=1.2)
-    ax_r2.set_ylabel('$R^2$', fontsize=10)
-    ax_r2.set_xlabel('Sequence Length $T$', fontsize=10)
-    ax_r2.set_title('(b) $R^2$', fontsize=10, fontweight='bold', loc='left')
-    ax_r2.set_xticks(ts)
-    ax_r2.set_ylim(0.25, 0.85)
-    ax_r2.spines['top'].set_visible(False)
-    ax_r2.spines['right'].set_visible(False)
-    ax_r2.grid(axis='y', linewidth=0.3, alpha=0.2)
-    ax_r2.tick_params(axis='both', labelsize=9)
+    ax1.set_ylabel('MSE', fontsize=10)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(ts_labels)
+    ax1.grid(True, alpha=0.2, axis='y', linewidth=0.5)
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['right'].set_visible(False)
+    ax1.text(0.5, 1.02, '(a) 预测MSE随序列长度的变化', transform=ax1.transAxes,
+             fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
 
-    # 图例放在两图中间
-    handles = [
-        plt.Rectangle((0,0),1,1, color=c_h, alpha=0.8),
-        plt.Rectangle((0,0),1,1, color=c_hs, alpha=0.8),
+    # ============ (b) R2 ============
+    ax2.bar(x - w/2, h_r2, w, color=c_h, alpha=0.5, edgecolor='none', zorder=2)
+    ax2.bar(x + w/2, hs_r2, w, color=c_hs, alpha=0.5, edgecolor='none', zorder=2)
+    ax2.plot(x - w/2, h_r2, 'o-', color=c_h, linewidth=1.5, markersize=5, zorder=3)
+    ax2.plot(x + w/2, hs_r2, 's-', color=c_hs, linewidth=1.5, markersize=5, zorder=3)
+    ax2.axvspan(-0.5, 1.5, alpha=0.08, color=c_h, zorder=1)
+    ax2.axvspan(-0.5, 1.5, alpha=0.08, color=c_hs, zorder=1)
+
+    ax2.axhline(y=0, color='gray', linestyle='--', alpha=0.4, linewidth=0.6)
+    ax2.set_xlabel('序列长度 T', fontproperties=zhfont, fontsize=10)
+    ax2.set_ylabel('$R^2$', fontsize=10)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(ts_labels)
+    ax2.grid(True, alpha=0.2, axis='y', linewidth=0.5)
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
+    ax2.text(0.5, 1.02, '(b) $R^2$随序列长度的变化', transform=ax2.transAxes,
+             fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
+
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0.55)
+
+    # 4-item legend (between two plots)
+    legend_elements = [
+        Line2D([0], [0], color=c_h, marker='o', linewidth=1.5, markersize=5, label='Humanoid'),
+        Line2D([0], [0], color=c_hs, marker='s', linewidth=1.5, markersize=5, label='HumanoidStandup'),
+        mpatches.Patch(facecolor=c_h, alpha=0.15, label='Humanoid推荐区间'),
+        mpatches.Patch(facecolor=c_hs, alpha=0.15, label='Standup推荐区间'),
     ]
-    fig.legend(handles, ['Humanoid', 'HumanoidStandup'],
-               loc='center', ncol=2, fontsize=9, frameon=True,
-               edgecolor='gray', fancybox=True,
-               bbox_to_anchor=(0.5, 0.52))
-
-    plt.subplots_adjust(hspace=0.25, top=0.93, bottom=0.10, left=0.12, right=0.96)
-    plt.savefig('paper/figures/seqlen_sensitivity.pdf', bbox_inches='tight', pad_inches=0.1)
-    plt.savefig('paper/figures/seqlen_sensitivity.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
+    fig.legend(handles=legend_elements, loc='center', ncol=2, fontsize=8.5, prop=zhfont_s,
+               bbox_to_anchor=(0.5, 0.49), frameon=True, fancybox=True,
+               framealpha=0.9, edgecolor='gray')
+    plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('paper/figures/seqlen_sensitivity.png', dpi=300, bbox_inches='tight')
     print('Done: seqlen_sensitivity.pdf')
 
 if __name__ == '__main__':
