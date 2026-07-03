@@ -30,9 +30,9 @@ plt.rcParams.update({
 def gen_ablation():
     configs = [
         ('MIMO-WM',       18.69, 0.31, 0.766, 0.208),
-        ('w/o gate',      20.36, 0.10, 0.745, 0.142),
-        ('w/o residual',  26.14, 0.26, 0.673, 0.208),
-        ('w/o LayerNorm', 21.25, 0.48, 0.734, 0.208),
+        ('w/o 门控',      20.36, 0.10, 0.745, 0.142),
+        ('w/o 残差',      26.14, 0.26, 0.673, 0.208),
+        ('w/o 层归一化',  21.25, 0.48, 0.734, 0.208),
         ('SSM$\\to$LSTM', 38.10, 0.44, 0.523, 0.389),
         ('SSM$\\to$GRU',  32.94, 0.58, 0.588, 0.323),
         ('$D$=64',         21.69, 0.35, 0.729, 0.080),
@@ -121,6 +121,7 @@ def gen_ablation():
     ax_mse.set_yticks(y)
     ax_mse.set_yticklabels(labels, fontsize=9)
     for i, tick in enumerate(ax_mse.get_yticklabels()):
+        tick.set_fontproperties(zhfont)
         if i == 0:
             tick.set_fontweight('bold')
             tick.set_color(HL)
@@ -128,6 +129,7 @@ def gen_ablation():
     ax_params.set_yticks(y)
     ax_params.set_yticklabels(labels, fontsize=9)
     for i, tick in enumerate(ax_params.get_yticklabels()):
+        tick.set_fontproperties(zhfont)
         if i == 0:
             tick.set_fontweight('bold')
             tick.set_color(HL)
