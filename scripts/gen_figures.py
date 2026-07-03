@@ -53,7 +53,7 @@ def gen_ablation():
     HL = C_RED
     colors = [HL if i == 0 else BAR for i in range(n)]
 
-    fig = plt.figure(figsize=(7.0, 8.5))
+    fig = plt.figure(figsize=(7.0, 7.5))
     fig.patch.set_facecolor('white')
 
     gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], hspace=0.35, wspace=0.12,
@@ -199,7 +199,7 @@ def gen_seqlen():
         mpatches.Patch(facecolor=C_ZONE, alpha=0.15, label='推荐区间'),
     ]
     fig.legend(handles=legend_elements, loc='center', ncol=3, fontsize=9, prop=zhfont_s,
-               bbox_to_anchor=(0.5, 0.53), frameon=True, fancybox=True,
+               bbox_to_anchor=(0.5, 0.5), frameon=True, fancybox=True,
                framealpha=0.9, edgecolor='gray')
     plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
     plt.savefig('paper/figures/seqlen_sensitivity.png', dpi=300, bbox_inches='tight')
