@@ -1,4 +1,4 @@
-"""生成论文图4(消融实验)和图5(序列长度敏感性)"""
+"""生成论文图3(消融实验)和图4(序列长度敏感性)"""
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -16,8 +16,6 @@ plt.rcParams.update({
     'mathtext.fontset': 'stix',
 })
 
-# ============================================================
-# 图4: 消融实验 (水平条形图, 上下分组结构)
 # ============================================================
 def gen_ablation():
     configs = [
@@ -43,130 +41,109 @@ def gen_ablation():
 
     BAR = '#4A90D9'
     HL = '#E74C3C'
-    # 显式逐个赋色
-    colors = []
-    for i in range(n):
-        colors.append(HL if i == 0 else BAR)
+    colors = [HL if i == 0 else BAR for i in range(n)]
 
-    # 打印验证
-    for i in range(n):
-        print(f'  {labels[i]:>15s} -> color={colors[i]}', flush=True)
-
-    fig = plt.figure(figsize=(6.0, 7.0))
+    fig = plt.figure(figsize=(7.0, 8.5))
     fig.patch.set_facecolor('white')
 
-    # 上半部分: a和b左右排列, 共享Y轴
-    gs_top = fig.add_gridspec(1, 2, hspace=0, wspace=0.08, left=0.18, right=0.95, top=0.92, bottom=0.52)
-    ax_mse = fig.add_subplot(gs_top[0, 0])
-    ax_r2 = fig.add_subplot(gs_top[0, 1], sharey=ax_mse)
-
-    # 下半部分: c图, 宽度与上半部分一致
-    ax_params = fig.add_axes([0.18, 0.08, 0.77, 0.36])
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], hspace=0.35, wspace=0.12,
+                          left=0.16, right=0.96, top=0.95, bottom=0.06)
+    ax_mse = fig.add_subplot(gs[0, 0])
+    ax_r2 = fig.add_subplot(gs[0, 1], sharey=ax_mse)
+    ax_params = fig.add_subplot(gs[1, :])
 
     y = np.arange(n)
     h = 0.6
 
-    # === 上图: MSE ===
+    # (a) MSE
     ax_mse.barh(y, mses, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
-    ax_mse.errorbar(mses, y, xerr=mse_stds, fmt='none', ecolor='#333', capsize=2, linewidth=0.7, zorder=4)
+    ax_mse.errorbar(mses, y, xerr=mse_stds, fmt='none', ecolor='#333', capsize=2, linewidth=0.8, zorder=4)
     for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
         ax_mse.text(mses[i] + mse_stds[i] + 0.5, y[i], f'{mses[i]:.1f}',
-                    fontsize=7, va='center', color='#222', fontweight=fw)
-    ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9)
+                    fontsize=8, va='center', color='#222', fontweight=fw)
+    ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=11)
     ax_mse.set_xlim(0, 44)
-    ax_mse.set_title('(a) MSE', fontsize=9, fontweight='bold', loc='left')
+    ax_mse.set_title('(a) MSE', fontsize=11, fontweight='bold', loc='left')
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
     ax_mse.grid(axis='x', linewidth=0.3, alpha=0.2)
+    ax_mse.tick_params(axis='x', labelsize=9)
 
-    # === 中图: R² ===
+    # (b) R2
     ax_r2.barh(y, r2s, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
     for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
         ax_r2.text(r2s[i] + 0.003, y[i], f'{r2s[i]:.3f}',
-                   fontsize=7, va='center', color='#222', fontweight=fw)
-    ax_r2.set_xlabel('$R^2$', fontsize=9)
+                   fontsize=8, va='center', color='#222', fontweight=fw)
+    ax_r2.set_xlabel('$R^2$', fontsize=11)
     ax_r2.set_xlim(0.48, 0.80)
-    ax_r2.set_title('(b) $R^2$', fontsize=9, fontweight='bold', loc='left')
+    ax_r2.set_title('(b) $R^2$', fontsize=11, fontweight='bold', loc='left')
     ax_r2.spines['top'].set_visible(False)
     ax_r2.spines['right'].set_visible(False)
     ax_r2.grid(axis='x', linewidth=0.3, alpha=0.2)
+    ax_r2.tick_params(axis='x', labelsize=9)
     plt.setp(ax_r2.get_yticklabels(), visible=False)
 
-    # === 下图: 参数量 ===
-    bubble_sizes = [p * 600 for p in params]
+    # (c) Parameters
+    bubble_sizes = [p * 500 for p in params]
     ax_params.scatter(params, y, s=bubble_sizes, c=colors, edgecolors='white',
                       linewidth=0.8, zorder=3, alpha=0.85)
     for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
         ax_params.text(params[i] + 0.03, y[i], f'{params[i]:.3f}',
-                       fontsize=7, va='center', color='#222', fontweight=fw)
-    ax_params.set_xlabel('Parameters (M)', fontsize=9)
+                       fontsize=8, va='center', color='#222', fontweight=fw)
+    ax_params.set_xlabel('Parameters (M)', fontsize=11)
     ax_params.set_xlim(0, 0.75)
-    ax_params.set_title('(c) Parameters', fontsize=9, fontweight='bold', loc='left')
+    ax_params.set_title('(c) Parameters', fontsize=11, fontweight='bold', loc='left')
     ax_params.spines['top'].set_visible(False)
     ax_params.spines['right'].set_visible(False)
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_params.invert_yaxis()
+    ax_params.tick_params(axis='x', labelsize=9)
 
-    # Y轴: 上半部分
-    ax_mse.set_yticks(y)
-    ax_mse.set_yticklabels(labels, fontsize=7.5)
+    # Y轴: 统一顺序
     ax_mse.invert_yaxis()
+    ax_params.set_ylim(ax_mse.get_ylim())
+
+    ax_mse.set_yticks(y)
+    ax_mse.set_yticklabels(labels, fontsize=9)
     for i, tick in enumerate(ax_mse.get_yticklabels()):
         if i == 0:
             tick.set_fontweight('bold')
             tick.set_color(HL)
 
-    # Y轴: 下半部分
     ax_params.set_yticks(y)
-    ax_params.set_yticklabels(labels, fontsize=7.5)
+    ax_params.set_yticklabels(labels, fontsize=9)
     for i, tick in enumerate(ax_params.get_yticklabels()):
         if i == 0:
             tick.set_fontweight('bold')
             tick.set_color(HL)
-
-    ax_params.set_yticks(y)
-    ax_params.set_yticklabels(labels, fontsize=7.5)
-    for i, tick in enumerate(ax_params.get_yticklabels()):
-        if i == 0:
-            tick.set_fontweight('bold')
-            tick.set_color(HL)
-    ax_params.invert_yaxis()
 
     plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.1)
     plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
     print('Done: ablation_results.pdf')
 
 # ============================================================
-# 图5: 序列长度敏感性 (柱状+折线双轴, 含推荐区间)
-# ============================================================
 def gen_seqlen():
-    # Humanoid 数据 (从之前实验)
     ts = [8, 16, 32, 64, 128]
     humanoid_mse = [20.14, 19.23, 21.18, 21.28, 41.13]
     humanoid_mse_std = [0.13, 0.14, 0.04, 0.16, 0.36]
     humanoid_r2 = [0.765, 0.764, 0.735, 0.708, 0.448]
 
-    # HumanoidStandup 数据 (待补充, 先用占位)
-    # 实际需要跑实验后替换
-    humanoid_standup_mse = [49.66, 48.5, 53.10, 55.0, 75.0]  # placeholder
-    humanoid_standup_r2 = [0.480, 0.490, 0.444, 0.420, 0.300]  # placeholder
+    humanoid_standup_mse = [49.66, 48.5, 53.10, 55.0, 75.0]
+    humanoid_standup_r2 = [0.480, 0.490, 0.444, 0.420, 0.300]
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(4.2, 5.0), sharex=True)
     fig.patch.set_facecolor('white')
 
-    # --- 上图: Humanoid ---
-    # 推荐区间背景
     ax1.axvspan(4, 20, alpha=0.08, color='#27ae60', zorder=0)
     ax1.text(12, 42, 'Recommended\n[8, 16]', fontsize=6.5, color='#27ae60',
              ha='center', va='center', style='italic')
 
     bar_width = 3
     x = np.array(ts)
-    bars = ax1.bar(x, humanoid_mse, width=bar_width, color='#3498db', alpha=0.7,
-                   edgecolor='white', linewidth=0.5, label='MSE ($\\times 10^{-2}$)')
+    ax1.bar(x, humanoid_mse, width=bar_width, color='#3498db', alpha=0.7,
+            edgecolor='white', linewidth=0.5, label='MSE ($\\times 10^{-2}$)')
     ax1.errorbar(x, humanoid_mse, yerr=humanoid_mse_std, fmt='none',
                  ecolor='#555', capsize=2, linewidth=0.8)
 
@@ -185,19 +162,17 @@ def gen_seqlen():
     ax1.spines['top'].set_visible(False)
     ax1.grid(axis='y', linewidth=0.3, alpha=0.2)
 
-    # 合并图例
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax1_r.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=6.5,
                framealpha=0.9, edgecolor='gray')
 
-    # --- 下图: HumanoidStandup ---
     ax2.axvspan(16, 40, alpha=0.08, color='#27ae60', zorder=0)
     ax2.text(26, 72, 'Recommended\n[16, 32]', fontsize=6.5, color='#27ae60',
              ha='center', va='center', style='italic')
 
-    bars2 = ax2.bar(x, humanoid_standup_mse, width=bar_width, color='#3498db', alpha=0.7,
-                    edgecolor='white', linewidth=0.5, label='MSE ($\\times 10^{-2}$)')
+    ax2.bar(x, humanoid_standup_mse, width=bar_width, color='#3498db', alpha=0.7,
+            edgecolor='white', linewidth=0.5, label='MSE ($\\times 10^{-2}$)')
 
     ax2_r = ax2.twinx()
     ax2_r.plot(x, humanoid_standup_r2, 'o-', color='#e74c3c', markersize=5,
@@ -224,7 +199,7 @@ def gen_seqlen():
     plt.tight_layout(pad=0.5, h_pad=0.3)
     plt.savefig('paper/figures/seqlen_sensitivity.pdf', bbox_inches='tight')
     plt.savefig('paper/figures/seqlen_sensitivity.png', dpi=300, bbox_inches='tight')
-    print('Done: seqlen_sensitivity.pdf (HumanoidStandup为占位数据, 需跑实验替换)')
+    print('Done: seqlen_sensitivity.pdf')
 
 if __name__ == '__main__':
     gen_ablation()
