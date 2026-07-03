@@ -53,7 +53,7 @@ def gen_ablation():
     HL = C_RED
     colors = [HL if i == 0 else BAR for i in range(n)]
 
-    fig = plt.figure(figsize=(7.0, 8.5))
+    fig = plt.figure(figsize=(7.0, 8.0))
     fig.patch.set_facecolor('white')
 
     gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], hspace=0.18, wspace=0.12,
