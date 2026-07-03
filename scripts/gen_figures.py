@@ -56,7 +56,7 @@ def gen_ablation():
     fig = plt.figure(figsize=(7.0, 8.5))
     fig.patch.set_facecolor('white')
 
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], hspace=0.35, wspace=0.12,
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], hspace=0.18, wspace=0.12,
                           left=0.16, right=0.96, top=0.95, bottom=0.06)
     ax_mse = fig.add_subplot(gs[0, 0])
     ax_r2 = fig.add_subplot(gs[0, 1], sharey=ax_mse)
