@@ -19,7 +19,7 @@ plt.rcParams.update({
 
 # MIMO-WM last (highlighted)
 models = ['LSTM', 'GRU', 'Trans.', 'Mamba', 'TCN', 'MIMO-WM']
-colors = ['#d62728', '#9467bd', '#2ca02c', '#ff7f0e', '#1f77b4', '#e91e63']
+colors = ['#95a5a6', '#7f8c8d', '#f39c12', '#A23B72', '#2E86AB', '#E74C3C']
 markers = ['D', 'v', '^', 's', 'o', '*']
 
 # Data from experiments (Humanoid)

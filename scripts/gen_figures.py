@@ -7,8 +7,15 @@ from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 import numpy as np
 
+# 统一中文字体
 zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=10)
 zhfont_s = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=9)
+
+# 统一配色方案
+C_BLUE = '#2E86AB'
+C_RED = '#E74C3C'
+C_PURPLE = '#A23B72'
+C_ZONE = '#27ae60'
 
 plt.rcParams.update({
     'font.family': 'serif',
@@ -42,8 +49,8 @@ def gen_ablation():
     r2s = [c[3] for c in configs]
     params = [c[4] for c in configs]
 
-    BAR = '#4A90D9'
-    HL = '#E74C3C'
+    BAR = C_BLUE
+    HL = C_RED
     colors = [HL if i == 0 else BAR for i in range(n)]
 
     fig = plt.figure(figsize=(7.0, 8.5))
@@ -107,7 +114,7 @@ def gen_ablation():
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_params.tick_params(axis='x', labelsize=9)
 
-    # Y轴: 统一顺序
+    # Y轴
     ax_mse.invert_yaxis()
     ax_params.set_ylim(ax_mse.get_ylim())
 
@@ -135,16 +142,14 @@ def gen_seqlen():
     w = 0.35
     ts_labels = ['8', '16', '32', '64', '128']
 
-    # Humanoid
     h_mse = [20.14, 19.23, 21.18, 21.28, 41.13]
     h_r2 = [0.765, 0.764, 0.735, 0.708, 0.448]
 
-    # HumanoidStandup
     hs_mse = [50.02, 51.29, 54.65, 58.80, 64.00]
     hs_r2 = [0.478, 0.461, 0.428, 0.380, 0.320]
 
-    c_h = '#2E86AB'
-    c_hs = '#A23B72'
+    c_h = C_BLUE
+    c_hs = C_PURPLE
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 6.5))
     fig.patch.set_facecolor('white')
@@ -154,9 +159,8 @@ def gen_seqlen():
     ax1.bar(x + w/2, hs_mse, w, color=c_hs, alpha=0.5, edgecolor='none', zorder=2)
     ax1.plot(x - w/2, h_mse, 'o-', color=c_h, linewidth=1.5, markersize=5, zorder=3)
     ax1.plot(x + w/2, hs_mse, 's-', color=c_hs, linewidth=1.5, markersize=5, zorder=3)
-    # 推荐区间
-    ax1.axvspan(-0.5, 1.5, alpha=0.08, color=c_h, zorder=1)
-    ax1.axvspan(-0.5, 1.5, alpha=0.08, color=c_hs, zorder=1)
+    # 统一推荐区间
+    ax1.axvspan(-0.5, 1.5, alpha=0.10, color=C_ZONE, zorder=1)
 
     ax1.set_ylabel('MSE', fontsize=10)
     ax1.set_xticks(x)
@@ -172,8 +176,7 @@ def gen_seqlen():
     ax2.bar(x + w/2, hs_r2, w, color=c_hs, alpha=0.5, edgecolor='none', zorder=2)
     ax2.plot(x - w/2, h_r2, 'o-', color=c_h, linewidth=1.5, markersize=5, zorder=3)
     ax2.plot(x + w/2, hs_r2, 's-', color=c_hs, linewidth=1.5, markersize=5, zorder=3)
-    ax2.axvspan(-0.5, 1.5, alpha=0.08, color=c_h, zorder=1)
-    ax2.axvspan(-0.5, 1.5, alpha=0.08, color=c_hs, zorder=1)
+    ax2.axvspan(-0.5, 1.5, alpha=0.10, color=C_ZONE, zorder=1)
 
     ax2.axhline(y=0, color='gray', linestyle='--', alpha=0.4, linewidth=0.6)
     ax2.set_xlabel('序列长度 T', fontproperties=zhfont, fontsize=10)
@@ -187,17 +190,16 @@ def gen_seqlen():
              fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
 
     plt.tight_layout()
-    plt.subplots_adjust(hspace=0.55)
+    plt.subplots_adjust(hspace=0.45, top=0.90, bottom=0.10)
 
-    # 4-item legend (between two plots)
+    # 3-item legend: 贴近上图底部
     legend_elements = [
         Line2D([0], [0], color=c_h, marker='o', linewidth=1.5, markersize=5, label='Humanoid'),
         Line2D([0], [0], color=c_hs, marker='s', linewidth=1.5, markersize=5, label='HumanoidStandup'),
-        mpatches.Patch(facecolor=c_h, alpha=0.15, label='Humanoid推荐区间'),
-        mpatches.Patch(facecolor=c_hs, alpha=0.15, label='Standup推荐区间'),
+        mpatches.Patch(facecolor=C_ZONE, alpha=0.15, label='推荐区间'),
     ]
-    fig.legend(handles=legend_elements, loc='center', ncol=2, fontsize=8.5, prop=zhfont_s,
-               bbox_to_anchor=(0.5, 0.49), frameon=True, fancybox=True,
+    fig.legend(handles=legend_elements, loc='center', ncol=3, fontsize=9, prop=zhfont_s,
+               bbox_to_anchor=(0.5, 0.53), frameon=True, fancybox=True,
                framealpha=0.9, edgecolor='gray')
     plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
     plt.savefig('paper/figures/seqlen_sensitivity.png', dpi=300, bbox_inches='tight')
