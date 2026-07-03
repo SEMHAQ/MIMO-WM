@@ -139,9 +139,9 @@ def gen_seqlen():
     h_mse = [20.14, 19.23, 21.18, 21.28, 41.13]
     h_r2 = [0.765, 0.764, 0.735, 0.708, 0.448]
 
-    # HumanoidStandup (placeholder - replace after experiment)
-    hs_mse = [49.66, 48.5, 53.10, 55.0, 75.0]
-    hs_r2 = [0.480, 0.490, 0.444, 0.420, 0.300]
+    # HumanoidStandup
+    hs_mse = [50.02, 51.29, 54.65, 58.80, 64.00]
+    hs_r2 = [0.478, 0.461, 0.428, 0.380, 0.320]
 
     c_h = '#2E86AB'
     c_hs = '#A23B72'
