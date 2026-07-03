@@ -52,8 +52,16 @@ def gen_ablation():
     for i in range(n):
         print(f'  {labels[i]:>15s} -> color={colors[i]}', flush=True)
 
-    fig, (ax_mse, ax_r2, ax_params) = plt.subplots(3, 1, figsize=(5.5, 7.5))
+    fig = plt.figure(figsize=(6.0, 7.0))
     fig.patch.set_facecolor('white')
+
+    # 上半部分: a和b左右排列, 共享Y轴
+    gs_top = fig.add_gridspec(1, 2, hspace=0, wspace=0.08, left=0.18, right=0.95, top=0.92, bottom=0.52)
+    ax_mse = fig.add_subplot(gs_top[0, 0])
+    ax_r2 = fig.add_subplot(gs_top[0, 1], sharey=ax_mse)
+
+    # 下半部分: c图, 宽度与上半部分一致
+    ax_params = fig.add_axes([0.18, 0.08, 0.77, 0.36])
 
     y = np.arange(n)
     h = 0.6
@@ -71,7 +79,6 @@ def gen_ablation():
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
     ax_mse.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_mse.invert_yaxis()
 
     # === 中图: R² ===
     ax_r2.barh(y, r2s, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
@@ -85,7 +92,7 @@ def gen_ablation():
     ax_r2.spines['top'].set_visible(False)
     ax_r2.spines['right'].set_visible(False)
     ax_r2.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_r2.invert_yaxis()
+    plt.setp(ax_r2.get_yticklabels(), visible=False)
 
     # === 下图: 参数量 ===
     bubble_sizes = [p * 600 for p in params]
@@ -103,17 +110,31 @@ def gen_ablation():
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_params.invert_yaxis()
 
-    # Y轴标签: 三个子图都显示
-    for ax in [ax_mse, ax_r2, ax_params]:
-        ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=7.5)
-        for i, tick in enumerate(ax.get_yticklabels()):
-            if i == 0:
-                tick.set_fontweight('bold')
-                tick.set_color(HL)
-        ax.invert_yaxis()
+    # Y轴: 上半部分
+    ax_mse.set_yticks(y)
+    ax_mse.set_yticklabels(labels, fontsize=7.5)
+    ax_mse.invert_yaxis()
+    for i, tick in enumerate(ax_mse.get_yticklabels()):
+        if i == 0:
+            tick.set_fontweight('bold')
+            tick.set_color(HL)
 
-    plt.tight_layout(pad=0.5, h_pad=0.8)
+    # Y轴: 下半部分
+    ax_params.set_yticks(y)
+    ax_params.set_yticklabels(labels, fontsize=7.5)
+    for i, tick in enumerate(ax_params.get_yticklabels()):
+        if i == 0:
+            tick.set_fontweight('bold')
+            tick.set_color(HL)
+
+    ax_params.set_yticks(y)
+    ax_params.set_yticklabels(labels, fontsize=7.5)
+    for i, tick in enumerate(ax_params.get_yticklabels()):
+        if i == 0:
+            tick.set_fontweight('bold')
+            tick.set_color(HL)
+    ax_params.invert_yaxis()
+
     plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.1)
     plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
     print('Done: ablation_results.pdf')
