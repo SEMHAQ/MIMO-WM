@@ -1,4 +1,4 @@
-# MIMO-WM: Lightweight Multi-Input Multi-Output State Space World Model for Humanoid Robot State Prediction
+# MIMO-WM: A Lightweight World Model Based on Multi-Input Multi-Output State Space Model for Humanoid Robots
 
 **基于多输入多输出状态空间模型的人形机器人轻量级世界模型**
 
@@ -110,7 +110,7 @@ mkdocs serve
 
 ```bibtex
 @article{mimo-wm2026,
-  title={A Lightweight MIMO-SSM World Model for Humanoid Robot State Prediction},
+  title={A Lightweight World Model Based on Multi-Input Multi-Output State Space Model for Humanoid Robots},
   author={Zhou, Xin-min and Yu, Huan-jie and Zhang, Hui-hui and Wang, Wei and Chen, Lu},
   journal={Control Theory \& Applications},
   year={2026}
