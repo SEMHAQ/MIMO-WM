@@ -40,6 +40,14 @@ Input [s; a] → Encoder → [MIMO Block × L] → Decoder → ŝ
 - **Gating**: Sigmoid mechanism for adaptive information control
 - **Dual-mode**: Convolution (O(T log T)) for training, recurrent (O(1)) for deployment
 
+## Dataset
+
+Experiments use MuJoCo medium datasets for Humanoid (348-dim state, 17-dim action) and HumanoidStandup (376-dim state, 17-dim action), collected via Gymnasium.
+
+[📥 Download Dataset (Google Drive)](https://drive.google.com/drive/folders/13k6u48Iu3vNW0nebvZ4RgT6M6nhoUorX?usp=drive_link)
+
+Place the downloaded `data/` folder under the project root.
+
 ## Quick Start
 
 ### Installation
