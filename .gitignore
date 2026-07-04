@@ -139,7 +139,6 @@ experiments/paper_results/
 
 # Misc
 configs/
-docs/
 notebooks/
 mkdocs.yml
 run.sh

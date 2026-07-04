@@ -65,7 +65,7 @@ if start_idx < 0 or end_idx < 0:
     exit(1)
 
 new_bib = '\\begin{thebibliography}{43} \\vskip 7pt\n'
-new_bib += '\n'.join(new_order)
+new_bib += '\n\n'.join(e.strip() for e in new_order)
 new_bib += '\n\n\\end{thebibliography}'
 
 old_bib = content[start_idx:end_idx + len(end_marker)]
