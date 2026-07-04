@@ -162,3 +162,5 @@ paper/paper_review_iteration/
 !architecture/pics/*
 
 C/
+
+*.dtmp
