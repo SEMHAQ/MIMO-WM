@@ -1,0 +1,71 @@
+site_name: MIMO-WM
+site_description: 基于多输入多输出状态空间模型的人形机器人轻量级世界模型
+site_url: https://semhaq.github.io/MIMO-WM/
+repo_url: https://github.com/SEMHAQ/MIMO-WM
+repo_name: SEMHAQ/MIMO-WM
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: blue
+      accent: red
+      toggle:
+        icon: material/brightness-7
+        name: 切换暗色
+    - scheme: slate
+      primary: blue
+      accent: red
+      toggle:
+        icon: material/brightness-4
+        name: 切换亮色
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - 首页: index.md
+  - 方法:
+    - 问题描述: method/background.md
+    - MIMO-WM架构: method/architecture.md
+    - 理论分析: method/theory.md
+    - 训练目标: method/training.md
+    - MPC规划: method/mpc.md
+  - 实验:
+    - 实验设置: experiments/setup.md
+    - 状态预测: experiments/results.md
+    - 消融实验: experiments/ablation.md
+    - 序列长度分析: experiments/seqlen.md
+    - MPC实验: experiments/mpc.md
+  - 讨论:
+    - 讨论: discussion/discussion.md
+    - 局限性: discussion/limitations.md

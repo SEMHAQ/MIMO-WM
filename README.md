@@ -1,121 +1,122 @@
-# MS-WM: Multi-Scale Dynamics World Model for High-Dimensional Robot State Prediction
+# MIMO-WM: Lightweight Multi-Input Multi-Output State Space World Model for Humanoid Robot State Prediction
 
-**面向高维机器人状态预测的多尺度动力学世界模型**
+**基于多输入多输出状态空间模型的人形机器人轻量级世界模型**
 
-[![Paper](https://img.shields.io/badge/Paper-CTA%202026-blue)](https://github.com/SEMHAQ/SSM-World-Model)
-[![Code](https://img.shields.io/badge/Code-Python-green)](https://github.com/SEMHAQ/SSM-World-Model)
+[![Paper](https://img.shields.io/badge/Paper-CTA%202026-blue)](https://github.com/SEMHAQ/MIMO-WM)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Overview
 
-MS-WM is a multi-scale dynamics world model that separately handles slow dynamics (position), fast dynamics (velocity), and instantaneous dynamics (forces) through three specialized branches: slow SSM, fast SSM, and local attention. This physics-inspired design achieves state-of-the-art accuracy on high-dimensional robot state prediction while maintaining lightweight parameters.
+MIMO-WM is a lightweight world model based on multi-input multi-output state space model (MIMO-SSM) architecture for humanoid robot state prediction. Each input dimension maintains an independent state space through parallel scanning, with a sigmoid gating mechanism that dynamically adjusts information flow. The model achieves state-of-the-art prediction accuracy while requiring only 0.138M parameters.
 
 ## Key Results
 
-### Performance Comparison (T=32, 5 seeds)
+### State Prediction Performance (T=32, 5 seeds)
 
-| Model | Humanoid (348D) | Ant (105D) |
-|-------|-----------------|------------|
-| LSTM-WM | 40.87±0.63 | 85.51±1.36 |
-| GRU-WM | 35.60±0.65 | 81.91±3.65 |
-| Transformer-WM | 25.85±0.35 | 73.78±1.59 |
-| Mamba-WM | 27.34±0.44 | 78.52±1.19 |
-| S4D-WM | 27.13±0.35 | 77.02±0.43 |
-| **MS-WM** | **20.74±0.28** | **72.59±0.71** |
+| Model | Humanoid MSE (×10⁻²) | Humanoid R² | Params (M) |
+|-------|----------------------|-------------|------------|
+| LSTM-WM | 39.93±0.36 | 0.501 | 0.227 |
+| GRU-WM | 36.60±0.30 | 0.542 | 0.190 |
+| Transformer-WM | 28.11±0.72 | 0.648 | 0.302 |
+| Mamba-WM | 20.18±0.24 | 0.748 | 0.224 |
+| TCN-WM | 20.68±0.32 | 0.741 | 0.189 |
+| **MIMO-WM** | **19.87±0.23** | **0.751** | **0.138** |
 
-**Key Findings**:
-- MS-WM achieves **20% lower MSE** than Transformer on Humanoid (348D)
-- MS-WM achieves **1.6% lower MSE** than Transformer on Ant (105D)
-- MS-WM has **0.019M parameters** (lightweight)
-- Multi-scale modeling is more effective for high-dimensional complex dynamics
+### Highlights
 
-## Dataset
+- **Best accuracy**: MSE 19.87×10⁻² on Humanoid, outperforming Mamba-WM by 1.5%
+- **Most lightweight**: Only 0.138M parameters, 38% fewer than Mamba-WM
+- **Theoretical guarantees**: Proven dual-mode equivalence, complexity advantage, and CEM-MPC convergence
 
-We use [Gymnasium MuJoCo](https://gymnasium.farama.org/environments/mujoco/) medium-v0 datasets:
+## Architecture
 
-```bash
-# Download and prepare datasets
-python scripts/download_all_data.py
+```
+Input [s; a] → Encoder → [MIMO Block × L] → Decoder → ŝ
+                              ↑
+                    LayerNorm → DiagSSM → Gate(σ) → Residual
 ```
 
-This will download:
-- `humanoid/` — Gymnasium Humanoid-medium (348D state, 17D action)
-- `ant/` — Gymnasium Ant-medium (105D state, 8D action)
+- **MIMO-SSM**: D parallel diagonal SSMs, one per input dimension
+- **Gating**: Sigmoid mechanism for adaptive information control
+- **Dual-mode**: Convolution (O(T log T)) for training, recurrent (O(1)) for deployment
+
+## Quick Start
+
+### Installation
+
+```bash
+git clone https://github.com/SEMHAQ/MIMO-WM.git
+cd MIMO-WM
+pip install torch numpy matplotlib
+```
+
+### Train & Evaluate
+
+```bash
+# State prediction (Humanoid + HumanoidStandup)
+python3 scripts/run_exp1_state_prediction.py
+
+# Ablation study
+python3 scripts/run_ablation_mimo.py
+
+# Sequence length sensitivity
+python3 scripts/run_seqlen_sensitivity.py
+python3 scripts/run_seqlen_standup.py
+
+# MPC planning
+python3 scripts/run_exp4_mpc.py
+```
+
+### Generate Figures
+
+```bash
+python3 scripts/gen_figures.py   # Ablation + sequence length
+python3 scripts/gen_radar.py     # Radar comparison
+```
 
 ## Project Structure
 
 ```
-SSM-World-Model/
-├── src/
-│   ├── models/
-│   │   ├── ssm_world_model.py     # S4D baseline
-│   │   ├── baselines.py           # LSTM, GRU, Transformer baselines
-│   │   ├── mamba_world_model.py   # Mamba baseline
-│   │   └── mpc_controller.py      # Model Predictive Control
-│   └── train/
-│       └── train.py               # Training loop
-├── scripts/
-│   ├── download_all_data.py       # Download Gymnasium MuJoCo datasets
-│   ├── run_all_experiments.py     # Full experiment pipeline (all models, all datasets, 5 seeds)
-│   └── update_paper_tables.py     # Generate LaTeX tables from results
-├── experiments/
-│   └── all_results.json           # All experiment results
-├── data/
-│   ├── humanoid/                  # Gymnasium Humanoid-medium (348D)
-│   └── ant/                       # Gymnasium Ant-medium (105D)
-└── paper/
-    ├── main.tex                   # Paper source (LaTeX, CTA template)
-    └── figures/                   # Paper figures
+src/models/
+  mimo_world_model.py    # MIMO-WM model (MIMOLayer + MIMOWorldModel)
+  ssm_world_model.py     # DiagSSM core (diagonal SSM with conv/recurrent modes)
+  baselines.py           # LSTM, GRU, Transformer, TCN baselines
+  mamba_world_model.py   # Mamba baseline
+
+scripts/
+  run_exp1_state_prediction.py   # Experiment 1: state prediction
+  run_ablation_mimo.py           # Ablation study
+  run_seqlen_sensitivity.py      # Humanoid sequence length analysis
+  run_seqlen_standup.py          # HumanoidStandup sequence length analysis
+  run_exp4_mpc.py                # MPC planning experiment
+  gen_figures.py                 # Figure generation
+  gen_radar.py                   # Radar chart generation
+
+paper/
+  main.tex              # Main paper (CTA format)
+  kzllyyhead.tex        # CTA template header
 ```
 
-## Quick Start
+## Documentation
 
-### Requirements
-
-```bash
-pip install torch numpy minari gymnasium matplotlib tqdm
-```
-
-### Download Dataset
+Full documentation is available via MkDocs.
 
 ```bash
-python scripts/download_all_data.py
-```
-
-### Run Experiments
-
-```bash
-# Full experiment pipeline (all models, all datasets, 5 seeds)
-python scripts/run_all_experiments.py
-
-# Update paper tables with results
-python scripts/update_paper_tables.py
+pip install mkdocs mkdocs-material
+mkdocs serve
 ```
 
 ## Citation
 
-If you find this work useful, please cite:
-
 ```bibtex
-@article{zhou2026mswm,
-  title   = {面向高维机器人状态预测的多尺度动力学世界模型},
-  author  = {周新民 and 余焕杰 and 张慧慧 and 王伟 and 陈露},
-  journal = {控制理论与应用},
-  year    = {2026}
+@article{mimo-wm2026,
+  title={A Lightweight MIMO-SSM World Model for Humanoid Robot State Prediction},
+  author={Zhou, Xin-min and Yu, Huan-jie and Zhang, Hui-hui and Wang, Wei and Chen, Lu},
+  journal={Control Theory \& Applications},
+  year={2026}
 }
 ```
 
-## Acknowledgments
-
-This work was supported by:
-- National Social Science Fund of China (Grant No. 21BGL231)
-- Major Program of Xiangjiang Laboratory (Grant No. 24XJ01001; 25XJ01001)
-
 ## License
 
-This project is for academic research purposes.
-
-## Contact
-
-- 周新民: zhouxinmin2699@163.com
-- 余焕杰: semhaqx@gmail.com
-- 张慧慧: huihuiz054@gmail.com
+MIT License
