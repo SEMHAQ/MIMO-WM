@@ -1,0 +1,333 @@
+{
+  "H": 6,
+  "K": 256,
+  "NE": 32,
+  "M": 12,
+  "problems": [
+    {
+      "problem": 0,
+      "trace": [
+        {
+          "iter": 1,
+          "elite_mean_cost": 58.9431,
+          "sigma_fro": 7.2018
+        },
+        {
+          "iter": 2,
+          "elite_mean_cost": 57.6697,
+          "sigma_fro": 5.9873
+        },
+        {
+          "iter": 3,
+          "elite_mean_cost": 56.8656,
+          "sigma_fro": 5.2609
+        },
+        {
+          "iter": 4,
+          "elite_mean_cost": 56.1332,
+          "sigma_fro": 4.7868
+        },
+        {
+          "iter": 5,
+          "elite_mean_cost": 55.4643,
+          "sigma_fro": 4.37
+        },
+        {
+          "iter": 6,
+          "elite_mean_cost": 54.9732,
+          "sigma_fro": 4.0878
+        },
+        {
+          "iter": 7,
+          "elite_mean_cost": 54.5119,
+          "sigma_fro": 3.779
+        },
+        {
+          "iter": 8,
+          "elite_mean_cost": 54.1129,
+          "sigma_fro": 3.5266
+        },
+        {
+          "iter": 9,
+          "elite_mean_cost": 53.8259,
+          "sigma_fro": 3.2752
+        },
+        {
+          "iter": 10,
+          "elite_mean_cost": 53.5818,
+          "sigma_fro": 3.0912
+        },
+        {
+          "iter": 11,
+          "elite_mean_cost": 53.3207,
+          "sigma_fro": 2.8767
+        },
+        {
+          "iter": 12,
+          "elite_mean_cost": 53.1387,
+          "sigma_fro": 2.7189
+        }
+      ]
+    },
+    {
+      "problem": 1,
+      "trace": [
+        {
+          "iter": 1,
+          "elite_mean_cost": 87.5672,
+          "sigma_fro": 7.1467
+        },
+        {
+          "iter": 2,
+          "elite_mean_cost": 85.5574,
+          "sigma_fro": 5.9109
+        },
+        {
+          "iter": 3,
+          "elite_mean_cost": 83.7955,
+          "sigma_fro": 5.1556
+        },
+        {
+          "iter": 4,
+          "elite_mean_cost": 82.5854,
+          "sigma_fro": 4.7115
+        },
+        {
+          "iter": 5,
+          "elite_mean_cost": 81.6368,
+          "sigma_fro": 4.3086
+        },
+        {
+          "iter": 6,
+          "elite_mean_cost": 80.8179,
+          "sigma_fro": 3.9707
+        },
+        {
+          "iter": 7,
+          "elite_mean_cost": 80.0952,
+          "sigma_fro": 3.6558
+        },
+        {
+          "iter": 8,
+          "elite_mean_cost": 79.354,
+          "sigma_fro": 3.4523
+        },
+        {
+          "iter": 9,
+          "elite_mean_cost": 78.8136,
+          "sigma_fro": 3.2812
+        },
+        {
+          "iter": 10,
+          "elite_mean_cost": 78.3737,
+          "sigma_fro": 3.1691
+        },
+        {
+          "iter": 11,
+          "elite_mean_cost": 77.9147,
+          "sigma_fro": 2.9318
+        },
+        {
+          "iter": 12,
+          "elite_mean_cost": 77.5191,
+          "sigma_fro": 2.7644
+        }
+      ]
+    },
+    {
+      "problem": 2,
+      "trace": [
+        {
+          "iter": 1,
+          "elite_mean_cost": 73.7488,
+          "sigma_fro": 7.2392
+        },
+        {
+          "iter": 2,
+          "elite_mean_cost": 71.6275,
+          "sigma_fro": 5.9576
+        },
+        {
+          "iter": 3,
+          "elite_mean_cost": 70.2753,
+          "sigma_fro": 5.1994
+        },
+        {
+          "iter": 4,
+          "elite_mean_cost": 69.5067,
+          "sigma_fro": 4.7277
+        },
+        {
+          "iter": 5,
+          "elite_mean_cost": 68.7514,
+          "sigma_fro": 4.3646
+        },
+        {
+          "iter": 6,
+          "elite_mean_cost": 68.1335,
+          "sigma_fro": 4.0495
+        },
+        {
+          "iter": 7,
+          "elite_mean_cost": 67.5032,
+          "sigma_fro": 3.7098
+        },
+        {
+          "iter": 8,
+          "elite_mean_cost": 67.095,
+          "sigma_fro": 3.5128
+        },
+        {
+          "iter": 9,
+          "elite_mean_cost": 66.6777,
+          "sigma_fro": 3.2553
+        },
+        {
+          "iter": 10,
+          "elite_mean_cost": 66.2576,
+          "sigma_fro": 3.0894
+        },
+        {
+          "iter": 11,
+          "elite_mean_cost": 65.9723,
+          "sigma_fro": 2.9243
+        },
+        {
+          "iter": 12,
+          "elite_mean_cost": 65.6087,
+          "sigma_fro": 2.7897
+        }
+      ]
+    },
+    {
+      "problem": 3,
+      "trace": [
+        {
+          "iter": 1,
+          "elite_mean_cost": 59.6016,
+          "sigma_fro": 7.1911
+        },
+        {
+          "iter": 2,
+          "elite_mean_cost": 58.5216,
+          "sigma_fro": 6.0103
+        },
+        {
+          "iter": 3,
+          "elite_mean_cost": 57.096,
+          "sigma_fro": 5.2744
+        },
+        {
+          "iter": 4,
+          "elite_mean_cost": 55.8015,
+          "sigma_fro": 4.7925
+        },
+        {
+          "iter": 5,
+          "elite_mean_cost": 54.8375,
+          "sigma_fro": 4.427
+        },
+        {
+          "iter": 6,
+          "elite_mean_cost": 53.8441,
+          "sigma_fro": 4.0449
+        },
+        {
+          "iter": 7,
+          "elite_mean_cost": 52.9941,
+          "sigma_fro": 3.6668
+        },
+        {
+          "iter": 8,
+          "elite_mean_cost": 52.2868,
+          "sigma_fro": 3.364
+        },
+        {
+          "iter": 9,
+          "elite_mean_cost": 51.6622,
+          "sigma_fro": 3.1985
+        },
+        {
+          "iter": 10,
+          "elite_mean_cost": 51.2034,
+          "sigma_fro": 2.9837
+        },
+        {
+          "iter": 11,
+          "elite_mean_cost": 50.8006,
+          "sigma_fro": 2.7918
+        },
+        {
+          "iter": 12,
+          "elite_mean_cost": 50.4196,
+          "sigma_fro": 2.6433
+        }
+      ]
+    },
+    {
+      "problem": 4,
+      "trace": [
+        {
+          "iter": 1,
+          "elite_mean_cost": 90.6775,
+          "sigma_fro": 7.2025
+        },
+        {
+          "iter": 2,
+          "elite_mean_cost": 89.0586,
+          "sigma_fro": 5.8726
+        },
+        {
+          "iter": 3,
+          "elite_mean_cost": 87.713,
+          "sigma_fro": 5.1854
+        },
+        {
+          "iter": 4,
+          "elite_mean_cost": 86.5371,
+          "sigma_fro": 4.6663
+        },
+        {
+          "iter": 5,
+          "elite_mean_cost": 85.367,
+          "sigma_fro": 4.274
+        },
+        {
+          "iter": 6,
+          "elite_mean_cost": 84.4855,
+          "sigma_fro": 3.972
+        },
+        {
+          "iter": 7,
+          "elite_mean_cost": 83.7986,
+          "sigma_fro": 3.672
+        },
+        {
+          "iter": 8,
+          "elite_mean_cost": 83.2363,
+          "sigma_fro": 3.4574
+        },
+        {
+          "iter": 9,
+          "elite_mean_cost": 82.8108,
+          "sigma_fro": 3.3579
+        },
+        {
+          "iter": 10,
+          "elite_mean_cost": 82.3664,
+          "sigma_fro": 3.0786
+        },
+        {
+          "iter": 11,
+          "elite_mean_cost": 82.0329,
+          "sigma_fro": 2.9471
+        },
+        {
+          "iter": 12,
+          "elite_mean_cost": 81.662,
+          "sigma_fro": 2.763
+        }
+      ]
+    }
+  ]
+}

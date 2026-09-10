@@ -1,0 +1,28 @@
+{
+  "protocol": "NVIDIA RTX3090, idle; no_grad; mean over warmup+reps; B=1 and B=128; conv mode (both models); MIMO D96N16L2 vs Transformer D96 nhead4 L2",
+  "note": "B=1: both ~1.4-1.8ms flat in T -> dispatch/overhead bound, complexity advantage not visible at batch-1. B=128: MIMO advantage grows with T (attention O(T^2)). Transformer positional encoding caps at T<=500.",
+  "B1_ms": {
+    "T32": {
+      "MIMO-WM": 1.82,
+      "Transformer-WM": 1.46
+    }
+  },
+  "B128_ms": {
+    "T64": {
+      "MIMO-WM": 1.91,
+      "Transformer-WM": 2.09,
+      "ratio": 1.1
+    },
+    "T128": {
+      "MIMO-WM": 1.91,
+      "Transformer-WM": 3.14,
+      "ratio": 1.64
+    },
+    "T256": {
+      "MIMO-WM": 2.95,
+      "Transformer-WM": 6.88,
+      "ratio": 2.33
+    }
+  },
+  "implication": "asymptotic O(TlogT) vs O(T^2) advantage materializes at larger T/batch; single-sample latency is overhead-dominated for this tiny model class."
+}

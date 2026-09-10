@@ -18,10 +18,10 @@ class MIMOLayer(nn.Module):
         self.gate = nn.Linear(d_model, d_model)
         self.output = nn.Linear(d_model, d_model)
 
-    def forward(self, x):
+    def forward(self, x, mode='conv'):
         residual = x
         x = self.norm(x)
-        x = self.ssm(x)
+        x = self.ssm(x, mode=mode)
         x = self.output(x) * torch.sigmoid(self.gate(x))
         return residual + x
 
@@ -44,7 +44,7 @@ class MIMOWorldModel(nn.Module):
             nn.Linear(d_model, state_dim),
         )
 
-    def forward(self, states, actions):
+    def forward(self, states, actions, mode='conv'):
         if actions.shape[1] < states.shape[1]:
             pad = torch.zeros(
                 states.shape[0], states.shape[1] - actions.shape[1],
@@ -54,5 +54,5 @@ class MIMOWorldModel(nn.Module):
         x = torch.cat([states, actions], dim=-1)
         h = self.encoder(x)
         for block in self.backbone:
-            h = block(h)
+            h = block(h, mode=mode)
         return states[:, -1, :] + self.decoder(h[:, -1, :])

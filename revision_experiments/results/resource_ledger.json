@@ -1,0 +1,46 @@
+{
+  "config": "state_dim=348, action_dim=17, T=32",
+  "models": {
+    "MIMO-WM": {
+      "params_m": 0.1378,
+      "weight_bytes_mb": 0.551,
+      "window_flops_T32": 5323740,
+      "per_step_flops": 166366
+    },
+    "S4D-WM(no-gate SSM-WM)": {
+      "params_m": 0.1008,
+      "weight_bytes_mb": 0.403,
+      "window_flops_T32": 2958300,
+      "per_step_flops": 92446
+    },
+    "Transformer-WM": {
+      "params_m": 0.3019,
+      "weight_bytes_mb": 1.208,
+      "window_flops_T32": 12554844,
+      "per_step_flops": 392338
+    },
+    "Transformer-Reg(D192L3)": {
+      "params_m": 1.5091,
+      "weight_bytes_mb": 6.036,
+      "window_flops_T32": 63681372,
+      "per_step_flops": 1990042
+    },
+    "LSTM-WM": {
+      "params_m": 0.2272,
+      "weight_bytes_mb": 0.909,
+      "window_flops_T32": 2328924,
+      "per_step_flops": 72778
+    },
+    "TCN-WM": {
+      "params_m": 0.1892,
+      "weight_bytes_mb": 0.757,
+      "window_flops_T32": 2334300,
+      "per_step_flops": 72946
+    }
+  },
+  "jetson_orin_nano_estimate_ms_per_T32window": {
+    "fp16@25%": 0.001,
+    "fp16@15%": 0.002,
+    "INT8@30%": 0.001
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "config": {
+    "D": 96,
+    "N": 16,
+    "L": 2
+  },
+  "state_dim": 348,
+  "action_dim": 17,
+  "checks": {
+    "T8_seed0": 2.384185791015625e-07,
+    "T8_seed7": 2.384185791015625e-07,
+    "T32_seed0": 2.384185791015625e-07,
+    "T32_seed7": 2.384185791015625e-07
+  },
+  "max_abs_diff_conv_vs_kernel": 2.384185791015625e-07,
+  "latency": {
+    "window_ms_T8_th1": 3.8534,
+    "per_step_ms_T8_th1": 0.4817,
+    "window_ms_T32_th1": 15.0783,
+    "per_step_ms_T32_th1": 0.4712,
+    "window_ms_T8_th4": 4.2352,
+    "per_step_ms_T8_th4": 0.5294,
+    "window_ms_T32_th4": 16.7787,
+    "per_step_ms_T32_th4": 0.5243
+  },
+  "window_ms_T32_th1_reference": 14.9936,
+  "deploy_params_m": 0.125,
+  "weight_bytes_mb": 0.501
+}

@@ -1,0 +1,12 @@
+{
+  "42": {
+    "mse_full_T128": 0.67575,
+    "mse_trunc_tail32": 0.67575,
+    "loss_ratio_trunc_over_full": 1.0
+  },
+  "123": {
+    "mse_full_T128": 0.661564,
+    "mse_trunc_tail32": 0.661564,
+    "loss_ratio_trunc_over_full": 1.0
+  }
+}
