@@ -40,6 +40,9 @@ data/
 *.npy
 *.npz
 
+# 例外：补充材料中的机载测速参考输入/输出（体积小，需随论文公开）
+!revision_experiments/onboard_bench/reference_io.npz
+
 # Model weights
 checkpoints/
 *.pth

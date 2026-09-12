@@ -24,9 +24,20 @@ revision_experiments/
 │   ├── cpu_deploy_bench.json      x86 CPU 部署基准
 │   ├── deploy_kernel_verify.json  部署核等价性与 ONNX 导出验证
 │   ├── resource_ledger.json       FLOPs 与权重体积账本
+│   ├── onboard_bench.json         机载平台推理延迟与内存/温度实测（表 6）
+│   ├── onboard_bench_mpc.json     机载平台 CEM-MPC 规划耗时实测
+│   ├── onboard_bench_console.txt  机载实测的终端原始输出留档
 │   ├── mimo_wm_deploy.onnx        导出用于部署评测的 ONNX 模型
 │   └── ckpt/                      各数据集各随机种子的最优权重
-└── scripts/               评测脚本
+├── scripts/               评测脚本（GPU / x86 侧）
+└── onboard_bench/         机载平台实测脚本与运行包
+    ├── bench_sbc.py               机载推理延迟测速（产出 onboard_bench.json）
+    ├── bench_mpc_sbc.py           机载 CEM-MPC 规划耗时测速（产出 onboard_bench_mpc.json）
+    ├── export_bench_models.py     在 x86 上导出待测 ONNX 模型与参考输入/输出
+    ├── export_mpc_onnx.py         导出支持动态批量的 MIMO-WM ONNX（供 MPC 测速）
+    ├── reference_io.npz           参考输入/输出，用于机载数值一致性核对
+    ├── models/                    机载测速所用 ONNX 模型
+    └── 机载实测说明.md            发给板端执行者的操作说明（含环境与运行步骤）
 ```
 
 ---
@@ -72,6 +83,8 @@ python3 scripts/generate_data.py
 | `cpu_deploy_bench.json` | 第 5.7 节（x86 CPU 与机载平台延迟对照） | `bench_deploy_cpu.py` |
 | `deploy_kernel_verify.json` | 第 5.7 节（部署核等价性与 ONNX 对拍） | `deploy_mimo.py` |
 | `resource_ledger.json` | 第 5.7 节（单窗 FLOPs 与权重体积账本） | `resource_ledger.py` |
+| `onboard_bench.json` | 表 6 全部数值、第 5.7 节（机载延迟、峰值内存、温度） | `onboard_bench/bench_sbc.py` |
+| `onboard_bench_mpc.json` | 第 5.7 节末（机载 5.82 s / 0.42 s 规划耗时） | `onboard_bench/bench_mpc_sbc.py` |
 | `mimo_wm_deploy.onnx` | 第 5.7 节（导出模型，opset 17） | `deploy_mimo.py` |
 | `ckpt/*.pt` | 表 1、表 2 中 MIMO-WM 各行（2 数据集 × 5 种子的最优验证权重） | `run_revision_matrix.py` |
 
@@ -114,6 +127,29 @@ python3 revision_experiments/scripts/bench_deploy_cpu.py
 python3 revision_experiments/scripts/resource_ledger.py
 ```
 
+### 5.1 机载平台实测（表 6）
+
+机载延迟与 MPC 规划耗时无法在 x86 上复现，须在 aarch64 板端运行。
+`onboard_bench/` 即当时发往板端的完整运行包，步骤如下：
+
+```bash
+# (1) 在 x86 上重新生成待测 ONNX 模型与参考输入/输出（可选，仓库中已附）
+python3 revision_experiments/onboard_bench/export_bench_models.py
+python3 revision_experiments/onboard_bench/export_mpc_onnx.py
+
+# (2) 把整个 onboard_bench/ 目录拷到板端，在板端执行
+pip3 install onnxruntime numpy
+cd onboard_bench
+sudo sh -c 'for p in /sys/devices/system/cpu/cpufreq/policy*; do echo performance > $p/scaling_governor; done'
+python3 bench_sbc.py MIMO-WM        # 产出 bench_result.json
+python3 bench_mpc_sbc.py            # 产出 bench_result_mpc.json
+```
+
+板端脚本自带数值正确性核对：与 `reference_io.npz` 中 x86 导出的参考输出逐元素比对，
+两条日志中报告的 `diff` 即该最大绝对误差（本机载运行中 $T{=}16$ 为 $2.4\times10^{-7}$，
+其余为 0）。`results/onboard_bench*.json` 即上述两条命令产出的 `bench_result*.json`，
+仅重命名以区分来源，内容未作改动；终端输出见 `onboard_bench_console.txt`。
+
 ---
 
 ## 6. 结果口径说明
@@ -132,15 +168,20 @@ python3 revision_experiments/scripts/resource_ledger.py
    （$B{=}128$，`gpu_time_scaling.json`）给出，两者不可混用。
 
 3. **部署延迟的测量口径。** 机载平台的延迟（表 6）为 ONNXRuntime 纯 CPU 推理的
-   单窗延迟中位数，测试期间温度恒定 44.5 ℃、未见降频。同一模型在 x86 服务器上的
+   单窗延迟中位数（`onboard_bench.json`），测试期间温度恒定 44.5 ℃、未见降频。
+   表中 1 线程列为 `th1`、4 线程列为 `th4`，同一单元内的单步延迟由该单元中位延迟
+   除以 $T$ 折算得到（脚本内 `per_step_ms`）。同一模型在 x86 服务器上的
    延迟约为机载平台的 1/8 至 1/9。若直接使用 PyTorch 的卷积或复数递推路径在 CPU 上
    测时，会得到与渐进复杂度相反的结论（见 `cpu_deploy_bench.json`），故部署数字
    统一取 ONNXRuntime 口径，并在修改稿中标注了测试环境。
 
 4. **MPC 频率的口径。** 表 5 的控制频率由 GPU 上并行评估 256 条候选序列测得。
    在算力受限的机载平台上按同一 CEM 配置单次规划耗时约 5.82 s（约 0.17 Hz）；
-   将候选规模缩减至 32、迭代 3 轮、时域 5 后降至 0.42 s（约 2.41 Hz）。
+   将候选规模缩减至 32、迭代 3 轮、时域 5 后降至 0.42 s（约 2.41 Hz）
+   （`onboard_bench_mpc.json`，每个配置测 3 个控制时刻取中位数）。
    该对比说明规划频率与候选规模近似成正比，机载端需要相应缩减候选规模。
+   机载 MPC 测速以 4 线程运行，使用的是动态批量 ONNX（`MIMO-WM_T8_batch.onnx`），
+   其批量输出与单样本输出逐位一致。
 
 5. **部署核与训练形态的一致性。** `deploy_mimo.py` 实现的纯实数单步递推部署核由训练
    所用卷积模式反推得到，与训练卷积路径的输出最大误差约 $2.4\times10^{-7}$

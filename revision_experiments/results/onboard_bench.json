@@ -1,0 +1,101 @@
+{
+  "platform": "Linux-4.9.38-bm1684-v10.5.0-00562-ga6d01e40bc7c-dirty-aarch64-with-glibc2.29",
+  "machine": "aarch64",
+  "processor": "bm1684",
+  "cores": 8,
+  "python": "3.8.2",
+  "onnxruntime": "1.16.3",
+  "temp_before_C": 44.5,
+  "models": {
+    "MIMO-WM_T16": {
+      "T": 16,
+      "model_kB": 634.2,
+      "latency": {
+        "th1": {
+          "mean_ms": 5.5726,
+          "median_ms": 5.3336,
+          "p95_ms": 5.9333,
+          "reps": 150,
+          "per_step_ms": 0.3333
+        },
+        "th4": {
+          "mean_ms": 5.6926,
+          "median_ms": 5.6903,
+          "p95_ms": 5.7246,
+          "reps": 150,
+          "per_step_ms": 0.3556
+        }
+      },
+      "diff_th1": 2.384185791015625e-07,
+      "diff_th4": 2.384185791015625e-07
+    },
+    "MIMO-WM_T32": {
+      "T": 32,
+      "model_kB": 713.3,
+      "latency": {
+        "th1": {
+          "mean_ms": 10.7194,
+          "median_ms": 10.6187,
+          "p95_ms": 10.6687,
+          "reps": 100,
+          "per_step_ms": 0.3318
+        },
+        "th4": {
+          "mean_ms": 11.3124,
+          "median_ms": 11.2773,
+          "p95_ms": 11.3429,
+          "reps": 100,
+          "per_step_ms": 0.3524
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T64": {
+      "T": 64,
+      "model_kB": 871.9,
+      "latency": {
+        "th1": {
+          "mean_ms": 21.2005,
+          "median_ms": 21.0277,
+          "p95_ms": 21.3175,
+          "reps": 50,
+          "per_step_ms": 0.3286
+        },
+        "th4": {
+          "mean_ms": 22.2019,
+          "median_ms": 22.2021,
+          "p95_ms": 22.2861,
+          "reps": 50,
+          "per_step_ms": 0.3469
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T8": {
+      "T": 8,
+      "model_kB": 595.0,
+      "latency": {
+        "th1": {
+          "mean_ms": 2.8503,
+          "median_ms": 2.8525,
+          "p95_ms": 2.8689,
+          "reps": 200,
+          "per_step_ms": 0.3566
+        },
+        "th4": {
+          "mean_ms": 2.954,
+          "median_ms": 2.957,
+          "p95_ms": 2.9715,
+          "reps": 200,
+          "per_step_ms": 0.3696
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    }
+  },
+  "peak_rss_MB": 96.7,
+  "temp_after_C": 44.5
+}
