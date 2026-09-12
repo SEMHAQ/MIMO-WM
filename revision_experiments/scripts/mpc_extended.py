@@ -1,4 +1,4 @@
-"""MPC 扩展对比：把返修新增的 5 个基线也纳入 MPC 口径（Humanoid）。
+"""MPC 扩展对比：把表 5 新增的 5 个基线纳入同一 MPC 口径（Humanoid）。
 训练配方与 run_exp4_mpc.py 一致（BS=1024, 100 epochs, lr=5e-4, 早停 pat=20），
 评测：梯度 MPC 频率 / CEM-MPC 频率 / 3 步预测 MSE。
 结果增量写入 revision_experiments/results/mpc_extended.json（可断点续跑）。
