@@ -100,9 +100,10 @@ scripts/
   gen_figures.py                 # Figure generation
   gen_radar.py                   # Radar chart generation
 
-paper/
-  main.tex              # Main paper (CTA format)
-  kzllyyhead.tex        # CTA template header
+revision_experiments/
+  README.md             # Supplementary material: file ↔ table/section map, repro commands
+  results/              # Raw outputs (JSON) and exported ONNX model
+  scripts/              # Evaluation scripts generating the results above
 ```
 
 ## Documentation
@@ -113,6 +114,13 @@ Full documentation is available via MkDocs.
 pip install mkdocs mkdocs-material
 mkdocs serve
 ```
+
+## Supplementary Material
+
+Results, evaluation scripts and the exported ONNX model supporting the revision of the manuscript
+are under [`revision_experiments/`](revision_experiments/). See
+[`revision_experiments/README.md`](revision_experiments/README.md) for the mapping from each result
+file to the corresponding table/section of the manuscript, along with reproduction commands.
 
 ## Citation
 
