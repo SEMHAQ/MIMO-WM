@@ -7,26 +7,57 @@
 
 ## Overview
 
-MIMO-WM is a lightweight world model based on multi-input multi-output state space model (MIMO-SSM) architecture for humanoid robot state prediction. Each input dimension maintains an independent state space through parallel scanning, with a sigmoid gating mechanism that dynamically adjusts information flow. The model achieves state-of-the-art prediction accuracy while requiring only 0.138M parameters.
+MIMO-WM is a lightweight world model based on multi-input multi-output state space model (MIMO-SSM) architecture for humanoid robot state prediction. Each input dimension maintains an independent state space through parallel scanning, with a sigmoid gating mechanism that dynamically adjusts information flow. The model reaches the best prediction accuracy among lightweight models while requiring only 0.138M parameters.
 
 ## Key Results
 
-### State Prediction Performance (T=32, 5 seeds)
+### State Prediction Performance (T=32, 5 seeds, mean ± std)
 
-| Model | Humanoid MSE (×10⁻²) | Humanoid R² | Params (M) |
-|-------|----------------------|-------------|------------|
+MSE in ×10⁻². All models share the hidden size $D{=}96$, $L{=}2$ for a like-for-like comparison.
+
+**Humanoid**
+
+| Model | MSE (×10⁻²) | R² | Params (M) |
+|-------|-------------|-----|------------|
 | LSTM-WM | 39.93±0.36 | 0.501 | 0.227 |
 | GRU-WM | 36.60±0.30 | 0.542 | 0.190 |
 | Transformer-WM | 28.11±0.72 | 0.648 | 0.302 |
 | Mamba-WM | 20.18±0.24 | 0.748 | 0.224 |
 | TCN-WM | 20.68±0.32 | 0.741 | 0.189 |
 | **MIMO-WM** | **19.87±0.23** | **0.751** | **0.138** |
+| MIMO-WM (openGate init) | 19.55±0.22 | 0.755 | 0.138 |
+| MIMO-WM (w/o gating) | 20.55±0.05 | 0.743 | 0.101 |
+| S4D-WM | 31.18±0.38 | 0.610 | 0.101 |
+| LRU-WM | 20.42±0.11 | 0.745 | 0.101 |
+| Performer-WM | 20.99±0.18 | 0.737 | 0.162 |
+| Transformer-WM (regular scale) | 25.13±0.54 | 0.686 | 1.509 |
+
+**HumanoidStandup**
+
+| Model | MSE (×10⁻²) | R² | Params (M) |
+|-------|-------------|-----|------------|
+| **MIMO-WM** | **53.10±0.07** | **0.444** | **0.138** |
+| MIMO-WM (openGate init) | 52.71±0.08 | 0.449 | 0.138 |
+| MIMO-WM (w/o gating) | 50.61±0.22 | 0.470 | 0.101 |
+| S4D-WM | 51.90±0.17 | 0.457 | 0.101 |
+| LRU-WM | 50.35±0.03 | 0.473 | 0.101 |
+| Performer-WM | 53.95±0.42 | 0.436 | 0.162 |
+| Transformer-WM (regular scale) | 54.53±0.28 | 0.429 | 1.509 |
+
+"Regular scale" Transformer uses $D{=}192$, 6 heads, $L{=}3$, FFN$=4D$ (1.509M parameters), included to
+test whether the ~0.3M baselines were under-parameterised. Per-seed values and the evaluation scripts
+are in [`revision_experiments/`](revision_experiments/).
 
 ### Highlights
 
-- **Best accuracy**: MSE 19.87×10⁻² on Humanoid, outperforming Mamba-WM by 1.5%
-- **Most lightweight**: Only 0.138M parameters, 38% fewer than Mamba-WM
-- **Theoretical guarantees**: Proven dual-mode equivalence, complexity advantage, and CEM-MPC convergence
+- **Best accuracy among lightweight models**: MSE 19.87×10⁻² on Humanoid at only 0.138M parameters,
+  ahead of Mamba-WM (20.18) and TCN-WM (20.68).
+- **A ~11× larger Transformer does not close the gap**: regular-scale Transformer (1.509M) reaches
+  25.13×10⁻² on Humanoid, versus 19.87 for MIMO-WM.
+- **Gating pays off where the dynamics are coupled**: removing it costs 3.3% on Humanoid, but on
+  HumanoidStandup it is not necessary — the benefit depends on the task dynamics.
+- **Deployable**: pure real-valued recurrence, ONNX-exportable, verified equal to the training
+  convolution path to ~2.4×10⁻⁷; 2.85 ms per 8-step window on an ARM board (ONNXRuntime, CPU).
 
 ## Architecture
 
@@ -42,7 +73,7 @@ Input [s; a] → Encoder → [MIMO Block × L] → Decoder → ŝ
 
 ## Dataset
 
-Experiments use MuJoCo medium datasets for Humanoid (348-dim state, 17-dim action) and HumanoidStandup (376-dim state, 17-dim action), collected via Gymnasium.
+Experiments use MuJoCo medium datasets for Humanoid (348-dim state, 17-dim action) and HumanoidStandup (348-dim state, 17-dim action), collected via Gymnasium.
 
 [📥 Download Dataset (Google Drive)](https://drive.google.com/drive/folders/13k6u48Iu3vNW0nebvZ4RgT6M6nhoUorX?usp=drive_link)
 
