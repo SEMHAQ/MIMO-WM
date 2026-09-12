@@ -51,6 +51,11 @@ checkpoints/
 *.bin
 *.safetensors
 
+# 例外：补充材料中 MIMO-WM 各数据集各种子的最优验证权重，
+# 表 1/表 2 各行与 mpc_extended.py 的复现依赖它们（10 × 0.55 MB）
+!revision_experiments/results/ckpt/
+!revision_experiments/results/ckpt/*.pt
+
 # OS
 .DS_Store
 Thumbs.db
