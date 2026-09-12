@@ -137,15 +137,6 @@ revision_experiments/
   scripts/              # Evaluation scripts generating the results above
 ```
 
-## Documentation
-
-Full documentation is available via MkDocs.
-
-```bash
-pip install mkdocs mkdocs-material
-mkdocs serve
-```
-
 ## Supplementary Material
 
 Results, evaluation scripts and the exported ONNX model supporting the revision of the manuscript
