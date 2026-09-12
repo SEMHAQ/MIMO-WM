@@ -1,5 +1,5 @@
 """A7: 训练期峰值显存实测 (前向+反向). MIMO-WM(conv) vs Transformer, 各 (B,T) 组合.
-用途:显存随 T 的增长 —— SSM 无 O(B·h·T²) 注意力分数矩阵, 显存近似线性.
+用途: 度量显存随 T 的增长 —— SSM 无 O(B·h·T²) 注意力分数矩阵, 显存近似线性.
 
 需 GPU 空闲时运行:
   wsl -e bash -lc "cd /mnt/e/Project/SSM-World-Model && python3 revision_experiments/scripts/mem_train_peak.py"

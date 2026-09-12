@@ -1,5 +1,5 @@
 """A8: GPU 推理时间—序列长度 T 伸缩曲线 (MIMO-WM vs Transformer, 随机权重即可).
-用途:展示随 T 增长 Transformer 二次 vs MIMO 拟线性的实测差距.
+用途: 度量随 T 增长 Transformer 的二次复杂度与 MIMO 的拟线性伸缩差距, 支撑修改稿第 5.2 节的吞吐口径结论.
 
 需 GPU 空闲时运行:
   wsl -e bash -lc "cd /mnt/e/Project/SSM-World-Model && python3 revision_experiments/scripts/bench_gpu_scaling.py"

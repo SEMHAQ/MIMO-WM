@@ -1,0 +1,47 @@
+{
+  "MIMO-SSM-noGate_GradMPC": {
+    "hz": 0.61,
+    "avg_step_time_ms": 1652.39
+  },
+  "MIMO-SSM-noGate_CEMMPC": {
+    "hz": 8.99,
+    "avg_step_time_ms": 111.19
+  },
+  "MIMO-SSM-noGate_Quality": 0.236758,
+  "S4D-WM_GradMPC": {
+    "hz": 0.58,
+    "avg_step_time_ms": 1718.99
+  },
+  "S4D-WM_CEMMPC": {
+    "hz": 8.99,
+    "avg_step_time_ms": 111.22
+  },
+  "S4D-WM_Quality": 0.233037,
+  "LRU-WM_GradMPC": {
+    "hz": 0.6,
+    "avg_step_time_ms": 1666.66
+  },
+  "LRU-WM_CEMMPC": {
+    "hz": 8.86,
+    "avg_step_time_ms": 112.91
+  },
+  "LRU-WM_Quality": 0.217782,
+  "Performer-WM_GradMPC": {
+    "hz": 0.72,
+    "avg_step_time_ms": 1386.99
+  },
+  "Performer-WM_CEMMPC": {
+    "hz": 1.92,
+    "avg_step_time_ms": 519.93
+  },
+  "Performer-WM_Quality": 0.243825,
+  "Transformer-Reg_GradMPC": {
+    "hz": 0.47,
+    "avg_step_time_ms": 2131.09
+  },
+  "Transformer-Reg_CEMMPC": {
+    "hz": 4.63,
+    "avg_step_time_ms": 215.97
+  },
+  "Transformer-Reg_Quality": 0.168487
+}

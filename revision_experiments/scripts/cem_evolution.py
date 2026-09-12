@@ -1,5 +1,5 @@
 """A9: CEM-MPC 代价下降 + 采样方差演化 (真实非线性代价下) —— 多次随机规划问题.
-用途:展示 μ-强凸假设不满足时 CEM 的实际收敛行为与早熟/方差演化.
+用途: 观察 μ-强凸假设不满足时 CEM 的实际收敛行为与早熟/方差演化.
 
 依赖 Wave-1 保存的 MIMO-WM Humanoid seed42 权重; GPU 空闲时运行:
   wsl -e bash -lc "cd /mnt/e/Project/SSM-World-Model && python3 revision_experiments/scripts/cem_evolution.py"

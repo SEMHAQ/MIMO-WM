@@ -1,4 +1,4 @@
-"""对比矩阵训练 runner—— A1(无门控) / A2-基线(S4D,LRU,Performer) / A3(常规Transformer) / MIMO-WM校准
+"""对比矩阵训练 runner —— A1(无门控) / A2-基线(S4D,LRU,Performer) / A3(常规Transformer) / MIMO-WM校准
 
 口径与论文主表(run_exp1_state_prediction.py)完全一致: D=96,N=16,L=2, BS=256, EPOCHS=100,
 LR=5e-4, cosine, 早停 pat=20, T=32, seeds [42,123,456,789,1024], Humanoid+HumanoidStandup.
