@@ -49,14 +49,11 @@ revision_experiments/
     └── 机载实测说明.md            机载实测的平台、口径、复现命令与全部结果
 ```
 
-> **两处需要留意的版本关系。** 其一，`results/onboard_bench.json` 与 `onboard_bench_console.txt`
+> **需要留意的一处版本关系。** `results/onboard_bench.json` 与 `onboard_bench_console.txt`
 > 是机载的**首批**测量：那批每模型一个进程，但 MIMO-WM 的四个序列长度共享同一进程，
 > 故其 `peak_rss_MB` 是四窗口累计峰值、不能归到模型头上。表 6 与修改稿第 5.7 节一律采用
 > `onboard_bench/results/` 下**逐窗口单进程**重跑的这批结果。（这两个文件仅存于仓库，不随
-> 投稿用 zip 分发。）其二，`results/true_lru.json` 与
-> `scripts/run_true_lru.py` 是早期对 LRU 的一次**已作废**尝试，它把 GLU 挂在递归之前、
-> 把 B/C 写成实对角，与官方实现不符；表 1、表 2 中的 LRU-WM 取自 `official_lru.json`，
-> 与这两个文件无关。二者保留于此仅为便于追溯，请勿引用。
+> 投稿用 zip 分发。）
 
 ---
 
