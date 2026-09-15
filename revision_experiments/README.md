@@ -21,7 +21,6 @@ revision_experiments/
 │   ├── nogate_seed_robustness.json 无门控变体的补种子复核（10 种子口径）
 │   ├── init_variants.json         门控偏置初始化的变体对照
 │   ├── ablation_crosscheck.json   消融数值的跨文件一致性核对
-│   ├── s4d_fairness.json          已发表 S4D-WM 的实现差异溯源
 │   ├── gpu_time_scaling.json      GPU 推理时间—序列长度伸缩
 │   ├── train_peak_mem.json        训练峰值显存
 │   ├── trunc_control.json         长序列截断对照
