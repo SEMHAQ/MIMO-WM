@@ -1,0 +1,76 @@
+{
+  "noGate_d96(复现表1)_humanoid": {
+    "seed42": {
+      "mse": 0.205896,
+      "r2": 0.7424,
+      "params_m": 0.101,
+      "inf_time_ms": 1.57,
+      "best_epoch": 85
+    },
+    "seed123": {
+      "mse": 0.204611,
+      "r2": 0.744,
+      "params_m": 0.101,
+      "inf_time_ms": 1.65,
+      "best_epoch": 82
+    },
+    "seed456": {
+      "mse": 0.205458,
+      "r2": 0.743,
+      "params_m": 0.101,
+      "inf_time_ms": 1.61,
+      "best_epoch": 73
+    },
+    "seed789": {
+      "mse": 0.205566,
+      "r2": 0.7429,
+      "params_m": 0.101,
+      "inf_time_ms": 1.71,
+      "best_epoch": 55
+    },
+    "seed1024": {
+      "mse": 0.205814,
+      "r2": 0.7425,
+      "params_m": 0.101,
+      "inf_time_ms": 1.68,
+      "best_epoch": 77
+    }
+  },
+  "noGate_d128(复现消融)_humanoid": {
+    "seed42": {
+      "mse": 0.202014,
+      "r2": 0.7473,
+      "params_m": 0.142,
+      "inf_time_ms": 1.65,
+      "best_epoch": 83
+    },
+    "seed123": {
+      "mse": 0.204297,
+      "r2": 0.7444,
+      "params_m": 0.142,
+      "inf_time_ms": 1.67,
+      "best_epoch": 72
+    },
+    "seed456": {
+      "mse": 0.202899,
+      "r2": 0.7462,
+      "params_m": 0.142,
+      "inf_time_ms": 1.77,
+      "best_epoch": 70
+    },
+    "seed789": {
+      "mse": 0.203756,
+      "r2": 0.7451,
+      "params_m": 0.142,
+      "inf_time_ms": 1.69,
+      "best_epoch": 54
+    },
+    "seed1024": {
+      "mse": 0.204818,
+      "r2": 0.7438,
+      "params_m": 0.142,
+      "inf_time_ms": 1.72,
+      "best_epoch": 54
+    }
+  }
+}

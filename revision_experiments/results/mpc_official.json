@@ -1,0 +1,42 @@
+{
+  "S4D-WM(原实现)_bs": 1024,
+  "S4D-WM(原实现)_GradMPC": {
+    "hz": 0.59,
+    "avg_step_time_ms": 1703.06
+  },
+  "S4D-WM(原实现)_CEMMPC": {
+    "hz": 9.12,
+    "avg_step_time_ms": 109.6
+  },
+  "S4D-WM(原实现)_Quality": 0.233037,
+  "LRU-WM(原实现)_bs": 1024,
+  "LRU-WM(原实现)_GradMPC": {
+    "hz": 0.58,
+    "avg_step_time_ms": 1729.08
+  },
+  "LRU-WM(原实现)_CEMMPC": {
+    "hz": 8.9,
+    "avg_step_time_ms": 112.34
+  },
+  "LRU-WM(原实现)_Quality": 0.217782,
+  "S4D-WM(官方)_bs": 1024,
+  "S4D-WM(官方)_GradMPC": {
+    "hz": 0.5,
+    "avg_step_time_ms": 2018.55
+  },
+  "S4D-WM(官方)_CEMMPC": {
+    "hz": 7.27,
+    "avg_step_time_ms": 137.56
+  },
+  "S4D-WM(官方)_Quality": 0.240512,
+  "LRU-WM(官方)_bs": 1024,
+  "LRU-WM(官方)_GradMPC": {
+    "hz": 0.21,
+    "avg_step_time_ms": 4877.79
+  },
+  "LRU-WM(官方)_CEMMPC": {
+    "hz": 2.74,
+    "avg_step_time_ms": 365.01
+  },
+  "LRU-WM(官方)_Quality": 0.255181
+}

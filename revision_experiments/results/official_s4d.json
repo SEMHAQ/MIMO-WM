@@ -1,0 +1,372 @@
+{
+  "S4D-WM(官方, N=16)_humanoid": {
+    "seed42": {
+      "mse": 0.205309,
+      "r2": 0.7432,
+      "params_m": 0.132,
+      "inf_time_ms": 2.21,
+      "best_epoch": 89
+    },
+    "seed123": {
+      "mse": 0.200401,
+      "r2": 0.7493,
+      "params_m": 0.132,
+      "inf_time_ms": 2.04,
+      "best_epoch": 93
+    },
+    "seed456": {
+      "mse": 0.197676,
+      "r2": 0.7527,
+      "params_m": 0.132,
+      "inf_time_ms": 2.04,
+      "best_epoch": 86
+    },
+    "seed789": {
+      "mse": 0.206272,
+      "r2": 0.742,
+      "params_m": 0.132,
+      "inf_time_ms": 2.02,
+      "best_epoch": 63
+    },
+    "seed1024": {
+      "mse": 0.201581,
+      "r2": 0.7478,
+      "params_m": 0.132,
+      "inf_time_ms": 1.87,
+      "best_epoch": 93
+    }
+  },
+  "S4D-WM(官方, N=64)_humanoid": {
+    "seed42": {
+      "mse": 0.203792,
+      "r2": 0.7451,
+      "params_m": 0.15,
+      "inf_time_ms": 1.93,
+      "best_epoch": 62
+    },
+    "seed123": {
+      "mse": 0.205097,
+      "r2": 0.7434,
+      "params_m": 0.15,
+      "inf_time_ms": 2.06,
+      "best_epoch": 93
+    },
+    "seed456": {
+      "mse": 0.202784,
+      "r2": 0.7463,
+      "params_m": 0.15,
+      "inf_time_ms": 2.11,
+      "best_epoch": 95
+    },
+    "seed789": {
+      "mse": 0.206649,
+      "r2": 0.7415,
+      "params_m": 0.15,
+      "inf_time_ms": 2.01,
+      "best_epoch": 78
+    },
+    "seed1024": {
+      "mse": 0.201842,
+      "r2": 0.7475,
+      "params_m": 0.15,
+      "inf_time_ms": 2.04,
+      "best_epoch": 76
+    }
+  },
+  "S4D-WM(原实现)_humanoid": {
+    "seed42": {
+      "mse": 0.316711,
+      "r2": 0.6038,
+      "params_m": 0.101,
+      "inf_time_ms": 1.56,
+      "best_epoch": 87
+    },
+    "seed123": {
+      "mse": 0.305562,
+      "r2": 0.6178,
+      "params_m": 0.101,
+      "inf_time_ms": 1.55,
+      "best_epoch": 100
+    },
+    "seed456": {
+      "mse": 0.311505,
+      "r2": 0.6103,
+      "params_m": 0.101,
+      "inf_time_ms": 1.59,
+      "best_epoch": 98
+    },
+    "seed789": {
+      "mse": 0.310506,
+      "r2": 0.6116,
+      "params_m": 0.101,
+      "inf_time_ms": 1.56,
+      "best_epoch": 88
+    },
+    "seed1024": {
+      "mse": 0.314673,
+      "r2": 0.6064,
+      "params_m": 0.101,
+      "inf_time_ms": 1.56,
+      "best_epoch": 85
+    }
+  },
+  "w/o门控(控制组)_humanoid": {
+    "seed42": {
+      "mse": 0.205896,
+      "r2": 0.7424,
+      "params_m": 0.101,
+      "inf_time_ms": 1.61,
+      "best_epoch": 85
+    },
+    "seed123": {
+      "mse": 0.204611,
+      "r2": 0.744,
+      "params_m": 0.101,
+      "inf_time_ms": 1.52,
+      "best_epoch": 82
+    },
+    "seed456": {
+      "mse": 0.205458,
+      "r2": 0.743,
+      "params_m": 0.101,
+      "inf_time_ms": 1.48,
+      "best_epoch": 73
+    },
+    "seed789": {
+      "mse": 0.205566,
+      "r2": 0.7429,
+      "params_m": 0.101,
+      "inf_time_ms": 1.54,
+      "best_epoch": 55
+    },
+    "seed1024": {
+      "mse": 0.205814,
+      "r2": 0.7425,
+      "params_m": 0.101,
+      "inf_time_ms": 1.62,
+      "best_epoch": 77
+    }
+  },
+  "MIMO-WM(完整)_humanoid": {
+    "seed42": {
+      "mse": 0.201791,
+      "r2": 0.7476,
+      "params_m": 0.138,
+      "inf_time_ms": 1.85,
+      "best_epoch": 66
+    },
+    "seed123": {
+      "mse": 0.200595,
+      "r2": 0.7491,
+      "params_m": 0.138,
+      "inf_time_ms": 1.83,
+      "best_epoch": 76
+    },
+    "seed456": {
+      "mse": 0.199101,
+      "r2": 0.7509,
+      "params_m": 0.138,
+      "inf_time_ms": 2.1,
+      "best_epoch": 77
+    },
+    "seed789": {
+      "mse": 0.195898,
+      "r2": 0.7549,
+      "params_m": 0.138,
+      "inf_time_ms": 1.97,
+      "best_epoch": 85
+    },
+    "seed1024": {
+      "mse": 0.196259,
+      "r2": 0.7545,
+      "params_m": 0.138,
+      "inf_time_ms": 1.88,
+      "best_epoch": 90
+    }
+  },
+  "S4D-WM(官方, N=16)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.533182,
+      "r2": 0.4421,
+      "params_m": 0.132,
+      "inf_time_ms": 2.07,
+      "best_epoch": 61
+    },
+    "seed123": {
+      "mse": 0.530205,
+      "r2": 0.4453,
+      "params_m": 0.132,
+      "inf_time_ms": 2.22,
+      "best_epoch": 69
+    },
+    "seed456": {
+      "mse": 0.533881,
+      "r2": 0.4414,
+      "params_m": 0.132,
+      "inf_time_ms": 2.13,
+      "best_epoch": 63
+    },
+    "seed789": {
+      "mse": 0.53433,
+      "r2": 0.4409,
+      "params_m": 0.132,
+      "inf_time_ms": 2.1,
+      "best_epoch": 61
+    },
+    "seed1024": {
+      "mse": 0.533156,
+      "r2": 0.4422,
+      "params_m": 0.132,
+      "inf_time_ms": 2.16,
+      "best_epoch": 57
+    }
+  },
+  "S4D-WM(官方, N=64)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.538812,
+      "r2": 0.4363,
+      "params_m": 0.15,
+      "inf_time_ms": 2.2,
+      "best_epoch": 46
+    },
+    "seed123": {
+      "mse": 0.539971,
+      "r2": 0.435,
+      "params_m": 0.15,
+      "inf_time_ms": 2.19,
+      "best_epoch": 57
+    },
+    "seed456": {
+      "mse": 0.540284,
+      "r2": 0.4347,
+      "params_m": 0.15,
+      "inf_time_ms": 2.18,
+      "best_epoch": 47
+    },
+    "seed789": {
+      "mse": 0.537433,
+      "r2": 0.4377,
+      "params_m": 0.15,
+      "inf_time_ms": 1.98,
+      "best_epoch": 53
+    },
+    "seed1024": {
+      "mse": 0.537551,
+      "r2": 0.4376,
+      "params_m": 0.15,
+      "inf_time_ms": 2.1,
+      "best_epoch": 52
+    }
+  },
+  "S4D-WM(原实现)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.517847,
+      "r2": 0.4582,
+      "params_m": 0.101,
+      "inf_time_ms": 1.58,
+      "best_epoch": 96
+    },
+    "seed123": {
+      "mse": 0.522385,
+      "r2": 0.4534,
+      "params_m": 0.101,
+      "inf_time_ms": 1.59,
+      "best_epoch": 98
+    },
+    "seed456": {
+      "mse": 0.518283,
+      "r2": 0.4577,
+      "params_m": 0.101,
+      "inf_time_ms": 1.57,
+      "best_epoch": 98
+    },
+    "seed789": {
+      "mse": 0.518058,
+      "r2": 0.458,
+      "params_m": 0.101,
+      "inf_time_ms": 1.59,
+      "best_epoch": 100
+    },
+    "seed1024": {
+      "mse": 0.518656,
+      "r2": 0.4573,
+      "params_m": 0.101,
+      "inf_time_ms": 1.66,
+      "best_epoch": 94
+    }
+  },
+  "w/o门控(控制组)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.50912,
+      "r2": 0.4673,
+      "params_m": 0.101,
+      "inf_time_ms": 1.53,
+      "best_epoch": 96
+    },
+    "seed123": {
+      "mse": 0.50543,
+      "r2": 0.4712,
+      "params_m": 0.101,
+      "inf_time_ms": 1.57,
+      "best_epoch": 98
+    },
+    "seed456": {
+      "mse": 0.506621,
+      "r2": 0.4699,
+      "params_m": 0.101,
+      "inf_time_ms": 1.55,
+      "best_epoch": 96
+    },
+    "seed789": {
+      "mse": 0.502497,
+      "r2": 0.4743,
+      "params_m": 0.101,
+      "inf_time_ms": 1.56,
+      "best_epoch": 95
+    },
+    "seed1024": {
+      "mse": 0.506773,
+      "r2": 0.4698,
+      "params_m": 0.101,
+      "inf_time_ms": 1.55,
+      "best_epoch": 94
+    }
+  },
+  "MIMO-WM(完整)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.530481,
+      "r2": 0.445,
+      "params_m": 0.138,
+      "inf_time_ms": 1.93,
+      "best_epoch": 88
+    },
+    "seed123": {
+      "mse": 0.532101,
+      "r2": 0.4433,
+      "params_m": 0.138,
+      "inf_time_ms": 1.99,
+      "best_epoch": 80
+    },
+    "seed456": {
+      "mse": 0.530161,
+      "r2": 0.4453,
+      "params_m": 0.138,
+      "inf_time_ms": 1.93,
+      "best_epoch": 83
+    },
+    "seed789": {
+      "mse": 0.530926,
+      "r2": 0.4445,
+      "params_m": 0.138,
+      "inf_time_ms": 1.95,
+      "best_epoch": 85
+    },
+    "seed1024": {
+      "mse": 0.53157,
+      "r2": 0.4438,
+      "params_m": 0.138,
+      "inf_time_ms": 1.94,
+      "best_epoch": 69
+    }
+  }
+}

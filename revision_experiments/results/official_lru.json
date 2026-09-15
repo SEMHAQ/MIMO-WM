@@ -1,0 +1,298 @@
+{
+  "LRU-WM(官方, N=16)_humanoid": {
+    "seed42": {
+      "mse": 0.200733,
+      "r2": 0.7489,
+      "params_m": 0.15,
+      "inf_time_ms": 6.45,
+      "best_epoch": 83
+    },
+    "seed123": {
+      "mse": 0.206228,
+      "r2": 0.742,
+      "params_m": 0.15,
+      "inf_time_ms": 6.78,
+      "best_epoch": 79
+    },
+    "seed456": {
+      "mse": 0.199609,
+      "r2": 0.7503,
+      "params_m": 0.15,
+      "inf_time_ms": 6.57,
+      "best_epoch": 92
+    },
+    "seed789": {
+      "mse": 0.201271,
+      "r2": 0.7482,
+      "params_m": 0.15,
+      "inf_time_ms": 6.48,
+      "best_epoch": 59
+    },
+    "seed1024": {
+      "mse": 0.20034,
+      "r2": 0.7494,
+      "params_m": 0.15,
+      "inf_time_ms": 6.43,
+      "best_epoch": 95
+    }
+  },
+  "LRU-WM(官方, N=64)_humanoid": {
+    "seed42": {
+      "mse": 0.200863,
+      "r2": 0.7487,
+      "params_m": 0.169,
+      "inf_time_ms": 6.86,
+      "best_epoch": 84
+    },
+    "seed123": {
+      "mse": 0.203732,
+      "r2": 0.7451,
+      "params_m": 0.169,
+      "inf_time_ms": 6.91,
+      "best_epoch": 77
+    },
+    "seed456": {
+      "mse": 0.199903,
+      "r2": 0.7499,
+      "params_m": 0.169,
+      "inf_time_ms": 7.02,
+      "best_epoch": 81
+    },
+    "seed789": {
+      "mse": 0.206382,
+      "r2": 0.7418,
+      "params_m": 0.169,
+      "inf_time_ms": 6.78,
+      "best_epoch": 69
+    },
+    "seed1024": {
+      "mse": 0.209531,
+      "r2": 0.7379,
+      "params_m": 0.169,
+      "inf_time_ms": 6.79,
+      "best_epoch": 90
+    }
+  },
+  "LRU-WM(原实现)_humanoid": {
+    "seed42": {
+      "mse": 0.203301,
+      "r2": 0.7457,
+      "params_m": 0.101,
+      "inf_time_ms": 1.62,
+      "best_epoch": 87
+    },
+    "seed123": {
+      "mse": 0.203077,
+      "r2": 0.746,
+      "params_m": 0.101,
+      "inf_time_ms": 1.53,
+      "best_epoch": 93
+    },
+    "seed456": {
+      "mse": 0.205989,
+      "r2": 0.7423,
+      "params_m": 0.101,
+      "inf_time_ms": 1.59,
+      "best_epoch": 84
+    },
+    "seed789": {
+      "mse": 0.205023,
+      "r2": 0.7435,
+      "params_m": 0.101,
+      "inf_time_ms": 1.59,
+      "best_epoch": 95
+    },
+    "seed1024": {
+      "mse": 0.203758,
+      "r2": 0.7451,
+      "params_m": 0.101,
+      "inf_time_ms": 1.64,
+      "best_epoch": 92
+    }
+  },
+  "w/o门控(控制组)_humanoid": {
+    "seed42": {
+      "mse": 0.205896,
+      "r2": 0.7424,
+      "params_m": 0.101,
+      "inf_time_ms": 1.52,
+      "best_epoch": 85
+    },
+    "seed123": {
+      "mse": 0.204611,
+      "r2": 0.744,
+      "params_m": 0.101,
+      "inf_time_ms": 1.52,
+      "best_epoch": 82
+    },
+    "seed456": {
+      "mse": 0.205458,
+      "r2": 0.743,
+      "params_m": 0.101,
+      "inf_time_ms": 1.52,
+      "best_epoch": 73
+    },
+    "seed789": {
+      "mse": 0.205566,
+      "r2": 0.7429,
+      "params_m": 0.101,
+      "inf_time_ms": 2.63,
+      "best_epoch": 55
+    },
+    "seed1024": {
+      "mse": 0.205814,
+      "r2": 0.7425,
+      "params_m": 0.101,
+      "inf_time_ms": 1.58,
+      "best_epoch": 77
+    }
+  },
+  "LRU-WM(官方, N=16)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.554617,
+      "r2": 0.4197,
+      "params_m": 0.15,
+      "inf_time_ms": 6.53,
+      "best_epoch": 33
+    },
+    "seed123": {
+      "mse": 0.555357,
+      "r2": 0.4189,
+      "params_m": 0.15,
+      "inf_time_ms": 6.48,
+      "best_epoch": 37
+    },
+    "seed456": {
+      "mse": 0.554788,
+      "r2": 0.4195,
+      "params_m": 0.15,
+      "inf_time_ms": 6.6,
+      "best_epoch": 34
+    },
+    "seed789": {
+      "mse": 0.553839,
+      "r2": 0.4205,
+      "params_m": 0.15,
+      "inf_time_ms": 6.5,
+      "best_epoch": 34
+    },
+    "seed1024": {
+      "mse": 0.552257,
+      "r2": 0.4222,
+      "params_m": 0.15,
+      "inf_time_ms": 6.55,
+      "best_epoch": 35
+    }
+  },
+  "LRU-WM(官方, N=64)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.576343,
+      "r2": 0.397,
+      "params_m": 0.169,
+      "inf_time_ms": 6.55,
+      "best_epoch": 18
+    },
+    "seed123": {
+      "mse": 0.577912,
+      "r2": 0.3953,
+      "params_m": 0.169,
+      "inf_time_ms": 6.48,
+      "best_epoch": 21
+    },
+    "seed456": {
+      "mse": 0.578184,
+      "r2": 0.3951,
+      "params_m": 0.169,
+      "inf_time_ms": 6.73,
+      "best_epoch": 18
+    },
+    "seed789": {
+      "mse": 0.579357,
+      "r2": 0.3938,
+      "params_m": 0.169,
+      "inf_time_ms": 6.59,
+      "best_epoch": 19
+    },
+    "seed1024": {
+      "mse": 0.578961,
+      "r2": 0.3943,
+      "params_m": 0.169,
+      "inf_time_ms": 6.49,
+      "best_epoch": 27
+    }
+  },
+  "LRU-WM(原实现)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.5036,
+      "r2": 0.4731,
+      "params_m": 0.101,
+      "inf_time_ms": 1.68,
+      "best_epoch": 96
+    },
+    "seed123": {
+      "mse": 0.503709,
+      "r2": 0.473,
+      "params_m": 0.101,
+      "inf_time_ms": 1.75,
+      "best_epoch": 97
+    },
+    "seed456": {
+      "mse": 0.503763,
+      "r2": 0.4729,
+      "params_m": 0.101,
+      "inf_time_ms": 1.67,
+      "best_epoch": 96
+    },
+    "seed789": {
+      "mse": 0.502983,
+      "r2": 0.4737,
+      "params_m": 0.101,
+      "inf_time_ms": 1.69,
+      "best_epoch": 100
+    },
+    "seed1024": {
+      "mse": 0.503313,
+      "r2": 0.4734,
+      "params_m": 0.101,
+      "inf_time_ms": 1.62,
+      "best_epoch": 94
+    }
+  },
+  "w/o门控(控制组)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.50912,
+      "r2": 0.4673,
+      "params_m": 0.101,
+      "inf_time_ms": 1.57,
+      "best_epoch": 96
+    },
+    "seed123": {
+      "mse": 0.50543,
+      "r2": 0.4712,
+      "params_m": 0.101,
+      "inf_time_ms": 1.54,
+      "best_epoch": 98
+    },
+    "seed456": {
+      "mse": 0.506621,
+      "r2": 0.4699,
+      "params_m": 0.101,
+      "inf_time_ms": 1.42,
+      "best_epoch": 96
+    },
+    "seed789": {
+      "mse": 0.502497,
+      "r2": 0.4743,
+      "params_m": 0.101,
+      "inf_time_ms": 1.41,
+      "best_epoch": 95
+    },
+    "seed1024": {
+      "mse": 0.506773,
+      "r2": 0.4698,
+      "params_m": 0.101,
+      "inf_time_ms": 1.57,
+      "best_epoch": 94
+    }
+  }
+}
