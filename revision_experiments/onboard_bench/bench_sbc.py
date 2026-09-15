@@ -116,7 +116,7 @@ def main():
         if not m:
             continue
         name, T = m.group(1), int(m.group(2))
-        if only and name != only:
+        if only and only not in (name, base):
             continue
         feed = {'states': ref[f'{base}_states'], 'actions': ref[f'{base}_actions']}
         expected = ref[f'{base}_pred']
