@@ -34,11 +34,15 @@ ZIP_ONLY_MIMO = {
     'onboard_bench/results': lambda n: (n.startswith('bench_result_MIMO-WM')
                                         or n == 'bench_result_mpc.json'),
 }
-# 仅存于仓库、尚未定稿的产物：机载首批（含各模型）的汇总，与真·无门控补跑的结果
+# 仅存于仓库、尚未定稿的产物：机载首批（含各模型）的汇总，与真·无门控补跑的结果。
+# true_nogate 的脚本与结果一并排除：表 1、表 2 的「w/o 门控」行由 run_revision_matrix.py 的
+# NoGateMIMO 产出（0.101M，20.55 / 50.61），而 run_true_nogate.py 定义的是另一个实现
+# （0.119M，保留 W_o），二者口径不同，不应随投稿材料分发，以免被误读为同一行的出处。
 ZIP_SKIP_REL = {
     'results/onboard_bench.json',
     'results/onboard_bench_console.txt',
     'results/true_nogate.json',
+    'scripts/run_true_nogate.py',
 }
 
 
