@@ -13,6 +13,7 @@
 ```
 revision_experiments/
 ├── README.md              本说明
+├── build_supp_zip.py      打包本目录为投稿用补充材料 zip（`--check` 可只比对不写）
 ├── results/               实验原始输出
 │   ├── matrix_results.json        对比矩阵（5 seeds × 2 数据集）
 │   ├── official_s4d.json          S4D-WM 官方参考实现对照（5 seeds × 2 数据集）
