@@ -1,0 +1,72 @@
+{
+  "MIMO-WM_T8": {
+    "T": 8,
+    "params_m": 0.1251,
+    "onnx_kB": 595.0
+  },
+  "MIMO-WM_T16": {
+    "T": 16,
+    "params_m": 0.1251,
+    "onnx_kB": 634.2
+  },
+  "MIMO-WM_T32": {
+    "T": 32,
+    "params_m": 0.1251,
+    "onnx_kB": 713.3
+  },
+  "MIMO-WM_T64": {
+    "T": 64,
+    "params_m": 0.1251,
+    "onnx_kB": 871.9
+  },
+  "Transformer-WM_T8": {
+    "T": 8,
+    "params_m": 0.3019,
+    "onnx_kB": 799.9
+  },
+  "Transformer-WM_T32": {
+    "T": 32,
+    "params_m": 0.3019,
+    "onnx_kB": 809.1
+  },
+  "Transformer-Reg_T8": {
+    "T": 8,
+    "params_m": 1.5091,
+    "onnx_kB": 2536.9
+  },
+  "Transformer-Reg_T32": {
+    "T": 32,
+    "params_m": 1.5091,
+    "onnx_kB": 2555.3
+  },
+  "LSTM-WM_T8": {
+    "T": 8,
+    "params_m": 0.2272,
+    "onnx_kB": 917.5
+  },
+  "LSTM-WM_T32": {
+    "T": 32,
+    "params_m": 0.2272,
+    "onnx_kB": 917.5
+  },
+  "GRU-WM_T8": {
+    "T": 8,
+    "params_m": 0.1899,
+    "onnx_kB": 766.4
+  },
+  "GRU-WM_T32": {
+    "T": 32,
+    "params_m": 0.1899,
+    "onnx_kB": 766.4
+  },
+  "TCN-WM_T8": {
+    "T": 8,
+    "params_m": 0.1892,
+    "onnx_kB": 764.1
+  },
+  "TCN-WM_T32": {
+    "T": 32,
+    "params_m": 0.1892,
+    "onnx_kB": 764.1
+  }
+}

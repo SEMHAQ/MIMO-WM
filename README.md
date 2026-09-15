@@ -57,7 +57,8 @@ are in [`revision_experiments/`](revision_experiments/).
 - **Gating pays off where the dynamics are coupled**: removing it costs 3.3% on Humanoid, but on
   HumanoidStandup it is not necessary — the benefit depends on the task dynamics.
 - **Deployable**: pure real-valued recurrence, ONNX-exportable, verified equal to the training
-  convolution path to ~2.4×10⁻⁷; 2.85 ms per 8-step window on an ARM board (ONNXRuntime, CPU).
+  convolution path to ~2.4×10⁻⁷; 2.69 ms per 8-step window on an ARM board (ONNXRuntime, CPU),
+  with a 9.6 MB resident-memory increase and a 0.59 MB model.
 
 ## Architecture
 

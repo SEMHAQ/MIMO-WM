@@ -5,7 +5,14 @@
 依赖:  pip install onnxruntime numpy
 用法:  python3 bench_sbc.py            # 全部模型
        python3 bench_sbc.py MIMO-WM    # 只测某个模型
-产物:  bench_result.json（连同终端输出一起发回）
+产物:  bench_result.json（全部）或 bench_result_<模型名>.json（单模型）
+
+建议逐模型单独运行（每个模型一个进程），这样 peak_rss_MB 只覆盖该模型：
+  for m in MIMO-WM Transformer-WM Transformer-Reg LSTM-WM GRU-WM TCN-WM; do
+      python3 bench_sbc.py $m
+  done
+同一进程内跑多个模型时 peak_rss_MB 是单调峰值，读作"截至当前所有模型的最大值"，
+此时应改用每条记录的 rss_delta_MB（加载该模型前后的常驻增量）作为单模型内存口径。
 
 测量内容:
   - 正确性: 与 reference_io.npz 参考输出比对 (max abs diff)
@@ -61,6 +68,17 @@ def vm_hwm_mb():
         return None
 
 
+def vm_rss_mb():
+    """当前常驻内存。与 VmHWM（进程峰值，只增不减）配合可把内存归到单个模型头上。"""
+    try:
+        for line in open('/proc/self/status', encoding='utf-8'):
+            if line.startswith('VmRSS'):
+                return round(int(line.split()[1]) / 1024, 1)
+    except Exception:
+        pass
+    return None
+
+
 def make_sess(path, th):
     so = ort.SessionOptions()
     so.intra_op_num_threads = th
@@ -103,9 +121,16 @@ def main():
         feed = {'states': ref[f'{base}_states'], 'actions': ref[f'{base}_actions']}
         expected = ref[f'{base}_pred']
         rec = {'T': T, 'model_kB': round(os.path.getsize(path) / 1e3, 1), 'latency': {}}
+        rss0 = vm_rss_mb()
         for th in THREADS:
             sess = make_sess(path, th)
             pred = sess.run(None, feed)[0]
+            if th == THREADS[0]:
+                rss1 = vm_rss_mb()          # 加载该模型并完成首次推理后的常驻增量
+                rec['rss_before_MB'] = rss0
+                rec['rss_after_load_MB'] = rss1
+                rec['rss_delta_MB'] = (round(rss1 - rss0, 1)
+                                       if None not in (rss0, rss1) else None)
             rec[f'diff_th{th}'] = float(np.max(np.abs(pred - expected)))
             lat = timed(sess, feed, REPEAT[T])
             lat['per_step_ms'] = round(lat['median_ms'] / T, 4)
@@ -113,14 +138,18 @@ def main():
             print(f"{base:<20} th={th}: median {lat['median_ms']:7.3f} ms "
                   f"(per-step {lat['per_step_ms']:6.4f}) | diff {rec[f'diff_th{th}']:.1e}")
         out['models'][base] = rec
-        print()
+        print(f"{'':<20} RSS {rec.get('rss_before_MB')} -> {rec.get('rss_after_load_MB')} MB "
+              f"(增量 {rec.get('rss_delta_MB')} MB)\n")
 
     out['peak_rss_MB'] = vm_hwm_mb()
+    out['peaked_over'] = list(out['models'])
     out['temp_after_C'] = read_temp()
-    with open(os.path.join(HERE, 'bench_result.json'), 'w', encoding='utf-8') as f:
+    # 指定单个模型时另存一份，便于逐模型单独进程运行、使 peak_rss_MB 可归到该模型头上
+    fname = f'bench_result_{only}.json' if only else 'bench_result.json'
+    with open(os.path.join(HERE, fname), 'w', encoding='utf-8') as f:
         json.dump(out, f, indent=2, ensure_ascii=False)
     print(f"peak RSS : {out['peak_rss_MB']} MB | temp {out['temp_before_C']} -> {out['temp_after_C']} C")
-    print('saved    : bench_result.json（请连同终端输出一起发回）')
+    print(f'saved    : {fname}（请连同终端输出一起发回）')
 
 
 if __name__ == '__main__':

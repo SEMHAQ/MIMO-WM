@@ -1,0 +1,119 @@
+{
+  "platform": "Linux-4.9.38-bm1684-v10.5.0-00562-ga6d01e40bc7c-dirty-aarch64-with-glibc2.29",
+  "machine": "aarch64",
+  "processor": "bm1684",
+  "cores": 8,
+  "python": "3.8.2",
+  "onnxruntime": "1.16.3",
+  "temp_before_C": 46.5,
+  "models": {
+    "MIMO-WM_T16": {
+      "T": 16,
+      "model_kB": 634.2,
+      "latency": {
+        "th1": {
+          "mean_ms": 5.314,
+          "median_ms": 5.283,
+          "p95_ms": 5.3291,
+          "reps": 150,
+          "per_step_ms": 0.3302
+        },
+        "th4": {
+          "mean_ms": 5.712,
+          "median_ms": 5.6699,
+          "p95_ms": 5.8407,
+          "reps": 150,
+          "per_step_ms": 0.3544
+        }
+      },
+      "rss_before_MB": 38.5,
+      "rss_after_load_MB": 51.3,
+      "rss_delta_MB": 12.8,
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T32": {
+      "T": 32,
+      "model_kB": 713.3,
+      "latency": {
+        "th1": {
+          "mean_ms": 10.6284,
+          "median_ms": 10.6283,
+          "p95_ms": 10.679,
+          "reps": 100,
+          "per_step_ms": 0.3321
+        },
+        "th4": {
+          "mean_ms": 11.2593,
+          "median_ms": 11.2364,
+          "p95_ms": 11.3119,
+          "reps": 100,
+          "per_step_ms": 0.3511
+        }
+      },
+      "rss_before_MB": 58.3,
+      "rss_after_load_MB": 64.8,
+      "rss_delta_MB": 6.5,
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T64": {
+      "T": 64,
+      "model_kB": 871.9,
+      "latency": {
+        "th1": {
+          "mean_ms": 21.2539,
+          "median_ms": 21.2333,
+          "p95_ms": 21.3,
+          "reps": 50,
+          "per_step_ms": 0.3318
+        },
+        "th4": {
+          "mean_ms": 22.1868,
+          "median_ms": 22.148,
+          "p95_ms": 22.2475,
+          "reps": 50,
+          "per_step_ms": 0.3461
+        }
+      },
+      "rss_before_MB": 71.5,
+      "rss_after_load_MB": 83.9,
+      "rss_delta_MB": 12.4,
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T8": {
+      "T": 8,
+      "model_kB": 595.0,
+      "latency": {
+        "th1": {
+          "mean_ms": 2.9942,
+          "median_ms": 2.921,
+          "p95_ms": 3.1944,
+          "reps": 200,
+          "per_step_ms": 0.3651
+        },
+        "th4": {
+          "mean_ms": 2.9334,
+          "median_ms": 2.9362,
+          "p95_ms": 2.9545,
+          "reps": 200,
+          "per_step_ms": 0.367
+        }
+      },
+      "rss_before_MB": 96.2,
+      "rss_after_load_MB": 96.2,
+      "rss_delta_MB": 0.0,
+      "diff_th1": 2.384185791015625e-07,
+      "diff_th4": 2.384185791015625e-07
+    }
+  },
+  "peak_rss_MB": 96.2,
+  "peaked_over": [
+    "MIMO-WM_T16",
+    "MIMO-WM_T32",
+    "MIMO-WM_T64",
+    "MIMO-WM_T8"
+  ],
+  "temp_after_C": 46.0
+}

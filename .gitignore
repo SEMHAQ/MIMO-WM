@@ -175,3 +175,6 @@ C/
 revision_manuscript_v2/
 
 reviews/
+deploy_bench.zip
+
+revision_experiments/results/_backup_cpu/

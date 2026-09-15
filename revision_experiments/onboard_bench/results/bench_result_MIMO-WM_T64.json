@@ -1,0 +1,41 @@
+{
+  "platform": "Linux-4.9.38-bm1684-v10.5.0-00562-ga6d01e40bc7c-dirty-aarch64-with-glibc2.29",
+  "machine": "aarch64",
+  "processor": "bm1684",
+  "cores": 8,
+  "python": "3.8.2",
+  "onnxruntime": "1.16.3",
+  "temp_before_C": 45.2,
+  "models": {
+    "MIMO-WM_T64": {
+      "T": 64,
+      "model_kB": 871.9,
+      "latency": {
+        "th1": {
+          "mean_ms": 20.7029,
+          "median_ms": 20.6412,
+          "p95_ms": 20.7073,
+          "reps": 50,
+          "per_step_ms": 0.3225
+        },
+        "th4": {
+          "mean_ms": 22.5293,
+          "median_ms": 22.4839,
+          "p95_ms": 22.5555,
+          "reps": 50,
+          "per_step_ms": 0.3513
+        }
+      },
+      "rss_before_MB": 39.1,
+      "rss_after_load_MB": 70.2,
+      "rss_delta_MB": 31.1,
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    }
+  },
+  "peak_rss_MB": 95.2,
+  "peaked_over": [
+    "MIMO-WM_T64"
+  ],
+  "temp_after_C": 45.2
+}

@@ -1,0 +1,67 @@
+{
+  "platform": "Linux-4.9.38-bm1684-v10.5.0-00562-ga6d01e40bc7c-dirty-aarch64-with-glibc2.29",
+  "machine": "aarch64",
+  "processor": "bm1684",
+  "cores": 8,
+  "python": "3.8.2",
+  "onnxruntime": "1.16.3",
+  "temp_before_C": 46.0,
+  "models": {
+    "Transformer-WM_T32": {
+      "T": 32,
+      "model_kB": 809.1,
+      "latency": {
+        "th1": {
+          "mean_ms": 3.6436,
+          "median_ms": 3.6427,
+          "p95_ms": 3.6686,
+          "reps": 100,
+          "per_step_ms": 0.1138
+        },
+        "th4": {
+          "mean_ms": 2.0466,
+          "median_ms": 1.9569,
+          "p95_ms": 2.3597,
+          "reps": 100,
+          "per_step_ms": 0.0612
+        }
+      },
+      "rss_before_MB": 38.6,
+      "rss_after_load_MB": 47.3,
+      "rss_delta_MB": 8.7,
+      "diff_th1": 2.384185791015625e-07,
+      "diff_th4": 2.384185791015625e-07
+    },
+    "Transformer-WM_T8": {
+      "T": 8,
+      "model_kB": 799.9,
+      "latency": {
+        "th1": {
+          "mean_ms": 1.6458,
+          "median_ms": 1.644,
+          "p95_ms": 1.6938,
+          "reps": 200,
+          "per_step_ms": 0.2055
+        },
+        "th4": {
+          "mean_ms": 1.0168,
+          "median_ms": 0.9684,
+          "p95_ms": 1.5849,
+          "reps": 200,
+          "per_step_ms": 0.1211
+        }
+      },
+      "rss_before_MB": 49.8,
+      "rss_after_load_MB": 50.6,
+      "rss_delta_MB": 0.8,
+      "diff_th1": 2.384185791015625e-07,
+      "diff_th4": 2.384185791015625e-07
+    }
+  },
+  "peak_rss_MB": 51.7,
+  "peaked_over": [
+    "Transformer-WM_T32",
+    "Transformer-WM_T8"
+  ],
+  "temp_after_C": 46.2
+}
