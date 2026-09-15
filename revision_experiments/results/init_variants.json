@@ -236,5 +236,42 @@
       "inf_time_ms": 1.4,
       "best_epoch": 77
     }
+  },
+  "MIMO-WM(output=I+门控开)_humanoid_standup": {
+    "seed42": {
+      "mse": 0.517567,
+      "r2": 0.4585,
+      "params_m": 0.138,
+      "inf_time_ms": 2.18,
+      "best_epoch": 78
+    },
+    "seed123": {
+      "mse": 0.514655,
+      "r2": 0.4615,
+      "params_m": 0.138,
+      "inf_time_ms": 1.93,
+      "best_epoch": 80
+    },
+    "seed456": {
+      "mse": 0.51343,
+      "r2": 0.4628,
+      "params_m": 0.138,
+      "inf_time_ms": 2.07,
+      "best_epoch": 92
+    },
+    "seed789": {
+      "mse": 0.51252,
+      "r2": 0.4638,
+      "params_m": 0.138,
+      "inf_time_ms": 2.51,
+      "best_epoch": 85
+    },
+    "seed1024": {
+      "mse": 0.518273,
+      "r2": 0.4577,
+      "params_m": 0.138,
+      "inf_time_ms": 2.33,
+      "best_epoch": 84
+    }
   }
 }

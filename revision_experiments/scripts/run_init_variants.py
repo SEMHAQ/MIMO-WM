@@ -90,6 +90,8 @@ if __name__ == '__main__':
 
     seeds = multi('--seeds', int)[:5] or R.SEEDS
     dss = multi('--datasets')[:2] or ['humanoid_standup']
+    only = multi('--variants')          # 可选：只跑指定变体（按名字精确匹配）
+    ALL = list(VARIANTS.items()) + list(CONTROLS.items())
 
     res = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
     for ds in dss:
@@ -102,7 +104,7 @@ if __name__ == '__main__':
         Xs, Xa, Y = R.make_data(eps_tr, m, s, T)
         Xv, Xav, Yv = R.make_data(eps_vl, m, s, T)
 
-        for name, (ModelClass, kwfn) in list(VARIANTS.items()) + list(CONTROLS.items()):
+        for name, (ModelClass, kwfn) in ALL if not only else [(n, v) for n, v in ALL if n in only]:
             key = '%s_%s' % (name, ds)
             res.setdefault(key, {})
             for seed in seeds:
@@ -120,7 +122,7 @@ if __name__ == '__main__':
     print('\n=== 汇总 (%s) ===' % ', '.join(dss), flush=True)
     for ds in dss:
         print('[%s]' % ds)
-        for name in list(VARIANTS) + list(CONTROLS):
+        for name in [n for n, _ in ALL if not only or n in only]:
             v = res.get('%s_%s' % (name, ds), {})
             ms = [x['mse'] * 100 for x in v.values()]
             if ms:
