@@ -44,7 +44,7 @@ revision_experiments/
     ├── export_bench_models.py     在 x86 上导出待测 ONNX 模型与参考输入/输出
     ├── export_mpc_onnx.py         导出支持动态批量的 MIMO-WM ONNX（供 MPC 测速）
     ├── reference_io.npz           参考输入/输出，用于机载数值一致性核对
-    ├── models/                    机载测速所用 ONNX 模型（15 个）与 manifest.json
+    ├── models/                    机载测速所用 ONNX 模型（含动态批量版）与 manifest.json
     ├── results/                   机载逐窗口原始结果 JSON（表 6 的来源）
     └── 机载实测说明.md            机载实测的平台、口径、复现命令与全部结果
 ```
@@ -52,7 +52,8 @@ revision_experiments/
 > **两处需要留意的版本关系。** 其一，`results/onboard_bench.json` 与 `onboard_bench_console.txt`
 > 是机载的**首批**测量：那批每模型一个进程，但 MIMO-WM 的四个序列长度共享同一进程，
 > 故其 `peak_rss_MB` 是四窗口累计峰值、不能归到模型头上。表 6 与修改稿第 5.7 节一律采用
-> `onboard_bench/results/` 下**逐窗口单进程**重跑的这批结果。其二，`results/true_lru.json` 与
+> `onboard_bench/results/` 下**逐窗口单进程**重跑的这批结果。（这两个文件仅存于仓库，不随
+> 投稿用 zip 分发。）其二，`results/true_lru.json` 与
 > `scripts/run_true_lru.py` 是早期对 LRU 的一次**已作废**尝试，它把 GLU 挂在递归之前、
 > 把 B/C 写成实对角，与官方实现不符；表 1、表 2 中的 LRU-WM 取自 `official_lru.json`，
 > 与这两个文件无关。二者保留于此仅为便于追溯，请勿引用。
@@ -224,8 +225,7 @@ python3 bench_mpc_sbc.py            # 产出 bench_result_mpc.json
    ONNX 按步展开，与权重体积无关。同一模型在 x86 服务器上的延迟约为机载平台的 1/8。
    若直接使用 PyTorch 的卷积或复数递推路径在 CPU 上测时，会得到与渐进复杂度相反的结论
    （见 `cpu_deploy_bench.json`），故部署数字统一取 ONNXRuntime 口径，并在修改稿中
-   标注了测试环境。同批测得的各基线机载数值见 `onboard_bench/机载实测说明.md` 第 5.2 节，
-   **修改稿正文未据此作任何对比结论**。
+   标注了测试环境。
 
 5. **MPC 频率的口径。** 表 5 的控制频率由 GPU 上并行评估 256 条候选序列测得。
    在算力受限的机载平台上按同一 CEM 配置单次规划耗时约 5.82 s（约 0.17 Hz）；
