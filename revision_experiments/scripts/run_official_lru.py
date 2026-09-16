@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
-"""官方参考 LRU 基线（用于替换此前两版，均为非忠实实现）。
+"""参考 LRU 基线（表 1、表 2 中 LRU-WM 一行即取自本脚本）。
 
-为什么重写两次：
-  * 第 1 版（run_revision_matrix.py 的 _LRUBlk，即已发表的 "LRU-WM"）：
-    gate 是 nn.Parameter(d_model)，一个【与输入无关】的静态逐通道常数。
-    LRU 的定义性特征是输入依赖门控，故那份实现不是 LRU。
-  * 第 2 版（run_true_lru.py 的 TrueLRULayer）：参数化对了，但结构有两处错：
+为什么改用参考实现：
+  * 原实现（run_revision_matrix.py 的 _LRUBlk，即 matrix_results.json 中的
+    'LRU-WM' 键）：gate 是 nn.Parameter(d_model)，一个【与输入无关】的静态逐通道
+    常数；LRU 的定义性特征是输入依赖门控，故它并非 LRU 的门控形式。该实现的
+    结果仍保留在 matrix_results.json 中供核对，但不作为表 1、表 2 中 'LRU-WM'
+    一行的出处。
+  * 另一版尝试：参数化对了，但结构有两处错：
     (a) GLU 挂在了递归【之前】（LayerNorm → GLU → LRU → out_proj），
-        官方 DWNBlock 是 LayerNorm → LRU → GLU → Dropout → 残差；
-    (b) B/C 写成实数逐通道对角配对、D 写成向量；官方 B (N,H)、C (H,N) 全为
+        参考实现的 DWNBlock 是 LayerNorm → LRU → GLU → Dropout → 残差；
+    (b) B/C 写成实数逐通道对角配对、D 写成向量；参考实现中 B (N,H)、C (H,N) 全为
         【复数】，D 为完整 (H,H) 实矩阵，混合是全 H×H 的：
             x_k = A x_{k-1} + B u_k
             y_k = Re[C x_k] + D u_k
-本版即为此前两版的更正。
+本版即为此前实现的更正。
 
 代码来源（逐行照抄，仅两处机械改动，见下）：
     https://github.com/forgi86/sysid-pytorch-lru
@@ -24,16 +26,16 @@
 出处性质（据实说明，勿误引）：这是社区维护的 PyTorch 实现，README 自称
 "A PyTorch implementation of DeepMind's LRU (arXiv:2303.06349)"，**不是 DeepMind
 的官方发布**。选它的理由是逐条对应论文方程（对角复 A、满复 B/C、满实 D）且是
-最广泛被引用的 PyTorch 参考版。若审稿要求官方 artifact，此处应整体替换。
+最广泛被引用的 PyTorch 参考版。
 
 机械改动（仅此两处，均可逐行核对）：
   1. LRU.forward 的 match 语句 → if/elif（本机 Python 3.9.7，match 需 3.10+）。
   2. 删去 linear.py 末尾的 __main__ 演示段。
 另：@torch.compiler.disable 做了兼容包装（torch 2.8 有该属性，包装是恒等的）。
 
-与其余 6 个模型的口径衔接：官方 DWN 骨架是 Linear(n_u→d) → blocks → Linear(d→n_y)。
+与其余 6 个模型的口径衔接：参考实现的 DWN 骨架是 Linear(n_u→d) → blocks → Linear(d→n_y)。
 本项目其余基线与 MIMO-WM 共用 "两层 encoder / 两层 decoder + 末步残差" 的骨架，
-为可比起见本脚本【保留该共用骨架，只把递归块换成官方 DWNBlock】。这是刻意的
+为可比起见本脚本【保留该共用骨架，只把递归块换成参考实现的 DWNBlock】。这是刻意的
 口径选择，改动的是块本身而非外围。
 
 用法（仓库根目录）：
@@ -342,7 +344,7 @@ class DWNBlock(nn.Module):
 # 以下：本项目包装（非官方代码）——沿用其余 6 个模型的共用 encoder/decoder 骨架
 # =====================================================================
 class OfficialLRUWorldModel(nn.Module):
-    """共用骨架 + 官方 DWNBlock 作为递归块。"""
+    """共用骨架 + 参考实现的 DWNBlock 作为递归块。"""
 
     def __init__(self, state_dim, action_dim, d_model=96, d_state=16, n_layers=2):
         super().__init__()

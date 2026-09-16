@@ -16,8 +16,8 @@ revision_experiments/
 ├── build_supp_zip.py      打包本目录为投稿用补充材料 zip（`--check` 可只比对不写）
 ├── results/               实验原始输出
 │   ├── matrix_results.json        对比矩阵（5 seeds × 2 数据集）
-│   ├── official_s4d.json          S4D-WM 官方参考实现对照（5 seeds × 2 数据集）
-│   ├── official_lru.json          LRU-WM 官方参考实现对照（5 seeds × 2 数据集）
+│   ├── official_s4d.json          S4D-WM 参考实现对照（5 seeds × 2 数据集）
+│   ├── official_lru.json          LRU-WM 参考实现对照（5 seeds × 2 数据集）
 │   ├── nogate_seed_robustness.json 无门控变体的补种子复核（10 种子口径）
 │   ├── init_variants.json         门控偏置初始化的变体对照
 │   ├── ablation_crosscheck.json   消融数值的跨文件一致性核对
@@ -27,7 +27,7 @@ revision_experiments/
 │   ├── trunc_longbudget.json      长序列 + 训练预算对照
 │   ├── cem_evolution.json         CEM 代价与采样方差演化
 │   ├── mpc_extended.json          MPC 控制频率与 3 步预测精度
-│   ├── mpc_official.json          MPC 口径下 S4D-WM / LRU-WM 的官方实现重跑
+│   ├── mpc_official.json          MPC 口径下 S4D-WM / LRU-WM 的参考实现重跑
 │   ├── cpu_deploy_bench.json      x86 CPU 部署基准
 │   ├── deploy_kernel_verify.json  部署核等价性与 ONNX 导出验证
 │   ├── resource_ledger.json       FLOPs 与权重体积账本
@@ -87,9 +87,12 @@ python3 scripts/generate_data.py
 
 | `results/` 文件 | 修改稿位置 | 生成脚本 |
 |---|---|---|
-| `matrix_results.json` | 表 1、表 2（Humanoid / HumanoidStandup 主对比；含 MIMO-WM、无门控、Performer-WM 与常规规模 Transformer） | `run_revision_matrix.py` |
+| `matrix_results.json` | 表 1、表 2（Humanoid / HumanoidStandup 主对比；含 MIMO-WM、无门控、Performer-WM 与常规规模 Transformer。其中 `S4D-WM`、`LRU-WM` 两键为原实现，非表 1、表 2 所用口径，表内该两行见下两行） | `run_revision_matrix.py` |
 | `official_s4d.json` | 表 1、表 2 中 S4D-WM 各行 | `run_official_s4d.py` |
 | `official_lru.json` | 表 1、表 2 中 LRU-WM 各行 | `run_official_lru.py` |
+| `nogate_seed_robustness.json` | 无门控行的补种子复核（回复信意见 1.4 所述 10 种子口径；表 1、表 2 仍按 5 种子报告） | `check_nogate_seed_robustness.py` |
+| `init_variants.json` | 第 5.3 节（门控偏置初始化的变体对照：原版、output=I、门控近全开、二者组合） | `run_init_variants.py` |
+| `ablation_crosscheck.json` | 表 3 与表 1 中无门控数值的跨口径核对（消融 $D{=}128$ 与主对比 $D{=}96$） | `run_ablation_crosscheck.py` |
 | `gpu_time_scaling.json` | 第 5.2 节末段（吞吐口径计算伸缩性） | `bench_gpu_scaling.py` |
 | `train_peak_mem.json` | 第 5.7 节（训练峰值显存对照） | `mem_train_peak.py` |
 | `trunc_control.json` | 第 5.4 节（截断对照） | `trunc_control.py` |
@@ -124,7 +127,7 @@ python3 revision_experiments/scripts/run_revision_matrix.py \
     --jobs MIMO-WM MIMO-WM-noGate S4D-WM LRU-WM Performer-WM Transformer-Reg \
     --datasets humanoid humanoid_standup --seeds 42 123 456 789 1024
 
-# S4D-WM / LRU-WM：官方参考实现的等价移植（表 1、表 2 对应行）
+# S4D-WM / LRU-WM：参考实现的等价移植（表 1、表 2 对应行）
 python3 revision_experiments/scripts/run_official_s4d.py \
     --datasets humanoid humanoid_standup --seeds 42 123 456 789 1024
 python3 revision_experiments/scripts/run_official_lru.py \
@@ -132,10 +135,10 @@ python3 revision_experiments/scripts/run_official_lru.py \
 # 两个脚本同时输出同口径的控制组（原实现 S4D/LRU、w/o 门控、MIMO-WM），用于核对与本目录
 # 其余结果的数值一致性；脚本内使用原子写入，中断不会损坏已有结果文件。
 
-# 核对表 1、表 2 表注 f 的 LRU 推理延迟（官方 scan/loop 两种写法 vs 其余各行）
+# 核对表 1、表 2 表注 f 的 LRU 推理延迟（参考实现的 scan/loop 两种写法 vs 其余各行）
 python3 revision_experiments/scripts/check_lru_timing.py
 
-# MPC 口径下的官方实现重跑：表 5 的 S4D-WM 与 LRU-WM 两行
+# MPC 口径下的参考实现重跑：表 5 的 S4D-WM 与 LRU-WM 两行
 python3 revision_experiments/scripts/run_mpc_official.py
 # 该脚本复用 mpc_extended.py 的训练与 MPC 协议，同时重跑两个控制组（原实现 S4D/LRU）：
 # 其 3 步 MSE 与 mpc_extended.json 逐位相同（0.233037 与 0.217782），可据此确认管线口径一致。
@@ -200,15 +203,17 @@ python3 bench_mpc_sbc.py            # 产出 bench_result_mpc.json
    不同模型之间的差异不反映渐进复杂度；因此计算伸缩性的结论以**批量吞吐口径**
    （$B{=}128$，`gpu_time_scaling.json`）给出，两者不可混用。
 
-3. **S4D-WM 与 LRU-WM 的实现口径。** 表 1、表 2 中这两行取自官方参考实现的等价移植：
-   S4D 取自 `S4D-Lin` 的官方 PyTorch 实现，LRU 取自 DeepMind 的官方实现，二者均取状态维度
-   $N{=}16$，参数量分别为 0.132M 与 0.150M。两行的时间列需按实现方式解读：官方 LRU 以
+3. **S4D-WM 与 LRU-WM 的实现口径。** 表 1、表 2 中这两行取自参考实现的等价移植：
+   S4D 取自 `S4D-Lin` 的官方 PyTorch 实现（`HazyResearch/state-spaces`）；LRU 一行取自
+   社区维护的 PyTorch 实现（逐条对应 LRU 论文方程），并非 DeepMind 官方发布，
+   文件名与键名中的 `official` 为工作命名。二者均取状态维度
+   $N{=}16$，参数量分别为 0.132M 与 0.150M。两行的时间列需按实现方式解读：LRU 参考实现以
    逐位循环驱动对角递推（`forward_loop`）或以 Python 级递归扫描（`forward_scan`）实现，
    均未做算子融合，在 $T{=}32$ 下由启动开销主导，故其 5.82 ms 反映的是参考实现的写法，
    而非 LRU 架构本身的计算量，改用等价的循环实现亦在 5.2 至 5.5 ms（`check_lru_timing.py`）。两行同时输出同口径的
    控制组（原实现、w/o 门控、MIMO-WM），其数值与本目录其余结果逐位一致，可据此核对口径。
-   表 5 中这两行同样取自官方实现（`mpc_official.json`，同表 1、表 2 的口径），其在 MPC 口径下
-   的控制频率亦受上述实现方式影响：官方 LRU 为 2.74 Hz、官方 S4D 为 7.27 Hz。表 5 的
+   表 5 中这两行同样取自参考实现（`mpc_official.json`，同表 1、表 2 的口径），其在 MPC 口径下
+   的控制频率亦受上述实现方式影响：LRU 为 2.74 Hz、S4D 为 7.27 Hz。表 5 的
    3 步预测 MSE 不受计时影响，可作为纯精度口径使用。
 
 4. **部署延迟与内存的测量口径。** 机载平台的延迟与内存（表 6）为 ONNXRuntime 纯 CPU

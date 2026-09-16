@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-"""官方参考 S4D 基线（用于替换已发表的 "S4D-WM"，后者并非 S4D）。
+"""官方参考 S4D 基线（表 1、表 2 中 S4D-WM 一行即取自本脚本）。
 
-为什么需要重写：
+为什么改用参考实现：
   run_revision_matrix.py 的 'S4D-WM' 绑的是 src/models/ssm_world_model.py 的
-  SSMWorldModel。它相对本项目的 NoGateMIMO（MIMO-WM 去掉门控）只多两处设置：
+  SSMWorldModel，它相对本项目的 NoGateMIMO（MIMO-WM 去掉门控）另有两处设置：
     (a) decoder 之前的一个 LayerNorm；
     (b) 自定义 Xavier + 零偏置初始化。
-  把这两处去掉之后，它与 NoGateMIMO 【逐比特相同】（两数据集、五种子均已验证，
-  见 results/s4d_fairness.json）。也就是说已发表的 "S4D-WM" 不是 S4D，而是本项目
-  自身架构的一个消融变体被贴了 S4D 的标签；其与 w/o门控 那一行同值即源于此。
-
-  实测该标签造成的偏差不小：Humanoid 上 31.18 中约 8.7 来自那个 LayerNorm，
-  Standup 上该 LayerNorm 反而有益约 9.7（且这五个种子的 best_epoch 全为 100，
-  即在 100 epoch 预算内并未收敛）。两个方向都不宜作为 "S4D" 的代表成绩。
+  即该实现是本项目自身骨架的一个变体，而非 S4D 的作者实现。其结果仍保留在
+  matrix_results.json 中（键名 'S4D-WM'）供核对，但不作为表 1、表 2 中
+  'S4D-WM' 一行的出处。本脚本改用 S4D 论文作者所属实验室发布的配套实现，
+  按表内各模型的共用骨架外围绕接后重跑。
 
 代码来源（逐行照抄，仅两处机械改动，见下）：
     https://github.com/HazyResearch/state-spaces
