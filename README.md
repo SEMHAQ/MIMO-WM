@@ -26,8 +26,8 @@ MSE in ×10⁻². All models share the hidden size $D{=}96$, $L{=}2$ for a like-
 | TCN-WM | 20.68±0.32 | 0.741 | 0.189 |
 | **MIMO-WM** | **19.87±0.23** | **0.751** | **0.138** |
 | MIMO-WM (w/o gating) | 20.55±0.05 | 0.743 | 0.101 |
-| S4D-WM | 31.18±0.38 | 0.610 | 0.101 |
-| LRU-WM | 20.42±0.11 | 0.745 | 0.101 |
+| S4D-WM | 20.22±0.32 | 0.747 | 0.132 |
+| LRU-WM | 20.16±0.24 | 0.748 | 0.150 |
 | Performer-WM | 20.99±0.18 | 0.737 | 0.162 |
 | Transformer-WM (regular scale) | 25.13±0.54 | 0.686 | 1.509 |
 
@@ -37,14 +37,15 @@ MSE in ×10⁻². All models share the hidden size $D{=}96$, $L{=}2$ for a like-
 |-------|-------------|-----|------------|
 | **MIMO-WM** | **53.10±0.07** | **0.444** | **0.138** |
 | MIMO-WM (w/o gating) | 50.61±0.22 | 0.470 | 0.101 |
-| S4D-WM | 51.90±0.17 | 0.457 | 0.101 |
-| LRU-WM | 50.35±0.03 | 0.473 | 0.101 |
+| S4D-WM | 53.30±0.14 | 0.442 | 0.132 |
+| LRU-WM | 55.42±0.11 | 0.420 | 0.150 |
 | Performer-WM | 53.95±0.42 | 0.436 | 0.162 |
 | Transformer-WM (regular scale) | 54.53±0.28 | 0.429 | 1.509 |
 
 "Regular scale" Transformer uses $D{=}192$, 6 heads, $L{=}3$, FFN$=4D$ (1.509M parameters), included to
-test whether the ~0.3M baselines were under-parameterised. Per-seed values and the evaluation scripts
-are in [`revision_experiments/`](revision_experiments/).
+test whether the ~0.3M baselines were under-parameterised. S4D-WM and LRU-WM are equivalent ports of
+the reference implementations ($N{=}16$). Per-seed values and the evaluation scripts are in
+[`revision_experiments/`](revision_experiments/).
 
 ### Highlights
 
@@ -56,7 +57,7 @@ are in [`revision_experiments/`](revision_experiments/).
   HumanoidStandup it is not necessary — the benefit depends on the task dynamics.
 - **Deployable**: pure real-valued recurrence, ONNX-exportable, verified equal to the training
   convolution path to ~2.4×10⁻⁷; 2.69 ms per 8-step window on an ARM board (ONNXRuntime, CPU),
-  with a 9.6 MB resident-memory increase and a 0.59 MB model.
+  with a 9.6 MB resident-memory increase and a 0.55 MB model.
 
 ## Architecture
 
