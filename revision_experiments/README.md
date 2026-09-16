@@ -19,7 +19,6 @@ revision_experiments/
 │   ├── official_s4d.json          S4D-WM 参考实现对照（5 seeds × 2 数据集）
 │   ├── official_lru.json          LRU-WM 参考实现对照（5 seeds × 2 数据集）
 │   ├── nogate_seed_robustness.json 无门控变体的补种子复核（10 种子口径）
-│   ├── init_variants.json         门控偏置初始化的变体对照
 │   ├── ablation_crosscheck.json   消融数值的跨文件一致性核对
 │   ├── gpu_time_scaling.json      GPU 推理时间—序列长度伸缩
 │   ├── train_peak_mem.json        训练峰值显存
@@ -91,7 +90,6 @@ python3 scripts/generate_data.py
 | `official_s4d.json` | 表 1、表 2 中 S4D-WM 各行 | `run_official_s4d.py` |
 | `official_lru.json` | 表 1、表 2 中 LRU-WM 各行 | `run_official_lru.py` |
 | `nogate_seed_robustness.json` | 无门控行的补种子复核（回复信意见 1.4 所述 10 种子口径；表 1、表 2 仍按 5 种子报告） | `check_nogate_seed_robustness.py` |
-| `init_variants.json` | 第 5.3 节（门控偏置初始化的变体对照：原版、output=I、门控近全开、二者组合） | `run_init_variants.py` |
 | `ablation_crosscheck.json` | 表 3 与表 1 中无门控数值的跨口径核对（消融 $D{=}128$ 与主对比 $D{=}96$） | `run_ablation_crosscheck.py` |
 | `gpu_time_scaling.json` | 第 5.2 节末段（吞吐口径计算伸缩性） | `bench_gpu_scaling.py` |
 | `train_peak_mem.json` | 第 5.7 节（训练峰值显存对照） | `mem_train_peak.py` |

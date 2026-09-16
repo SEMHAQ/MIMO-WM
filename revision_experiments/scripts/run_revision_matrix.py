@@ -29,21 +29,6 @@ print(f'Device: {DEVICE}', flush=True)
 
 
 # ============================================================ 新基线模型
-class MIMOGateOpen(nn.Module):
-    """MIMO-WM 变体: 与 src MIMO-WM 同构, 但门控线性偏置初始化为 +b0(σ≈近全开).
-    门控从"近全开"开始训练, 仅在需要时学习关闭——用于改进实验(回应 Standup 上门控 vs 无门控的取舍)."""
-    def __init__(self, state_dim, action_dim, d_model=96, d_state=16, n_layers=2, gate_bias0=4.0):
-        from src.models.mimo_world_model import MIMOWorldModel
-        super().__init__()
-        self.inner = MIMOWorldModel(state_dim, action_dim, d_model=d_model, d_state=d_state, n_layers=n_layers)
-        with torch.no_grad():
-            for blk in self.inner.backbone:
-                blk.gate.bias.fill_(gate_bias0)
-
-    def forward(self, states, actions):
-        return self.inner(states, actions)
-
-
 class NoGateMIMO(nn.Module):
     """MIMO-SSM(无门控): 编码器 + (LayerNorm + DiagSSM + 残差)*L + 解码器.
     与 src MIMO-WM 同 encoder/decoder, 仅去掉 output(W_o)*sigmoid(gate) 交互."""
@@ -232,7 +217,6 @@ def models_reg():
     def t(kw): return (lambda sd, ad: dict(kw, state_dim=sd, action_dim=ad))
     return {
         'MIMO-WM': (MIMOWorldModel, t({'d_model': 96, 'd_state': 16, 'n_layers': 2})),
-        'MIMO-WM-openGate': (MIMOGateOpen, t({'d_model': 96, 'd_state': 16, 'n_layers': 2, 'gate_bias0': 4.0})),
         'MIMO-WM-noGate': (NoGateMIMO, t({'d_model': 96, 'd_state': 16, 'n_layers': 2})),     # A1
         'S4D-WM': (SSMWorldModel, t({'d_model': 96, 'd_state': 16, 'n_layers': 2})),           # A2
         'LRU-WM': (LRUWorldModel, t({'d_model': 96, 'd_state': 16, 'n_layers': 2})),           # A2
