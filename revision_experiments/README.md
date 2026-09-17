@@ -28,9 +28,7 @@ revision_experiments/
 │   ├── mpc_official.json          MPC 口径下 S4D-WM / LRU-WM 的参考实现重跑
 │   ├── cpu_deploy_bench.json      x86 CPU 部署基准
 │   ├── deploy_kernel_verify.json  部署核等价性与 ONNX 导出验证
-│   ├── resource_ledger.json       FLOPs 与权重体积账本
-│   ├── onboard_bench.json         机载首批测量（每模型一进程，MIMO-WM 四窗口共享一进程）
-│   ├── onboard_bench_console.txt  机载首批测量的终端输出留档
+│   ├── resource_ledger.json       FLOPs 与权重体积开销
 │   ├── onboard_bench_mpc.json     机载平台 CEM-MPC 规划耗时实测
 │   ├── mimo_wm_deploy.onnx        导出用于部署评测的 ONNX 模型
 │   └── ckpt/                      各数据集各随机种子的最优权重
@@ -45,12 +43,6 @@ revision_experiments/
     ├── results/                   机载逐窗口原始结果 JSON（表 6 的来源）
     └── 机载实测说明.md            机载实测的平台、口径、复现命令与全部结果
 ```
-
-> **需要留意的一处版本关系。** `results/onboard_bench.json` 与 `onboard_bench_console.txt`
-> 是机载的**首批**测量：那批每模型一个进程，但 MIMO-WM 的四个序列长度共享同一进程，
-> 故其 `peak_rss_MB` 是四窗口累计峰值、不能归到模型头上。表 6 与修改稿第 5.7 节一律采用
-> `onboard_bench/results/` 下**逐窗口单进程**重跑的这批结果。（这两个文件仅存于仓库，不随
-> 投稿用 zip 分发。）
 
 ---
 
@@ -98,7 +90,7 @@ python3 scripts/generate_data.py
 | `mpc_official.json` | 表 5 中 S4D-WM 与 LRU-WM 两行 | `run_mpc_official.py` |
 | `cpu_deploy_bench.json` | 第 5.7 节（x86 CPU 与机载平台延迟对照） | `bench_deploy_cpu.py` |
 | `deploy_kernel_verify.json` | 第 5.7 节（部署核等价性与 ONNX 对拍） | `deploy_mimo.py` |
-| `resource_ledger.json` | 第 5.7 节（单窗 FLOPs 与权重体积账本） | `resource_ledger.py` |
+| `resource_ledger.json` | 第 5.7 节（单窗 FLOPs 与权重体积开销） | `resource_ledger.py` |
 | `onboard_bench/results/bench_result_*_T*.json` | 表 6 全部数值、第 5.7 节（机载延迟、内存、温度） | `onboard_bench/bench_sbc.py`（逐窗口单进程） |
 | `onboard_bench_mpc.json` | 第 5.7 节末（机载 5.82 s / 0.42 s 规划耗时） | `onboard_bench/bench_mpc_sbc.py` |
 | `mimo_wm_deploy.onnx` | 第 5.7 节（导出模型，opset 17） | `deploy_mimo.py` |
@@ -154,7 +146,7 @@ python3 revision_experiments/scripts/trunc_control.py --seeds 42 123 --epochs 25
 # 部署核等价性验证 + ONNX 导出
 python3 revision_experiments/scripts/deploy_mimo.py
 
-# x86 CPU 部署基准；资源账本
+# x86 CPU 部署基准；FLOPs 与权重体积开销
 python3 revision_experiments/scripts/bench_deploy_cpu.py
 python3 revision_experiments/scripts/resource_ledger.py
 ```
@@ -173,14 +165,17 @@ python3 revision_experiments/onboard_bench/export_mpc_onnx.py
 pip3 install onnxruntime numpy
 cd onboard_bench
 sudo sh -c 'for p in /sys/devices/system/cpu/cpufreq/policy*; do echo performance > $p/scaling_governor; done'
-python3 bench_sbc.py MIMO-WM        # 产出 bench_result.json
+for w in MIMO-WM_T8 MIMO-WM_T16 MIMO-WM_T32 MIMO-WM_T64; do
+    python3 bench_sbc.py $w         # 逐窗口单独进程，产出 bench_result_<窗口>.json
+done
 python3 bench_mpc_sbc.py            # 产出 bench_result_mpc.json
 ```
 
 板端脚本自带数值正确性核对：与 `reference_io.npz` 中 x86 导出的参考输出逐元素比对，
-两条日志中报告的 `diff` 即该最大绝对误差（本机载运行中 $T{=}16$ 为 $2.4\times10^{-7}$，
-其余为 0）。`results/onboard_bench*.json` 即上述两条命令产出的 `bench_result*.json`，
-仅重命名以区分来源，内容未作改动；终端输出见 `onboard_bench_console.txt`。
+运行时打印的 `diff` 即该最大绝对误差（本机载运行中 $T{=}8$ 为 $2.4\times10^{-7}$，
+其余为 0）。表 6 的逐窗口结果即上述 `bench_result_<窗口>.json`，按窗口各存一份于
+`onboard_bench/results/`；`results/onboard_bench_mpc.json` 为机载 MPC 命令产出的
+`bench_result_mpc.json`，仅重命名以区分来源，内容未作改动。
 
 ---
 

@@ -7,12 +7,12 @@
        python3 bench_sbc.py MIMO-WM    # 只测某个模型
 产物:  bench_result.json（全部）或 bench_result_<模型名>.json（单模型）
 
-建议逐模型单独运行（每个模型一个进程），这样 peak_rss_MB 只覆盖该模型：
-  for m in MIMO-WM Transformer-WM Transformer-Reg LSTM-WM GRU-WM TCN-WM; do
-      python3 bench_sbc.py $m
+逐窗口单独运行（每个序列长度一个进程），这样 peak_rss_MB 只覆盖该窗口：
+  for w in MIMO-WM_T8 MIMO-WM_T16 MIMO-WM_T32 MIMO-WM_T64; do
+      python3 bench_sbc.py $w
   done
-同一进程内跑多个模型时 peak_rss_MB 是单调峰值，读作"截至当前所有模型的最大值"，
-此时应改用每条记录的 rss_delta_MB（加载该模型前后的常驻增量）作为单模型内存口径。
+同一进程内跑多个窗口时 peak_rss_MB 是单调峰值，读作"截至当前所有窗口的最大值"，
+不能归到单个窗口头上。
 
 测量内容:
   - 正确性: 与 reference_io.npz 参考输出比对 (max abs diff)

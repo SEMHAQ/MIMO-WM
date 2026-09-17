@@ -1,4 +1,4 @@
-"""B1 资源账本: 参数量/权重体积/单窗 FLOPs(profiler 实测) + Jetson Orin Nano 级延迟预估(标注为预估).
+"""资源开销: 参数量/权重体积/单窗 FLOPs(profiler 实测) + Jetson Orin Nano 级延迟预估(标注为预估).
 
 用法: python revision_experiments/scripts/resource_ledger.py   (CPU 即可, 不占 GPU)
 产物: revision_experiments/results/resource_ledger.json
@@ -56,8 +56,8 @@ def main():
         print(f'{name:<26} params={p/1e6:.3f}M  weight={p*4/1e6:.2f}MB  window_FLOPs={fl/1e6:.2f}M  per-step={per_step/1e3:.1f}K', flush=True)
 
     # Jetson Orin Nano 级延迟: 不做纯 FLOP 投影(微模型为延迟/开销主导, FLOP 投影会给出
-    # 无意义的 µs 级数字). 板级延迟须实测; 本账本仅提供 FLOPs/权重/激活规模的资源预算,
-    # 供正文以"板级延迟待实测"如实呈现, 并以本机 ONNXRuntime(CPU) 实测 0.378ms@T8 作为参照量级.
+    # 无意义的 µs 级数字). 板级延迟以机载实测为准(见表 6 与机载实测说明.md); 本文件仅提供
+    # FLOPs/权重/激活规模的资源开销, 并附本机 ONNXRuntime(CPU) 实测 0.378 ms @ T8 作参照量级.
     out['note'] = ('FLOP-only projection omitted: tiny models are latency/overhead-bound, '
                    'projected ~us numbers are meaningless. On-board latency requires real measurement; '
                    'reported reference: ONNXRuntime CPU x86 = 0.378 ms per T=8 window.')

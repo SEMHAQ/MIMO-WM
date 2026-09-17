@@ -15,7 +15,7 @@
 另有一类**只影响投稿 zip、不影响仓库**的收窄：修改稿表 6 与第 5.7 节只报告 MIMO-WM
 自身的机载数值，因此 zip 只随附 MIMO-WM 的 ONNX 与逐窗口结果；其余模型的 ONNX 与同批
 机载结果保留在仓库中，可用同一套脚本重新导出与测量，但不随投稿材料分发。见
-ZIP_ONLY_MIMO 与 ZIP_SKIP_REL。
+ZIP_ONLY_MIMO。
 
 打完包可用 --check 只做比对不写文件，用于确认 zip 与工作区没有版本漂移。
 """
@@ -34,13 +34,6 @@ ZIP_ONLY_MIMO = {
     'onboard_bench/results': lambda n: (n.startswith('bench_result_MIMO-WM')
                                         or n == 'bench_result_mpc.json'),
 }
-# 以下产物不随投稿 zip 分发：机载首批（含各模型）的汇总，以及口径与表内不同的实现变体
-# （表 1、表 2 的「w/o 门控」行由 run_revision_matrix.py 的 NoGateMIMO 产出，
-# 0.101M，20.55 / 50.61），以免被误读为同一行的出处。
-ZIP_SKIP_REL = {
-    'results/onboard_bench.json',
-    'results/onboard_bench_console.txt',
-}
 
 
 def keep(rel):
@@ -48,7 +41,7 @@ def keep(rel):
     parts = rel.split('/')
     if any(p in SKIP_DIRS for p in parts):
         return False
-    if parts[-1].endswith('.log') or rel in ZIP_SKIP_REL:
+    if parts[-1].endswith('.log'):
         return False
     only = ZIP_ONLY_MIMO.get('/'.join(parts[:-1]))
     return only is None or only(parts[-1])
