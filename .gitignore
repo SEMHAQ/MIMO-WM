@@ -178,3 +178,7 @@ reviews/
 deploy_bench.zip
 
 revision_experiments/results/_backup_cpu/
+revision_experiments/scripts/_backup_cpu/
+
+# 投稿提交材料（上传用，不进仓库）
+提交材料-CCTA260363/

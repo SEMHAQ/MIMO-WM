@@ -26,7 +26,7 @@ revision_experiments/
 │   ├── cem_evolution.json         CEM 代价与采样方差演化
 │   ├── mpc_extended.json          MPC 控制频率与 3 步预测精度
 │   ├── mpc_official.json          MPC 口径下 S4D-WM / LRU-WM 的参考实现重跑
-│   ├── cpu_deploy_bench.json      x86 CPU 部署基准
+│   ├── cpu_onnx_bench.json        x86 ONNXRuntime 部署基准（表 6 的 x86 参照）
 │   ├── deploy_kernel_verify.json  部署核等价性与 ONNX 导出验证
 │   ├── resource_ledger.json       FLOPs 与权重体积开销
 │   ├── onboard_bench_mpc.json     机载平台 CEM-MPC 规划耗时实测
@@ -88,7 +88,7 @@ python3 scripts/generate_data.py
 | `cem_evolution.json` | 第 5.5 节（CEM 代价与采样方差演化） | `cem_evolution.py` |
 | `mpc_extended.json` | 表 5（MPC 控制性能对比；除 S4D-WM 与 LRU-WM 外的各行） | `mpc_extended.py` |
 | `mpc_official.json` | 表 5 中 S4D-WM 与 LRU-WM 两行 | `run_mpc_official.py` |
-| `cpu_deploy_bench.json` | 第 5.7 节（x86 CPU 与机载平台延迟对照） | `bench_deploy_cpu.py` |
+| `cpu_onnx_bench.json` | 第 5.7 节（x86 单窗延迟 0.34 / 0.77 / 1.40 / 3.25 ms，表 6 的 x86 参照） | `bench_deploy_x86_onnx.py` |
 | `deploy_kernel_verify.json` | 第 5.7 节（部署核等价性与 ONNX 对拍） | `deploy_mimo.py` |
 | `resource_ledger.json` | 第 5.7 节（单窗 FLOPs 与权重体积开销） | `resource_ledger.py` |
 | `onboard_bench/results/bench_result_*_T*.json` | 表 6 全部数值、第 5.7 节（机载延迟、内存、温度） | `onboard_bench/bench_sbc.py`（逐窗口单进程） |
@@ -146,8 +146,8 @@ python3 revision_experiments/scripts/trunc_control.py --seeds 42 123 --epochs 25
 # 部署核等价性验证 + ONNX 导出
 python3 revision_experiments/scripts/deploy_mimo.py
 
-# x86 CPU 部署基准；FLOPs 与权重体积开销
-python3 revision_experiments/scripts/bench_deploy_cpu.py
+# x86 CPU 部署基准（与板端同一套 ONNX 与同一计时协议）；FLOPs 与权重体积开销
+python3 revision_experiments/scripts/bench_deploy_x86_onnx.py
 python3 revision_experiments/scripts/resource_ledger.py
 ```
 
@@ -214,10 +214,10 @@ python3 bench_mpc_sbc.py            # 产出 bench_result_mpc.json
    内存一列必须逐窗口单进程运行才可归到该模型：`VmHWM` 在进程内只增不减，一个进程装
    多个窗口时 `peak_rss_MB` 只是累计峰值。增量为加载模型并完成首帧推理前后的进程常驻
    内存之差，其中含约 38.6 MB 的 Python 与 ONNXRuntime 运行时开销；峰值随 $T$ 增大源于
-   ONNX 按步展开，与权重体积无关。同一模型在 x86 服务器上的延迟约为机载平台的 1/8。
-   若直接使用 PyTorch 的卷积或复数递推路径在 CPU 上测时，会得到与渐进复杂度相反的结论
-   （见 `cpu_deploy_bench.json`），故部署数字统一取 ONNXRuntime 口径，并在修改稿中
-   标注了测试环境。
+   ONNX 按步展开，与权重体积无关。同一模型在 x86 服务器上的延迟约为机载平台的 1/6 至
+   1/8（x86 侧见 `cpu_onnx_bench.json`，1 线程：$T{=}8$、16、32、64 分别为 0.34、0.77、
+   1.40 与 3.25 ms，由 `bench_deploy_x86_onnx.py` 用同一套 ONNX 与同一计时协议生成），
+   部署数字统一取 ONNXRuntime 口径，并在修改稿中标注了测试环境。
 
 5. **MPC 频率的口径。** 表 5 的控制频率由 GPU 上并行评估 256 条候选序列测得。
    在算力受限的机载平台上按同一 CEM 配置单次规划耗时约 5.82 s（约 0.17 Hz）；

@@ -42,5 +42,6 @@
     "fp16@25%": 0.001,
     "fp16@15%": 0.002,
     "INT8@30%": 0.001
-  }
+  },
+  "note": "FLOP-only projection omitted: tiny models are latency/overhead-bound, projected ~us numbers are meaningless. On-board latency requires real measurement; x86 reference: see results/cpu_onnx_bench.json (ONNXRuntime CPU, T=8 median 0.34 ms, 1 thread)."
 }

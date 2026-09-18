@@ -1,0 +1,99 @@
+{
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "machine": "x86_64",
+  "processor": "Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz",
+  "cores": 16,
+  "python": "3.10.12",
+  "onnxruntime": "1.23.2",
+  "note": "x86 ONNXRuntime CPU baseline for Sec. 5.7; same ONNX files, same inputs and same timing protocol as the on-board benchmark (onboard_bench/bench_sbc.py), platform only differs.",
+  "models": {
+    "MIMO-WM_T8": {
+      "T": 8,
+      "model_kB": 595.0,
+      "latency": {
+        "th1": {
+          "median_ms": 0.3389,
+          "p95_ms": 0.4661,
+          "mean_ms": 0.3506,
+          "reps": 200,
+          "per_step_ms": 0.0424
+        },
+        "th4": {
+          "median_ms": 0.3383,
+          "p95_ms": 0.4449,
+          "mean_ms": 0.3537,
+          "reps": 200,
+          "per_step_ms": 0.0423
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T16": {
+      "T": 16,
+      "model_kB": 634.2,
+      "latency": {
+        "th1": {
+          "median_ms": 0.7685,
+          "p95_ms": 0.9447,
+          "mean_ms": 0.7659,
+          "reps": 150,
+          "per_step_ms": 0.048
+        },
+        "th4": {
+          "median_ms": 0.7081,
+          "p95_ms": 0.8519,
+          "mean_ms": 0.7124,
+          "reps": 150,
+          "per_step_ms": 0.0443
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T32": {
+      "T": 32,
+      "model_kB": 713.3,
+      "latency": {
+        "th1": {
+          "median_ms": 1.4011,
+          "p95_ms": 1.71,
+          "mean_ms": 1.4137,
+          "reps": 100,
+          "per_step_ms": 0.0438
+        },
+        "th4": {
+          "median_ms": 1.4466,
+          "p95_ms": 1.7442,
+          "mean_ms": 1.4637,
+          "reps": 100,
+          "per_step_ms": 0.0452
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    },
+    "MIMO-WM_T64": {
+      "T": 64,
+      "model_kB": 871.9,
+      "latency": {
+        "th1": {
+          "median_ms": 3.2499,
+          "p95_ms": 3.5366,
+          "mean_ms": 3.2383,
+          "reps": 50,
+          "per_step_ms": 0.0508
+        },
+        "th4": {
+          "median_ms": 2.9454,
+          "p95_ms": 3.4627,
+          "mean_ms": 2.9473,
+          "reps": 50,
+          "per_step_ms": 0.046
+        }
+      },
+      "diff_th1": 0.0,
+      "diff_th4": 0.0
+    }
+  }
+}
